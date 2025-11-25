@@ -1,16 +1,48 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import ArticleCard from '../components/ArticleCard.jsx';
+import { getArticles, getCategories } from '../utils/api.js';
 
+const articles = await getArticles();
+const categories = await getCategories();
+const recentArticles = articles.slice(0, 3);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="MyBlog - Accueil">
+  <section class="mb-12 text-center">
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-4">
+      Bienvenue sur <span class="text-indigo-600">MyBlog</span>
+    </h1>
+    <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+      Découvrez nos derniers articles sur le développement web, le cloud et bien plus encore.
+    </p>
+  </section>
+
+  <section class="mb-16">
+    <div class="flex justify-between items-center mb-8">
+      <h2 class="text-2xl font-bold text-gray-900">Articles récents</h2>
+      <a href="/articles" class="text-indigo-600 font-medium hover:text-indigo-800">
+        Voir tout &rarr;
+      </a>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {recentArticles.map(article => (
+        <ArticleCard article={article} />
+      ))}
+    </div>
+  </section>
+
+  <section class="bg-indigo-50 rounded-2xl p-8 md:p-12">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Explorer par catégories</h2>
+    <div class="flex flex-wrap justify-center gap-4">
+      {categories.map(category => (
+        <a 
+          href={`/categories`} 
+          class="bg-white text-gray-700 hover:text-indigo-600 hover:shadow-md px-6 py-3 rounded-lg font-medium transition-all duration-300"
+        >
+          {category}
+        </a>
+      ))}
+    </div>
+  </section>
+</Layout>
