@@ -1,19 +1,19 @@
 export const articles = [
-    {
-        slug: "introduction-kubernetes",
-        title: "Introduction à Kubernetes : Le guide complet",
-        description: "Découvrez les concepts fondamentaux de Kubernetes, l'orchestrateur de conteneurs qui a révolutionné le déploiement d'applications.",
-        date: "2025-01-12",
-        category: "DevOps",
-        tags: ["kubernetes", "containers", "docker"],
-        cover: "https://placehold.co/600x400/2563eb/ffffff?text=Kubernetes",
-        author: {
-            name: "Kevin Kemta",
-            avatar: "https://ui-avatars.com/api/?name=Kevin+Kemta&background=4f46e5&color=fff&size=200",
-            role: "DevOps Engineer",
-            bio: "Passionné par l'automatisation et les architectures cloud-native. 5 ans d'expérience en orchestration de conteneurs."
-        },
-        content: `
+  {
+    slug: "introduction-kubernetes",
+    title: "Introduction à Kubernetes : Le guide complet",
+    description: "Découvrez les concepts fondamentaux de Kubernetes, l'orchestrateur de conteneurs qui a révolutionné le déploiement d'applications.",
+    date: "2025-01-12",
+    category: "DevOps",
+    tags: ["kubernetes", "containers", "docker"],
+    cover: "https://placehold.co/600x400/2563eb/ffffff?text=Kubernetes",
+    author: {
+      name: "Kevin Kemta",
+      avatar: "https://ui-avatars.com/api/?name=Kevin+Kemta&background=4f46e5&color=fff&size=200",
+      role: "DevOps Engineer",
+      bio: "Passionné par l'automatisation et les architectures cloud-native. 5 ans d'expérience en orchestration de conteneurs."
+    },
+    content: `
 # Introduction à Kubernetes
 
 Kubernetes (K8s) est un système open-source permettant d'automatiser le déploiement, la mise à l'échelle et la gestion des applications conteneurisées. Il regroupe les conteneurs qui constituent une application dans des unités logiques pour une gestion et une découverte facilitées.
@@ -39,7 +39,7 @@ Un cluster Kubernetes se compose de deux parties principales :
 
 Kubernetes est devenu le standard de facto pour l'orchestration de conteneurs. Sa courbe d'apprentissage est raide, mais la puissance qu'il offre est inégalée.
     `,
-        html: `
+    html: `
 <h1>Introduction à Kubernetes</h1>
 <p>Kubernetes (K8s) est un système open-source permettant d'automatiser le déploiement, la mise à l'échelle et la gestion des applications conteneurisées. Il regroupe les conteneurs qui constituent une application dans des unités logiques pour une gestion et une découverte facilitées.</p>
 <h2>Pourquoi Kubernetes ?</h2>
@@ -60,22 +60,22 @@ Kubernetes est devenu le standard de facto pour l'orchestration de conteneurs. S
 <h2>Conclusion</h2>
 <p>Kubernetes est devenu le standard de facto pour l'orchestration de conteneurs. Sa courbe d'apprentissage est raide, mais la puissance qu'il offre est inégalée.</p>
     `
+  },
+  {
+    slug: "astro-framework",
+    title: "Pourquoi Astro est le futur du Web Statique",
+    description: "Analyse approfondie d'Astro, le framework qui parie sur le 'Zero JS' par défaut pour des performances exceptionnelles.",
+    date: "2025-02-15",
+    category: "Frontend",
+    tags: ["astro", "javascript", "performance"],
+    cover: "https://placehold.co/600x400/f97316/ffffff?text=Astro",
+    author: {
+      name: "Sophie Martin",
+      avatar: "https://ui-avatars.com/api/?name=Sophie+Martin&background=f97316&color=fff&size=200",
+      role: "Frontend Developer",
+      bio: "Spécialiste des frameworks modernes et de l'architecture frontend. Contributrice active à la communauté Astro."
     },
-    {
-        slug: "astro-framework",
-        title: "Pourquoi Astro est le futur du Web Statique",
-        description: "Analyse approfondie d'Astro, le framework qui parie sur le 'Zero JS' par défaut pour des performances exceptionnelles.",
-        date: "2025-02-15",
-        category: "Frontend",
-        tags: ["astro", "javascript", "performance"],
-        cover: "https://placehold.co/600x400/f97316/ffffff?text=Astro",
-        author: {
-            name: "Sophie Martin",
-            avatar: "https://ui-avatars.com/api/?name=Sophie+Martin&background=f97316&color=fff&size=200",
-            role: "Frontend Developer",
-            bio: "Spécialiste des frameworks modernes et de l'architecture frontend. Contributrice active à la communauté Astro."
-        },
-        content: `
+    content: `
 # Pourquoi Astro est le futur du Web Statique
 
 Astro est un framework web tout-en-un conçu pour la vitesse. Il vous permet de construire votre site avec vos composants UI préférés (React, Vue, Svelte, etc.) et de livrer du HTML pur, sans JavaScript inutile.
@@ -110,7 +110,7 @@ import Counter from './Counter.jsx';
 
 Pour les sites de contenu (blogs, portfolios, documentation), Astro est probablement le meilleur choix actuel en 2025.
     `,
-        html: `
+    html: `
 <h1>Pourquoi Astro est le futur du Web Statique</h1>
 <p>Astro est un framework web tout-en-un conçu pour la vitesse. Il vous permet de construire votre site avec vos composants UI préférés (React, Vue, Svelte, etc.) et de livrer du HTML pur, sans JavaScript inutile.</p>
 <h2>L'Architecture des Îles (Islands Architecture)</h2>
@@ -137,22 +137,22 @@ import Counter from './Counter.jsx';
 <h2>Conclusion</h2>
 <p>Pour les sites de contenu (blogs, portfolios, documentation), Astro est probablement le meilleur choix actuel en 2025.</p>
     `
+  },
+  {
+    slug: "react-hooks-guide",
+    title: "Maîtriser les Hooks React en 2025",
+    description: "Un guide avancé sur l'utilisation des Hooks React, de useState à useTransition, pour des applications fluides.",
+    date: "2025-03-10",
+    category: "Frontend",
+    tags: ["react", "javascript", "hooks"],
+    cover: "https://placehold.co/600x400/61dafb/000000?text=React+Hooks",
+    author: {
+      name: "Alexandre Dubois",
+      avatar: "https://ui-avatars.com/api/?name=Alexandre+Dubois&background=61dafb&color=000&size=200",
+      role: "Senior React Developer",
+      bio: "Expert React avec 7 ans d'expérience. Formateur et conférencier sur les patterns modernes de React."
     },
-    {
-        slug: "react-hooks-guide",
-        title: "Maîtriser les Hooks React en 2025",
-        description: "Un guide avancé sur l'utilisation des Hooks React, de useState à useTransition, pour des applications fluides.",
-        date: "2025-03-10",
-        category: "Frontend",
-        tags: ["react", "javascript", "hooks"],
-        cover: "https://placehold.co/600x400/61dafb/000000?text=React+Hooks",
-        author: {
-            name: "Alexandre Dubois",
-            avatar: "https://ui-avatars.com/api/?name=Alexandre+Dubois&background=61dafb&color=000&size=200",
-            role: "Senior React Developer",
-            bio: "Expert React avec 7 ans d'expérience. Formateur et conférencier sur les patterns modernes de React."
-        },
-        content: `
+    content: `
 # Maîtriser les Hooks React
 
 Les Hooks ont transformé la façon dont nous écrivons du React. Fini les classes, place aux fonctions. Mais les maîtrisez-vous vraiment ?
@@ -188,7 +188,7 @@ function handleClick() {
 
 React continue d'évoluer. Rester à jour sur les patterns de Hooks est crucial pour tout développeur frontend.
     `,
-        html: `
+    html: `
 <h1>Maîtriser les Hooks React</h1>
 <p>Les Hooks ont transformé la façon dont nous écrivons du React. Fini les classes, place aux fonctions. Mais les maîtrisez-vous vraiment ?</p>
 <h2>Les Fondamentaux</h2>
@@ -214,22 +214,22 @@ function handleClick() {
 <h2>Conclusion</h2>
 <p>React continue d'évoluer. Rester à jour sur les patterns de Hooks est crucial pour tout développeur frontend.</p>
     `
+  },
+  {
+    slug: "serverless-aws",
+    title: "Architecture Serverless sur AWS : Le Guide Pratique",
+    description: "Comment construire une API robuste et scalable avec AWS Lambda, API Gateway et DynamoDB sans gérer un seul serveur.",
+    date: "2025-04-05",
+    category: "Cloud",
+    tags: ["aws", "serverless", "lambda", "backend"],
+    cover: "https://placehold.co/600x400/ff9900/000000?text=AWS+Serverless",
+    author: {
+      name: "Marc Lefebvre",
+      avatar: "https://ui-avatars.com/api/?name=Marc+Lefebvre&background=ff9900&color=000&size=200",
+      role: "Cloud Architect",
+      bio: "Architecte cloud certifié AWS. Spécialisé dans les architectures serverless et microservices à grande échelle."
     },
-    {
-        slug: "serverless-aws",
-        title: "Architecture Serverless sur AWS : Le Guide Pratique",
-        description: "Comment construire une API robuste et scalable avec AWS Lambda, API Gateway et DynamoDB sans gérer un seul serveur.",
-        date: "2025-04-05",
-        category: "Cloud",
-        tags: ["aws", "serverless", "lambda", "backend"],
-        cover: "https://placehold.co/600x400/ff9900/000000?text=AWS+Serverless",
-        author: {
-            name: "Marc Lefebvre",
-            avatar: "https://ui-avatars.com/api/?name=Marc+Lefebvre&background=ff9900&color=000&size=200",
-            role: "Cloud Architect",
-            bio: "Architecte cloud certifié AWS. Spécialisé dans les architectures serverless et microservices à grande échelle."
-        },
-        content: `
+    content: `
 # Architecture Serverless sur AWS
 
 Le Serverless n'est pas une mode, c'est une évolution logique de l'infrastructure cloud. Plus de gestion d'OS, de patching, ou de scaling manuel.
@@ -258,7 +258,7 @@ Le "Cold Start" (démarrage à froid) est le principal ennemi. Lorsqu'une foncti
 
 Pour une startup ou un nouveau projet, démarrer en Serverless est souvent le choix le plus rationnel économiquement et techniquement.
     `,
-        html: `
+    html: `
 <h1>Architecture Serverless sur AWS</h1>
 <p>Le Serverless n'est pas une mode, c'est une évolution logique de l'infrastructure cloud. Plus de gestion d'OS, de patching, ou de scaling manuel.</p>
 <h2>La Stack Classique</h2>
@@ -283,22 +283,22 @@ Pour une startup ou un nouveau projet, démarrer en Serverless est souvent le ch
 <h2>Conclusion</h2>
 <p>Pour une startup ou un nouveau projet, démarrer en Serverless est souvent le choix le plus rationnel économiquement et techniquement.</p>
     `
+  },
+  {
+    slug: "tailwind-v4",
+    title: "Tailwind CSS v4 : La Révolution CSS",
+    description: "Tout ce qu'il faut savoir sur la nouvelle version de Tailwind : moteur Rust, performance accrue et simplification de la configuration.",
+    date: "2025-05-20",
+    category: "Frontend",
+    tags: ["css", "tailwind", "design"],
+    // cover: "https://placehold.co/600x400/38bdf8/ffffff?text=Tailwind+v4",
+    author: {
+      name: "Julie Bernard",
+      avatar: "https://ui-avatars.com/api/?name=Julie+Bernard&background=38bdf8&color=fff&size=200",
+      role: "UI/UX Designer & Developer",
+      bio: "Designer et développeuse frontend. Passionnée par les design systems et l'optimisation de l'expérience utilisateur."
     },
-    {
-        slug: "tailwind-v4",
-        title: "Tailwind CSS v4 : La Révolution CSS",
-        description: "Tout ce qu'il faut savoir sur la nouvelle version de Tailwind : moteur Rust, performance accrue et simplification de la configuration.",
-        date: "2025-05-20",
-        category: "Frontend",
-        tags: ["css", "tailwind", "design"],
-        // cover: "https://placehold.co/600x400/38bdf8/ffffff?text=Tailwind+v4",
-        author: {
-            name: "Julie Bernard",
-            avatar: "https://ui-avatars.com/api/?name=Julie+Bernard&background=38bdf8&color=fff&size=200",
-            role: "UI/UX Designer & Developer",
-            bio: "Designer et développeuse frontend. Passionnée par les design systems et l'optimisation de l'expérience utilisateur."
-        },
-        content: `
+    content: `
 # Tailwind CSS v4
 
 Tailwind v4 est là, et c'est une réécriture complète du framework.
@@ -329,7 +329,7 @@ La migration depuis la v3 est facilitée par un outil dédié, mais attention au
 
 Tailwind v4 confirme sa position de leader en rendant l'expérience développeur encore plus fluide et rapide.
     `,
-        html: `
+    html: `
 <h1>Tailwind CSS v4</h1>
 <p>Tailwind v4 est là, et c'est une réécriture complète du framework.</p>
 <h2>Nouveautés Majeures</h2>
@@ -349,24 +349,68 @@ Tailwind v4 confirme sa position de leader en rendant l'expérience développeur
 <h2>Conclusion</h2>
 <p>Tailwind v4 confirme sa position de leader en rendant l'expérience développeur encore plus fluide et rapide.</p>
     `
-    }
+  },
+  {
+    slug: "springboot-security-jwt",
+    title: "Sécuriser une API Spring Boot avec JWT",
+    description: "Guide complet sur l'implémentation de la sécurité dans Spring Boot 3 avec Spring Security, JWT et les rôles utilisateurs.",
+    date: "2025-06-15",
+    category: "Backend",
+    tags: ["java", "spring-boot", "security", "jwt"],
+    cover: "/images/spring-security-cover.png",
+    author: {
+      name: "Kevin Kemta",
+      avatar: "https://ui-avatars.com/api/?name=Kevin+Kemta&background=4f46e5&color=fff&size=200",
+      role: "Backend Architect",
+      bio: "Expert Java et architectures distribuées."
+    },
+    content: `
+# Sécuriser une API Spring Boot avec JWT
+
+La sécurité est un aspect crucial de toute application moderne. Dans cet article, nous allons voir comment sécuriser une API REST Spring Boot en utilisant JSON Web Tokens (JWT).
+
+## Pourquoi JWT ?
+
+JWT est un standard ouvert (RFC 7519) qui définit un moyen compact et autonome pour transmettre des informations entre des parties sous forme d'objet JSON.
+
+### Architecture
+
+1. Le client s'authentifie avec usuario/password.
+2. Le serveur valide et renvoie un token JWT.
+3. Le client envoie ce token dans le header \`Authorization\` pour les requêtes suivantes.
+
+## Implémentation
+
+Nous utiliserons \`spring-boot-starter-security\` et \`jjwt\`.
+
+\`\`\`java
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+    // Configuration...
+}
+\`\`\`
+
+Pour le guide complet, consultez la documentation officielle ou nos formations dédiées.
+        `
+  }
 ];
 
 export const categories = ["DevOps", "Frontend", "Backend", "Cloud"];
 export const tags = ["kubernetes", "containers", "astro", "javascript", "react", "aws"];
 
 export async function getArticles() {
-    return articles;
+  return articles;
 }
 
 export async function getArticleBySlug(slug) {
-    return articles.find(article => article.slug === slug);
+  return articles.find(article => article.slug === slug);
 }
 
 export async function getCategories() {
-    return categories;
+  return categories;
 }
 
 export async function getTags() {
-    return tags;
+  return tags;
 }

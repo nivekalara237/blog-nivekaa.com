@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import ArticleCard from "../components/ArticleCard.jsx";
+import CategoryCards from "../components/CategoryCards.jsx";
 import Pagination from "../components/Pagination.astro";
 import { api } from "../lib/api";
 import { getCategories } from "../utils/api.js";
@@ -8,8 +9,31 @@ import { getCategories } from "../utils/api.js";
 const PAGE_SIZE = 3;
 
 const response = await api.getArticles({ limit: 100 }); // Fetch more to calculate total pages if needed, or just enough for first page
-const categories = await getCategories();
 const allArticles = response.items || [];
+const validCategories = await getCategories(); // Fetch static categories
+
+// Calculate category counts
+const categoryCounts = allArticles.reduce((acc: any, article: any) => {
+	const cat = article.category;
+	if (cat) {
+		acc[cat] = (acc[cat] || 0) + 1;
+	}
+	return acc;
+}, {});
+
+// Ensure default categories exist with 0 count if not present
+validCategories.forEach((cat: string) => {
+	if (categoryCounts[cat] === undefined) {
+		// Check case-insensitive existence before adding
+		const exists = Object.keys(categoryCounts).some(
+			(k) => k.toLowerCase() === cat.toLowerCase(),
+		);
+		if (!exists) {
+			categoryCounts[cat] = 0;
+		}
+	}
+});
+
 // Sort by date descending (newest first)
 allArticles.sort(
 	(a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime(),
@@ -35,14 +59,62 @@ const page = {
 ---
 
 <Layout title="MyBlog - Accueil">
+	<section class="mb-12">
+		<CategoryCards client:load counts={categoryCounts} />
+	</section>
+
 	<section class="mb-12 text-center">
 		<h1 class="text-4xl font-extrabold text-gray-900 mb-4">
 			Bienvenue sur <span class="text-indigo-600">CLOUD.NIVEKAA.COM</span>
 		</h1>
-		<p class="text-xl text-gray-600 max-w-2xl mx-auto">
+		<p
+			class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-10"
+		>
 			Découvrez nos derniers articles sur le développement web, le cloud
 			et bien plus encore.
 		</p>
+
+		<!-- Newsletter Section -->
+		<div class="max-w-md mx-auto mb-16 relative z-10">
+			<div
+				class="relative flex items-center w-full rounded-full bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-700 p-1.5 focus-within:ring-2 focus-within:ring-indigo-100 transition-all"
+			>
+				<div class="grid place-items-center h-full w-12 text-gray-400">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						class="h-5 w-5"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke="currentColor"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+						></path>
+					</svg>
+				</div>
+
+				<input
+					class="peer h-full w-full outline-none text-sm text-gray-700 dark:text-gray-200 bg-transparent pr-2 placeholder-gray-400"
+					type="email"
+					id="email"
+					placeholder="Enter your email address"
+				/>
+
+				<button
+					class="flex items-center justify-center px-6 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition-all hover:shadow-lg hover:-translate-y-0.5"
+				>
+					Join
+				</button>
+			</div>
+			<p
+				class="mt-3 text-xs text-center text-gray-400 dark:text-gray-500"
+			>
+				Join 10,000+ developers. Unsubscribe anytime.
+			</p>
+		</div>
 	</section>
 
 	<section class="mb-16">
@@ -67,24 +139,4 @@ const page = {
 	<div class="mt-8 mb-16">
 		<Pagination page={page} />
 	</div>
-
-	<section class="bg-indigo-50 dark:bg-gray-800 rounded-2xl p-8 md:p-12">
-		<h2
-			class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center"
-		>
-			Explorer par catégories
-		</h2>
-		<div class="flex flex-wrap justify-center gap-4">
-			{
-				categories.map((category) => (
-					<a
-						href={`/category/${category}`}
-						class="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md px-6 py-3 rounded-lg font-medium transition-all duration-300"
-					>
-						{category}
-					</a>
-				))
-			}
-		</div>
-	</section>
 </Layout>
