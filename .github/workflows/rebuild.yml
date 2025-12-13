@@ -27,11 +27,11 @@ jobs:
       - name: Configure AWS Account
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: ${{ vars.AWS_REGIION }}
+          aws-region: ${{ vars.AWS_REGION }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Redeploy to S3
         run: aws s3 sync dist/ s3://${{ vars.AWS_S3_BUCKET }} --delete --cache-control "public, max-age=31536000, immutable"
         env:
-          AWS_REGION: ${{ vars.AWS_S3_BUCKET }}
+          AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET }}
