@@ -1,51 +1,174 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import { getArticles } from '../../utils/api.js';
+import Layout from "../../layouts/Layout.astro";
+import { api } from "../../lib/api";
+import MarkdownRenderer from "../../components/MarkdownRenderer";
+import TableOfContents from "../../components/TableOfContents";
+import AuthorCard from "../../components/AuthorCard";
+import AdPanel from "../../components/AdPanel";
+import CoverImage from "../../components/CoverImage";
+import { DEFAULT_AUTHOR } from "../../config/author";
+import { ADS_ENABLED, AD_CONFIG, AD_SLOTS } from "../../config/ads";
+
+// Active le mode statique (SSG)
+export const prerender = true;
 
 export async function getStaticPaths() {
-  const articles = await getArticles();
-  return articles.map(article => ({
-    params: { slug: article.slug },
-    props: { article },
-  }));
+    const data = await api.getArticles({ limit: 1000 });
+    const articles = Array.isArray(data) ? data : data.items || [];
+
+    return articles.map((article: any) => ({
+        params: { slug: article.slug },
+        props: { article },
+    }));
 }
 
-const { article } = Astro.props;
+const { article }: any = Astro.props;
+
+// Use article author or default author
+const author = article.author || DEFAULT_AUTHOR;
+
+console.log("***************************************");
+console.log({ article, author });
+console.log("***************************************");
+
+// Calculate reading time (assuming 200 words per minute)
+const content = article.content || article.contentMarkdown;
+const wordCount = content?.split(/\s+/).length || 0;
+const readingTime = Math.ceil(wordCount / 200);
+
+// Format date like "February 12, 2025"
+const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("fr-FR", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    });
+};
 ---
 
-<Layout title={`${article.title} - MyBlog`} description={article.description}>
-  <article class="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm overflow-hidden">
-    <img 
-      src={article.cover} 
-      alt={article.title} 
-      class="w-full h-64 md:h-96 object-cover"
-    />
-    <div class="p-8 md:p-12">
-      <div class="flex items-center justify-between mb-6">
-        <span class="text-indigo-600 font-medium bg-indigo-50 px-3 py-1 rounded-full">
-          {article.category}
-        </span>
-        <time class="text-gray-500">{article.date}</time>
-      </div>
-      
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-        {article.title}
-      </h1>
+<Layout title={`${article.title}`} description={article.description}>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Cover Image or Gradient Fallback -->
+        <CoverImage
+            client:load
+            cover={article.cover}
+            title={article.title}
+            category={article.category}
+        />
 
-      <div class="prose prose-lg prose-indigo max-w-none">
-        <Fragment set:html={article.html} />
-      </div>
-
-      <div class="mt-12 pt-8 border-t border-gray-100">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Tags</h3>
-        <div class="flex flex-wrap gap-2">
-          {article.tags.map(tag => (
-            <span class="text-gray-600 bg-gray-100 px-3 py-1 rounded-lg text-sm">
-              #{tag}
-            </span>
-          ))}
+        <!-- Tags (right after image) -->
+        <div class="max-w-4xl ml-0 mb-6">
+            {
+                article.tags && article.tags.length > 0 && (
+                    <div class="flex flex-wrap gap-2">
+                        {article.tags.map((tag: any) => (
+                            <span class="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded-md text-xs font-medium border border-indigo-100 dark:border-indigo-800">
+                                {tag}
+                            </span>
+                        ))}
+                    </div>
+                )
+            }
         </div>
-      </div>
+
+        <!-- Article Header Section -->
+        <div class="max-w-4xl ml-0 mb-10">
+            <!-- Title -->
+            <h1
+                class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-6 leading-tight"
+            >
+                {article.title}
+            </h1>
+
+            <!-- Author Info -->
+            <div class="flex items-center gap-3 mb-5">
+                <img
+                    src={author.avatar}
+                    alt={author.name}
+                    class="w-12 h-12 rounded-full border-2 border-gray-200 dark:border-gray-700"
+                />
+                <div>
+                    <div
+                        class="text-sm font-semibold text-gray-900 dark:text-gray-100"
+                    >
+                        {author.name}
+                    </div>
+                    <div class="text-xs text-gray-600 dark:text-gray-400">
+                        {author.role}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Date & Reading Time & Category -->
+            <div
+                class="flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-500"
+            >
+                <time>{formatDate(article.date)}</time>
+                <span>•</span>
+                <span>{readingTime} min read</span>
+                <span>•</span>
+                <span class="text-indigo-600 dark:text-indigo-400 font-medium"
+                    >{article.category}</span
+                >
+            </div>
+        </div>
+
+        <!-- Ad Before Content -->
+        {
+            ADS_ENABLED && AD_CONFIG.showBeforeContent && (
+                <AdPanel
+                    client:load
+                    ad={AD_SLOTS.beforeContent}
+                    variant="banner"
+                />
+            )
+        }
+
+        <!-- Two Column Layout: Content + TOC -->
+        <div class="lg:flex lg:gap-8">
+            <!-- Main Content -->
+            <article class="lg:w-3/4">
+                <div
+                    class="bg-white dark:bg-gray-800 rounded-2xl p-8 md:p-12 transition-colors duration-200"
+                >
+                    <div
+                        class="prose prose-lg prose-indigo dark:prose-invert max-w-none"
+                    >
+                        <MarkdownRenderer client:load content={content} />
+                    </div>
+                </div>
+
+                <!-- Ad After Content -->
+                {
+                    ADS_ENABLED && AD_CONFIG.showAfterContent && (
+                        <AdPanel
+                            client:load
+                            ad={AD_SLOTS.afterContent}
+                            variant="card"
+                        />
+                    )
+                }
+
+                <!-- Author Card (Always displayed with fallback to default) -->
+                <AuthorCard client:load author={author} />
+            </article>
+
+            <!-- Sidebar: Table of Contents (hidden on mobile) -->
+            <aside class="hidden lg:block lg:w-1/4">
+                <TableOfContents client:load content={content} />
+
+                <!-- Ad in Sidebar -->
+                {
+                    ADS_ENABLED && AD_CONFIG.showInSidebar && (
+                        <AdPanel
+                            client:load
+                            ad={AD_SLOTS.sidebar}
+                            variant="sidebar"
+                        />
+                    )
+                }
+            </aside>
+        </div>
     </div>
-  </article>
 </Layout>

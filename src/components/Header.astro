@@ -1,27 +1,118 @@
 ---
-const navItems = [
-  { href: '/', label: 'Home' },
-  { href: '/articles', label: 'Articles' },
-  { href: '/categories', label: 'Categories' },
-  { href: '/tags', label: 'Tags' },
-  { href: '/about', label: 'À propos' },
-  { href: '/contact', label: 'Contact' },
-];
+import DarkModeToggle from "./DarkModeToggle.jsx";
+import MobileMenu from "./MobileMenu.jsx";
 ---
 
-<header class="bg-white shadow-sm">
-  <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-    <a href="/" class="text-2xl font-bold text-indigo-600">MyBlog</a>
-    <nav>
-      <ul class="flex space-x-6">
-        {navItems.map((item) => (
-          <li>
-            <a href={item.href} class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">
-              {item.label}
+<header
+    class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 sticky top-0 z-50 transition-colors duration-200"
+>
+    <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <!-- Logo: CloudNive -->
+            <a href="/" class="flex items-center gap-2 group">
+                <div
+                    class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center transform group-hover:scale-110 transition-transform duration-200"
+                >
+                    <svg
+                        class="w-6 h-6 text-white"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                    >
+                        <path
+                            d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z"
+                        ></path>
+                    </svg>
+                </div>
+                <span
+                    class="text-xl text-gray-900 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"
+                >
+                    Cloud<span class="font-bold">Nive</span>
+                </span>
             </a>
-          </li>
-        ))}
-      </ul>
+
+            <!-- Desktop Navigation -->
+            <ul class="hidden md:flex items-center gap-8">
+                <li>
+                    <a
+                        href="/"
+                        class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors relative group"
+                    >
+                        Home
+                        <span
+                            class="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 dark:bg-indigo-400 group-hover:w-full transition-all duration-300"
+                        ></span>
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="/articles"
+                        class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors relative group"
+                    >
+                        Articles
+                        <span
+                            class="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 dark:bg-indigo-400 group-hover:w-full transition-all duration-300"
+                        ></span>
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="/categories"
+                        class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors relative group"
+                    >
+                        Categories
+                        <span
+                            class="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 dark:bg-indigo-400 group-hover:w-full transition-all duration-300"
+                        ></span>
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="/contact"
+                        class="px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors shadow-sm hover:shadow-md"
+                    >
+                        Get in Touch
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Right Side: Dark Mode + Mobile Menu -->
+            <div class="flex items-center gap-3">
+                <DarkModeToggle client:load />
+
+                <!-- Mobile Menu Button -->
+                <button
+                    id="mobile-menu-button"
+                    class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    aria-label="Open menu"
+                >
+                    <svg
+                        class="w-6 h-6 text-gray-700 dark:text-gray-300"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
     </nav>
-  </div>
+
+    <!-- Mobile Menu Component -->
+    <MobileMenu client:load />
 </header>
+
+<script>
+    // Mobile menu toggle
+    const button = document.getElementById("mobile-menu-button");
+    if (button) {
+        button.addEventListener("click", () => {
+            const event = new CustomEvent("toggle-mobile-menu");
+            window.dispatchEvent(event);
+        });
+    }
+</script>

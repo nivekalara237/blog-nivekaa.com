@@ -8,21 +8,26 @@ export async function getStaticPaths({ paginate }: any) {
     const response = await api.getArticles();
     const articles = response.items || [];
 
-    // Trier par date du plus récent au plus ancien
+    // Sort by date descending (newest first)
     articles.sort(
         (a: any, b: any) =>
             new Date(b.date).getTime() - new Date(a.date).getTime(),
     );
 
+    // Note: We use pageSize 3 to match index.astro, but this handles page 2, 3, etc.
+    // The first page of this collection (page 1) technically duplicates index,
+    // but in our architecture we link index's "Next" to /page/2.
     return paginate(articles, { pageSize: 3 });
 }
-export const prerender = true;
-const { page } = Astro.props as any;
+
+const { page } = Astro.props;
 ---
 
-<Layout title="Articles">
+<Layout title={`Articles - Page ${page.currentPage}`}>
     <section class="mb-12">
-        <h1 class="text-3xl font-bold text-gray-900 mb-8">Tous les articles</h1>
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">
+            Tous les articles (Page {page.currentPage})
+        </h1>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {

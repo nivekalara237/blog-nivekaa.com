@@ -1,0 +1,74 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ArticleCard from "../../../components/ArticleCard.jsx";
+import Pagination from "../../../components/Pagination.astro";
+import { api } from "../../../lib/api";
+import { getCategories } from "../../../utils/api";
+
+export async function getStaticPaths({ paginate }: any) {
+    const response = await api.getArticles();
+    const articles = response.items || [];
+    const categories = await getCategories();
+
+    // Sort by date (newest first)
+    articles.sort(
+        (a: any, b: any) =>
+            new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
+
+    // Generate paths for each category
+    return categories.flatMap((category) => {
+        const filteredArticles = articles.filter(
+            (article: any) => article.category === category,
+        );
+
+        return paginate(filteredArticles, {
+            params: { category },
+            pageSize: 3,
+        });
+    });
+}
+
+export const prerender = true;
+const { page } = Astro.props as any;
+const { category } = Astro.params;
+---
+
+<Layout title={`Articles - ${category}`}>
+    <section class="mb-12">
+        <div class="mb-8">
+            <a
+                href="/categories"
+                class="text-sm text-indigo-600 hover:text-indigo-800 font-medium mb-4 inline-block"
+                >&larr; Toutes les catégories</a
+            >
+            <h1 class="text-3xl font-bold text-gray-900">
+                Catégorie : <span class="text-indigo-600">{category}</span>
+            </h1>
+        </div>
+
+        {
+            page.data.length > 0 ? (
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {page.data.map((article: any) => (
+                        <ArticleCard client:load article={article} />
+                    ))}
+                </div>
+            ) : (
+                <div class="text-center py-20 bg-gray-50 dark:bg-gray-800 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700">
+                    <p class="text-xl text-gray-500 dark:text-gray-400">
+                        Aucun article trouvé dans cette catégorie.
+                    </p>
+                    <a
+                        href="/articles"
+                        class="inline-block mt-4 text-indigo-600 hover:text-indigo-800 font-medium"
+                    >
+                        Voir tous les articles
+                    </a>
+                </div>
+            )
+        }
+
+        <Pagination page={page} />
+    </section>
+</Layout>

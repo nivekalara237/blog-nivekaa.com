@@ -1,48 +1,90 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import ArticleCard from '../components/ArticleCard.jsx';
-import { getArticles, getCategories } from '../utils/api.js';
+import Layout from "../layouts/Layout.astro";
+import ArticleCard from "../components/ArticleCard.jsx";
+import Pagination from "../components/Pagination.astro";
+import { api } from "../lib/api";
+import { getCategories } from "../utils/api.js";
 
-const articles = await getArticles();
+const PAGE_SIZE = 3;
+
+const response = await api.getArticles({ limit: 100 }); // Fetch more to calculate total pages if needed, or just enough for first page
 const categories = await getCategories();
-const recentArticles = articles.slice(0, 3);
+const allArticles = response.items || [];
+// Sort by date descending (newest first)
+allArticles.sort(
+	(a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+);
+
+const articles = allArticles.slice(0, PAGE_SIZE);
+const recentArticles = articles;
+
+// Construct a fake page object for the Pagination component
+// We assume there are more pages if we fetched more items than we displayed
+const totalItems = allArticles.length;
+const pageSize = PAGE_SIZE;
+const lastPage = Math.ceil(totalItems / pageSize);
+
+const page = {
+	currentPage: 1,
+	lastPage: lastPage,
+	url: {
+		prev: undefined,
+		next: lastPage > 1 ? "/page/2" : undefined,
+	},
+};
 ---
 
 <Layout title="MyBlog - Accueil">
-  <section class="mb-12 text-center">
-    <h1 class="text-4xl font-extrabold text-gray-900 mb-4">
-      Bienvenue sur <span class="text-indigo-600">MyBlog</span>
-    </h1>
-    <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-      Découvrez nos derniers articles sur le développement web, le cloud et bien plus encore.
-    </p>
-  </section>
+	<section class="mb-12 text-center">
+		<h1 class="text-4xl font-extrabold text-gray-900 mb-4">
+			Bienvenue sur <span class="text-indigo-600">CLOUD.NIVEKAA.COM</span>
+		</h1>
+		<p class="text-xl text-gray-600 max-w-2xl mx-auto">
+			Découvrez nos derniers articles sur le développement web, le cloud
+			et bien plus encore.
+		</p>
+	</section>
 
-  <section class="mb-16">
-    <div class="flex justify-between items-center mb-8">
-      <h2 class="text-2xl font-bold text-gray-900">Articles récents</h2>
-      <a href="/articles" class="text-indigo-600 font-medium hover:text-indigo-800">
-        Voir tout &rarr;
-      </a>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {recentArticles.map(article => (
-        <ArticleCard article={article} />
-      ))}
-    </div>
-  </section>
+	<section class="mb-16">
+		<div class="flex justify-between items-center mb-8">
+			<h2 class="text-2xl font-bold text-gray-900">Articles récents</h2>
+			<a
+				href="/articles"
+				class="text-indigo-600 font-medium hover:text-indigo-800"
+			>
+				Voir tous les articles &rarr;
+			</a>
+		</div>
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+			{
+				recentArticles.map((article: any) => (
+					<ArticleCard client:load article={article} />
+				))
+			}
+		</div>
+	</section>
 
-  <section class="bg-indigo-50 rounded-2xl p-8 md:p-12">
-    <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Explorer par catégories</h2>
-    <div class="flex flex-wrap justify-center gap-4">
-      {categories.map(category => (
-        <a 
-          href={`/categories`} 
-          class="bg-white text-gray-700 hover:text-indigo-600 hover:shadow-md px-6 py-3 rounded-lg font-medium transition-all duration-300"
-        >
-          {category}
-        </a>
-      ))}
-    </div>
-  </section>
+	<div class="mt-8 mb-16">
+		<Pagination page={page} />
+	</div>
+
+	<section class="bg-indigo-50 dark:bg-gray-800 rounded-2xl p-8 md:p-12">
+		<h2
+			class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center"
+		>
+			Explorer par catégories
+		</h2>
+		<div class="flex flex-wrap justify-center gap-4">
+			{
+				categories.map((category) => (
+					<a
+						href={`/category/${category}`}
+						class="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md px-6 py-3 rounded-lg font-medium transition-all duration-300"
+					>
+						{category}
+					</a>
+				))
+			}
+		</div>
+	</section>
 </Layout>

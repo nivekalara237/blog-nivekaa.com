@@ -1,0 +1,565 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Typography Showcase - All 5 Options">
+    <div class="max-w-7xl mx-auto">
+        <div class="mb-12 text-center">
+            <h1 class="text-5xl font-bold mb-4">Typography Showcase</h1>
+            <p class="text-lg text-gray-600 dark:text-gray-400">
+                Compare all 5 professional font combinations
+            </p>
+        </div>
+
+        <!-- Option 1: Ultra-Moderne (Vercel/Linear Style) -->
+        <section
+            class="mb-16 p-8 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg border-2 border-blue-200 dark:border-blue-800"
+        >
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2
+                        class="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2"
+                        style="font-family: 'Space Grotesk';"
+                    >
+                        Option 1: Ultra-Moderne
+                    </h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        Style Vercel/Linear - Tech startup épuré
+                    </p>
+                </div>
+                <span
+                    class="px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-semibold"
+                    >TECH</span
+                >
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                    <p class="text-xs text-gray-500 mb-2">
+                        Headings: Space Grotesk
+                    </p>
+                    <h1
+                        class="text-4xl font-bold mb-2"
+                        style="font-family: 'Space Grotesk';"
+                    >
+                        Bold Heading
+                    </h1>
+                    <h3
+                        class="text-2xl font-semibold"
+                        style="font-family: 'Space Grotesk';"
+                    >
+                        Geometric Design
+                    </h3>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                    <p class="text-xs text-gray-500 mb-2">Body: Inter</p>
+                    <p
+                        class="text-base leading-relaxed"
+                        style="font-family: 'Inter';"
+                    >
+                        Inter is a clean, modern sans-serif perfect for tech
+                        content. It's highly readable and used by GitHub, Figma,
+                        and many modern startups.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-gray-900 text-gray-100 p-4 rounded-lg">
+                <p class="text-xs text-gray-400 mb-2">Code: JetBrains Mono</p>
+                <pre
+                    style="font-family: 'JetBrains Mono';"
+                    class="text-sm"><code>const modern = "ultra-clean design";
+console.log(modern);</code></pre>
+            </div>
+        </section>
+
+        <!-- Option 2: Élégant & Audacieux (Stripe/Notion Style) -->
+        <section
+            class="mb-16 p-8 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg border-2 border-purple-200 dark:border-purple-800"
+        >
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2
+                        class="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2"
+                        style="font-family: 'Sora';"
+                    >
+                        Option 2: Élégant & Audacieux
+                    </h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        Style Stripe/Notion - Premium professionnel
+                    </p>
+                </div>
+                <span
+                    class="px-4 py-2 bg-purple-600 text-white rounded-full text-sm font-semibold"
+                    >PREMIUM</span
+                >
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                    <p class="text-xs text-gray-500 mb-2">Headings: Sora</p>
+                    <h1
+                        class="text-4xl font-bold mb-2"
+                        style="font-family: 'Sora'; font-weight: 800;"
+                    >
+                        Futuristic Bold
+                    </h1>
+                    <h3
+                        class="text-2xl font-semibold"
+                        style="font-family: 'Sora';"
+                    >
+                        Impactful Design
+                    </h3>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                    <p class="text-xs text-gray-500 mb-2">Body: Manrope</p>
+                    <p
+                        class="text-base leading-relaxed"
+                        style="font-family: 'Manrope';"
+                    >
+                        Manrope brings a soft, rounded feel that's professional
+                        yet approachable. Perfect for premium brands that want
+                        warmth.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-gray-900 text-gray-100 p-4 rounded-lg">
+                <p class="text-xs text-gray-400 mb-2">Code: JetBrains Mono</p>
+                <pre
+                    style="font-family: 'JetBrains Mono';"
+                    class="text-sm"
+                    is:raw><code>const premium = { elegant: true, bold: true };
+return premium;</code></pre>
+            </div>
+        </section>
+
+        <!-- Option 3: Tendance & Énergique (Headspace/Spotify Style) -->
+        <section
+            class="mb-16 p-8 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg border-2 border-emerald-200 dark:border-emerald-800"
+        >
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2
+                        class="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mb-2"
+                        style="font-family: 'Outfit';"
+                    >
+                        Option 3: Tendance & Énergique
+                    </h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        Style Headspace/Spotify - Jeune et dynamique
+                    </p>
+                </div>
+                <span
+                    class="px-4 py-2 bg-emerald-600 text-white rounded-full text-sm font-semibold"
+                    >TRENDY</span
+                >
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                    <p class="text-xs text-gray-500 mb-2">Headings: Outfit</p>
+                    <h1
+                        class="text-4xl font-bold mb-2"
+                        style="font-family: 'Outfit'; font-weight: 800;"
+                    >
+                        Geometric Bold
+                    </h1>
+                    <h3
+                        class="text-2xl font-semibold"
+                        style="font-family: 'Outfit';"
+                    >
+                        Very 2024
+                    </h3>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                    <p class="text-xs text-gray-500 mb-2">
+                        Body: Plus Jakarta Sans
+                    </p>
+                    <p
+                        class="text-base leading-relaxed"
+                        style="font-family: 'Plus Jakarta Sans';"
+                    >
+                        Plus Jakarta Sans is friendly and rounded, creating an
+                        energetic yet professional vibe. Great for engaging
+                        content.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-gray-900 text-gray-100 p-4 rounded-lg">
+                <p class="text-xs text-gray-400 mb-2">Code: JetBrains Mono</p>
+                <pre
+                    style="font-family: 'JetBrains Mono';"
+                    class="text-sm"
+                    is:raw><code>const trendy = () => ({ energetic: true, modern: true });
+trendy();</code></pre>
+            </div>
+        </section>
+
+        <!-- Option 4: Premium & Sophistiqué -->
+        <section
+            class="mb-16 p-8 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg border-2 border-amber-200 dark:border-amber-800"
+        >
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2
+                        class="text-3xl font-bold text-amber-600 dark:text-amber-400 mb-2"
+                        style="font-family: 'Inter'; font-weight: 800;"
+                    >
+                        Option 4: Premium & Sophistiqué
+                    </h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        Haut de gamme et impactant
+                    </p>
+                </div>
+                <span
+                    class="px-4 py-2 bg-amber-600 text-white rounded-full text-sm font-semibold"
+                    >LUXURY</span
+                >
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                    <p class="text-xs text-gray-500 mb-2">
+                        Headings: Inter Ultra-Bold
+                    </p>
+                    <h1
+                        class="text-4xl mb-2"
+                        style="font-family: 'Inter'; font-weight: 800;"
+                    >
+                        Ultra Bold Impact
+                    </h1>
+                    <h3
+                        class="text-2xl font-bold"
+                        style="font-family: 'Inter'; font-weight: 700;"
+                    >
+                        Sophisticated
+                    </h3>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                    <p class="text-xs text-gray-500 mb-2">Body: Albert Sans</p>
+                    <p
+                        class="text-base leading-relaxed"
+                        style="font-family: 'Albert Sans';"
+                    >
+                        Albert Sans offers exceptional readability with a clean,
+                        sophisticated aesthetic. Perfect for premium content.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-gray-900 text-gray-100 p-4 rounded-lg">
+                <p class="text-xs text-gray-400 mb-2">Code: JetBrains Mono</p>
+                <pre
+                    style="font-family: 'JetBrains Mono';"
+                    class="text-sm"
+                    is:raw><code>const sophisticated = { premium: true, impactful: true };
+export default sophisticated;</code></pre>
+            </div>
+        </section>
+
+        <!-- Option 5: Simple Inter Partout (GitHub/Raycast Style) -->
+        <section
+            class="mb-16 p-8 bg-gradient-to-br from-gray-100 to-slate-100 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg border-2 border-gray-300 dark:border-gray-700"
+        >
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2
+                        class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2"
+                        style="font-family: 'Inter'; font-weight: 700;"
+                    >
+                        Option 5: Simple Inter Partout
+                    </h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        Style GitHub/Raycast - Minimaliste absolu
+                    </p>
+                </div>
+                <span
+                    class="px-4 py-2 bg-gray-700 text-white rounded-full text-sm font-semibold"
+                    >MINIMAL</span
+                >
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                    <p class="text-xs text-gray-500 mb-2">
+                        Headings: Inter Bold
+                    </p>
+                    <h1
+                        class="text-4xl mb-2"
+                        style="font-family: 'Inter'; font-weight: 700;"
+                    >
+                        Clean Headers
+                    </h1>
+                    <h3
+                        class="text-2xl"
+                        style="font-family: 'Inter'; font-weight: 600;"
+                    >
+                        Minimalist
+                    </h3>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                    <p class="text-xs text-gray-500 mb-2">
+                        Body: Inter Regular
+                    </p>
+                    <p
+                        class="text-base leading-relaxed"
+                        style="font-family: 'Inter'; font-weight: 400;"
+                    >
+                        Inter everywhere creates a unified, clean aesthetic.
+                        Used by GitHub, Raycast, and modern developer tools.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-gray-900 text-gray-100 p-4 rounded-lg">
+                <p class="text-xs text-gray-400 mb-2">Code: JetBrains Mono</p>
+                <pre
+                    style="font-family: 'JetBrains Mono';"
+                    class="text-sm"><code>// Simple, clean, professional
+const minimal = true;
+if (minimal) console.log("Perfect!");</code></pre>
+            </div>
+        </section>
+
+        <!-- Comparison Table -->
+        <section
+            class="mb-16 p-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg"
+        >
+            <h2 class="text-3xl font-bold mb-6 text-center">
+                Quick Comparison
+            </h2>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr
+                            class="border-b-2 border-gray-200 dark:border-gray-700"
+                        >
+                            <th class="text-left py-3 px-4">Option</th>
+                            <th class="text-left py-3 px-4">Headings</th>
+                            <th class="text-left py-3 px-4">Body</th>
+                            <th class="text-left py-3 px-4">Vibe</th>
+                            <th class="text-left py-3 px-4">Best For</th>
+                        </tr>
+                    </thead>
+                    <tbody
+                        class="divide-y divide-gray-200 dark:divide-gray-700"
+                    >
+                        <tr class="hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                            <td class="py-3 px-4 font-semibold text-blue-600"
+                                >1. Ultra-Moderne</td
+                            >
+                            <td
+                                class="py-3 px-4"
+                                style="font-family: 'Space Grotesk';"
+                                >Space Grotesk</td
+                            >
+                            <td class="py-3 px-4" style="font-family: 'Inter';"
+                                >Inter</td
+                            >
+                            <td class="py-3 px-4">Tech, Startup</td>
+                            <td class="py-3 px-4">Dev tools, SaaS</td>
+                        </tr>
+                        <tr
+                            class="hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                        >
+                            <td class="py-3 px-4 font-semibold text-purple-600"
+                                >2. Élégant</td
+                            >
+                            <td class="py-3 px-4" style="font-family: 'Sora';"
+                                >Sora</td
+                            >
+                            <td
+                                class="py-3 px-4"
+                                style="font-family: 'Manrope';">Manrope</td
+                            >
+                            <td class="py-3 px-4">Premium, Bold</td>
+                            <td class="py-3 px-4">Finance, Business</td>
+                        </tr>
+                        <tr
+                            class="hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                        >
+                            <td class="py-3 px-4 font-semibold text-emerald-600"
+                                >3. Énergique</td
+                            >
+                            <td class="py-3 px-4" style="font-family: 'Outfit';"
+                                >Outfit</td
+                            >
+                            <td
+                                class="py-3 px-4"
+                                style="font-family: 'Plus Jakarta Sans';"
+                                >Plus Jakarta Sans</td
+                            >
+                            <td class="py-3 px-4">Trendy, Young</td>
+                            <td class="py-3 px-4">Lifestyle, Creative</td>
+                        </tr>
+                        <tr
+                            class="hover:bg-amber-50 dark:hover:bg-amber-900/20"
+                        >
+                            <td class="py-3 px-4 font-semibold text-amber-600"
+                                >4. Sophistiqué</td
+                            >
+                            <td
+                                class="py-3 px-4"
+                                style="font-family: 'Inter'; font-weight: 800;"
+                                >Inter Bold</td
+                            >
+                            <td
+                                class="py-3 px-4"
+                                style="font-family: 'Albert Sans';"
+                                >Albert Sans</td
+                            >
+                            <td class="py-3 px-4">Luxury, Impact</td>
+                            <td class="py-3 px-4">High-end brands</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <td
+                                class="py-3 px-4 font-semibold text-gray-700 dark:text-gray-300"
+                                >5. Minimaliste</td
+                            >
+                            <td class="py-3 px-4" style="font-family: 'Inter';"
+                                >Inter</td
+                            >
+                            <td class="py-3 px-4" style="font-family: 'Inter';"
+                                >Inter</td
+                            >
+                            <td class="py-3 px-4">Clean, Simple</td>
+                            <td class="py-3 px-4">Developer tools</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Full Article Preview -->
+        <section class="mb-16 space-y-12">
+            <h2 class="text-3xl font-bold text-center mb-8">
+                Full Article Preview
+            </h2>
+            <p class="text-center text-gray-600 dark:text-gray-400 mb-12">
+                See how each option looks in a real article context
+            </p>
+
+            <!-- Preview for each option -->
+            <div class="space-y-16">
+                <!-- Option 1 Preview -->
+                <div class="p-8 bg-blue-50 dark:bg-gray-800 rounded-xl">
+                    <div class="mb-4">
+                        <span
+                            class="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider"
+                            >Option 1: Ultra-Moderne</span
+                        >
+                    </div>
+                    <article class="prose dark:prose-invert max-w-none">
+                        <h1
+                            style="font-family: 'Space Grotesk'; font-weight: 700; font-size: 2.5rem; line-height: 1.2;"
+                        >
+                            Guide Complet d'Ansible
+                        </h1>
+                        <p
+                            style="font-family: 'Inter'; font-size: 17px; line-height: 1.7;"
+                        >
+                            Ansible est un outil d'automatisation IT open-source
+                            qui simplifie la gestion de configuration. Cette
+                            introduction utilise Space Grotesk pour les titres
+                            et Inter pour le corps du texte.
+                        </p>
+                        <h2
+                            style="font-family: 'Space Grotesk'; font-weight: 700; font-size: 2rem;"
+                        >
+                            Installation
+                        </h2>
+                        <p
+                            style="font-family: 'Inter'; font-size: 17px; line-height: 1.7;"
+                        >
+                            L'installation est simple et rapide grâce à cette
+                            combinaison moderne.
+                        </p>
+                    </article>
+                </div>
+
+                <!-- Option 3 Preview (Current) -->
+                <div class="p-8 bg-emerald-50 dark:bg-gray-800 rounded-xl">
+                    <div class="mb-4">
+                        <span
+                            class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider"
+                            >Option 3: Tendance (Current)</span
+                        >
+                    </div>
+                    <article class="prose dark:prose-invert max-w-none">
+                        <h1
+                            style="font-family: 'Outfit'; font-weight: 800; font-size: 2.75rem; line-height: 1.15;"
+                        >
+                            Guide Complet d'Ansible
+                        </h1>
+                        <p
+                            style="font-family: 'Plus Jakarta Sans'; font-size: 17px; line-height: 1.7;"
+                        >
+                            Ansible est un outil d'automatisation IT open-source
+                            qui simplifie la gestion de configuration. Cette
+                            version utilise Outfit (très trendy) et Plus Jakarta
+                            Sans (friendly).
+                        </p>
+                        <h2
+                            style="font-family: 'Outfit'; font-weight: 700; font-size: 2.125rem;"
+                        >
+                            Installation
+                        </h2>
+                        <p
+                            style="font-family: 'Plus Jakarta Sans'; font-size: 17px; line-height: 1.7;"
+                        >
+                            Une combinaison jeune et énergique qui engage le
+                            lecteur.
+                        </p>
+                    </article>
+                </div>
+
+                <!-- Option 5 Preview -->
+                <div class="p-8 bg-gray-100 dark:bg-gray-800 rounded-xl">
+                    <div class="mb-4">
+                        <span
+                            class="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider"
+                            >Option 5: Minimaliste</span
+                        >
+                    </div>
+                    <article class="prose dark:prose-invert max-w-none">
+                        <h1
+                            style="font-family: 'Inter'; font-weight: 700; font-size: 2.5rem; line-height: 1.2;"
+                        >
+                            Guide Complet d'Ansible
+                        </h1>
+                        <p
+                            style="font-family: 'Inter'; font-size: 17px; line-height: 1.7;"
+                        >
+                            Ansible est un outil d'automatisation IT open-source
+                            qui simplifie la gestion de configuration. Inter
+                            partout pour un look ultra-clean et professionnel.
+                        </p>
+                        <h2
+                            style="font-family: 'Inter'; font-weight: 600; font-size: 2rem;"
+                        >
+                            Installation
+                        </h2>
+                        <p
+                            style="font-family: 'Inter'; font-size: 17px; line-height: 1.7;"
+                        >
+                            Simple, cohérent, parfait pour le contenu technique.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigation -->
+        <div class="text-center py-8">
+            <a
+                href="/"
+                class="inline-block px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition-colors"
+            >
+                ← Back to Home
+            </a>
+        </div>
+    </div>
+</Layout>

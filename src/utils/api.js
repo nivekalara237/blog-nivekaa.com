@@ -7,6 +7,12 @@ export const articles = [
         category: "DevOps",
         tags: ["kubernetes", "containers", "docker"],
         cover: "https://placehold.co/600x400/2563eb/ffffff?text=Kubernetes",
+        author: {
+            name: "Kevin Kemta",
+            avatar: "https://ui-avatars.com/api/?name=Kevin+Kemta&background=4f46e5&color=fff&size=200",
+            role: "DevOps Engineer",
+            bio: "Passionné par l'automatisation et les architectures cloud-native. 5 ans d'expérience en orchestration de conteneurs."
+        },
         content: `
 # Introduction à Kubernetes
 
@@ -63,6 +69,12 @@ Kubernetes est devenu le standard de facto pour l'orchestration de conteneurs. S
         category: "Frontend",
         tags: ["astro", "javascript", "performance"],
         cover: "https://placehold.co/600x400/f97316/ffffff?text=Astro",
+        author: {
+            name: "Sophie Martin",
+            avatar: "https://ui-avatars.com/api/?name=Sophie+Martin&background=f97316&color=fff&size=200",
+            role: "Frontend Developer",
+            bio: "Spécialiste des frameworks modernes et de l'architecture frontend. Contributrice active à la communauté Astro."
+        },
         content: `
 # Pourquoi Astro est le futur du Web Statique
 
@@ -134,6 +146,12 @@ import Counter from './Counter.jsx';
         category: "Frontend",
         tags: ["react", "javascript", "hooks"],
         cover: "https://placehold.co/600x400/61dafb/000000?text=React+Hooks",
+        author: {
+            name: "Alexandre Dubois",
+            avatar: "https://ui-avatars.com/api/?name=Alexandre+Dubois&background=61dafb&color=000&size=200",
+            role: "Senior React Developer",
+            bio: "Expert React avec 7 ans d'expérience. Formateur et conférencier sur les patterns modernes de React."
+        },
         content: `
 # Maîtriser les Hooks React
 
@@ -205,6 +223,12 @@ function handleClick() {
         category: "Cloud",
         tags: ["aws", "serverless", "lambda", "backend"],
         cover: "https://placehold.co/600x400/ff9900/000000?text=AWS+Serverless",
+        author: {
+            name: "Marc Lefebvre",
+            avatar: "https://ui-avatars.com/api/?name=Marc+Lefebvre&background=ff9900&color=000&size=200",
+            role: "Cloud Architect",
+            bio: "Architecte cloud certifié AWS. Spécialisé dans les architectures serverless et microservices à grande échelle."
+        },
         content: `
 # Architecture Serverless sur AWS
 
@@ -267,7 +291,13 @@ Pour une startup ou un nouveau projet, démarrer en Serverless est souvent le ch
         date: "2025-05-20",
         category: "Frontend",
         tags: ["css", "tailwind", "design"],
-        cover: "https://placehold.co/600x400/38bdf8/ffffff?text=Tailwind+v4",
+        // cover: "https://placehold.co/600x400/38bdf8/ffffff?text=Tailwind+v4",
+        author: {
+            name: "Julie Bernard",
+            avatar: "https://ui-avatars.com/api/?name=Julie+Bernard&background=38bdf8&color=fff&size=200",
+            role: "UI/UX Designer & Developer",
+            bio: "Designer et développeuse frontend. Passionnée par les design systems et l'optimisation de l'expérience utilisateur."
+        },
         content: `
 # Tailwind CSS v4
 
