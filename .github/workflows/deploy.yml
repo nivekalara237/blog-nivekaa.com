@@ -38,6 +38,9 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+          aws-region: us-east-1  # <--- Add this line
+          audience: sts.amazonaws.com
+          output-env-credentials: true
 
       - name: Deploy to S3
         run: aws s3 sync dist/ s3://${{ env.AWS_S3_BUCKET }} --delete --cache-control "public, max-age=31536000, immutable"
