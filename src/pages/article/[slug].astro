@@ -27,10 +27,6 @@ const { article }: any = Astro.props;
 // Use article author or default author
 const author = article.author || DEFAULT_AUTHOR;
 
-console.log("***************************************");
-console.log({ article, author });
-console.log("***************************************");
-
 // Calculate reading time (assuming 200 words per minute)
 const content = article.content || article.contentMarkdown;
 const wordCount = content?.split(/\s+/).length || 0;
