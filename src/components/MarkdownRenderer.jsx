@@ -13,7 +13,7 @@ const IMAGE_BASE_URL = import.meta.env.PUBLIC_IMAGE_URL || `${API_BASE_URL}/imag
 // Initialize mermaid
 mermaid.initialize({
     startOnLoad: false,
-    theme: 'default',
+    theme: (typeof window !== 'undefined' && localStorage.getItem("theme") === 'dark' ? 'dark' : 'neutral') || 'default',
     securityLevel: 'loose',
     fontFamily: 'inherit',
 });
@@ -25,7 +25,13 @@ const Mermaid = ({ chart }) => {
 
     useEffect(() => {
         if (chart) {
-            mermaid.render(id, chart)
+
+            let withPieInsteadBar = chart.trim();
+            if (chart.startsWith("bar")) {
+                withPieInsteadBar = "pie" + chart.substring(3);
+            }
+
+            mermaid.render(id, withPieInsteadBar)
                 .then(({ svg }) => {
                     setSvg(svg);
                     setError(null);
@@ -35,6 +41,9 @@ const Mermaid = ({ chart }) => {
                     setError('Erreur de rendu du diagramme');
                 });
         }
+
+
+        console.log({ id, chart });
     }, [chart, id]);
 
     if (error) {
