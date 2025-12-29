@@ -427,7 +427,14 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
                 cover: finalCoverKey,
                 isDrafted: submitStatus === 'draft',
                 authorEmail: user?.email || '',
-                authorName: `${user?.given_name || ''} ${user?.family_name || ''}`.trim()
+                authorName: author?.name || '',
+                author: {
+                    name: author?.name || '',
+                    avatar: author?.avatar || '',
+                    role: author?.jobPositions?.join(', ') || author?.role || '',
+                    bio: author?.bio || '',
+                    medias: author?.medias || []
+                }
             };
 
             const url = editSlug ? `${API_URL}/articles/${editSlug}` : `${API_URL}/articles`;
