@@ -56,9 +56,27 @@ const page = {
 		next: lastPage > 1 ? "/page/2" : undefined,
 	},
 };
+const siteUrl = Astro.site || "https://cloud.nivekaa.com";
+const jsonLd = {
+	"@context": "https://schema.org",
+	"@type": "WebSite",
+	url: siteUrl,
+	name: "CloudNive Blog",
+	description:
+		"Découvrez nos derniers articles sur le développement web, le cloud et bien plus encore.",
+	potentialAction: {
+		"@type": "SearchAction",
+		target: `${siteUrl}/articles?q={search_term_string}`,
+		"query-input": "required name=search_term_string",
+	},
+};
 ---
 
-<Layout title="MyBlog - Accueil">
+<Layout
+	title="CloudNive - Blog Technique Cloud & DevOps"
+	description="Expertise technique sur le Cloud, le DevOps, et le Développement Web. Tutoriels, articles de fond et partage d'expérience."
+>
+	<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 	<section class="mb-12">
 		<CategoryCards client:load counts={categoryCounts} />
 	</section>

@@ -41,9 +41,45 @@ const formatDate = (dateStr: string) => {
         day: "numeric",
     });
 };
+const siteUrl = Astro.site || "https://cloud.nivekaa.com";
+const articleUrl = new URL(Astro.url.pathname, siteUrl);
+
+const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: article.title,
+    description: article.description,
+    image: article.cover ? new URL(article.cover, siteUrl) : undefined,
+    datePublished: article.date,
+    dateModified: article.lastUpdated || article.date,
+    author: {
+        "@type": "Person",
+        name: author.name,
+        jobTitle: author.role,
+        image: author.avatar,
+    },
+    publisher: {
+        "@type": "Organization",
+        name: "CloudNive",
+        logo: {
+            "@type": "ImageObject",
+            url: new URL("/favicon.svg", siteUrl),
+        },
+    },
+    mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": articleUrl,
+    },
+};
 ---
 
-<Layout title={`${article.title}`} description={article.description}>
+<Layout
+    title={`${article.title}`}
+    description={article.description}
+    image={article.cover}
+    type="article"
+>
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <!-- Cover Image or Gradient Fallback -->
         <CoverImage
