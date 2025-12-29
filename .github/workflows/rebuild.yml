@@ -13,7 +13,7 @@ jobs:
   build-project:
     name: Build Project
     runs-on: ubuntu-latest
-    environment: clerk
+    environment: kinde
     steps:
       - name: Checkout
         uses: actions/checkout@v4
