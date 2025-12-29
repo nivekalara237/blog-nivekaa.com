@@ -6,7 +6,7 @@ import Pagination from "../components/Pagination.astro";
 import { api } from "../lib/api";
 import { getCategories } from "../utils/api.js";
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 24;
 
 const response = await api.getArticles({ limit: 100 }); // Fetch more to calculate total pages if needed, or just enough for first page
 const allArticles = response.items || [];
