@@ -11,10 +11,10 @@ permissions:
   id-token: write
 
 jobs:
-  deploy:
-    name: Build and Deploy
+  build:
+    name: Build Website
     runs-on: ubuntu-latest
-    environment: aws
+    environment: clerk
     
     steps:
       - name: Checkout
@@ -32,6 +32,32 @@ jobs:
 
       - name: Build Project
         run: npm run build
+        env:
+          PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          # On peut aussi ajouter d'autres variables si nécessaire
+          PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
+          PUBLIC_IMAGE_URL: ${{ vars.PUBLIC_IMAGE_URL }}
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-files
+          path: dist/
+          retention-days: 1
+
+  deploy:
+    name: Deploy to S3
+    needs: build
+    runs-on: ubuntu-latest
+    environment: aws
+    
+    steps:
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-files
+          path: dist/
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4

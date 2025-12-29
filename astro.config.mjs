@@ -9,7 +9,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  // Active le rendu côté serveur (SSR)
+  // Active le mode statique (SSG)
   output: 'static',
   site: 'https://cloud.nivekaa.com',
 

@@ -1,0 +1,8 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import AdminDashboard from "../../components/admin/AdminDashboard";
+---
+
+<AdminLayout title="Tableau de bord | CloudNive Admin">
+    <AdminDashboard client:only="react" />
+</AdminLayout>

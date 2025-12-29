@@ -2,6 +2,7 @@
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import "../styles/global.css";
+import KindeAuthProvider from "../components/KindeAuthProvider";
 
 interface Props {
     title: string;
@@ -39,10 +40,12 @@ const { title, description = "My Awesome Blog" } = Astro.props;
     <body
         class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen flex flex-col transition-colors duration-200"
     >
-        <Header />
-        <main class="flex-grow container mx-auto px-4 py-8">
-            <slot />
-        </main>
-        <Footer />
+        <KindeAuthProvider client:only="react">
+            <Header />
+            <main class="flex-grow container mx-auto px-4 py-8">
+                <slot />
+            </main>
+            <Footer />
+        </KindeAuthProvider>
     </body>
 </html>

@@ -41,9 +41,6 @@ const Mermaid = ({ chart }) => {
                     setError('Erreur de rendu du diagramme');
                 });
         }
-
-
-        console.log({ id, chart });
     }, [chart, id]);
 
     if (error) {
