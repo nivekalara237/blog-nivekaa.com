@@ -4,6 +4,7 @@ import AuthorCard from '../AuthorCard.jsx';
 import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 import { mapKindeUserToAuthor } from '../../utils/user-mapper';
 import { kindeApi } from '../../lib/kinde-api';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 
 export default function ArticleEditor({ categories, tags, onSaveSuccess = (result) => { } }) {
     const [editSlug, setEditSlug] = useState(null);
@@ -47,6 +48,10 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
     const fileInputRef = useRef(null);
     const contentImageInputRef = useRef(null);
     const isInitialMount = useRef(true);
+
+    // Deletion state
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const API_URL = import.meta.env.PUBLIC_API_URL || 'https://cloudnive-api.nivekaa.com';
 
@@ -143,9 +148,27 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
                     setIsLoadingArticle(false);
                 }
             } else {
-                // CREATE MODE: Start empty (as requested: "formulaire vide")
-                console.log('Create mode: starting with empty form');
+                // CREATE MODE: Start empty OR restore draft
                 setEditSlug(null);
+
+                // Check for saved draft
+                const savedDraft = localStorage.getItem('articleDraft');
+                if (savedDraft) {
+                    try {
+                        const draft = JSON.parse(savedDraft);
+                        setTitle(draft.title || '');
+                        setDescription(draft.description || '');
+                        setContent(draft.content || '');
+                        setSelectedTags(draft.selectedTags || []);
+                        setSelectedCategory(draft.selectedCategory || categories[0]);
+                        setCoverPreview(draft.coverPreview || '');
+                        console.log('Restored draft from localStorage');
+                    } catch (e) {
+                        console.error('Failed to parse draft', e);
+                    }
+                } else {
+                    console.log('Create mode: starting with empty form');
+                }
             }
         };
 
@@ -484,6 +507,31 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
         }
     };
 
+    const handleDelete = async () => {
+        if (!editSlug) return;
+
+        setIsDeleting(true);
+        try {
+            const response = await fetch(`${API_URL}/articles/${editSlug}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) throw new Error('Erreur lors de la suppression');
+
+            alert('✅ Article supprimé avec succès');
+            localStorage.removeItem('articleDraft');
+
+            // Redirect to dashboard
+            window.location.href = '/admin/dash';
+        } catch (err) {
+            console.error('Delete error:', err);
+            alert('❌ Erreur lors de la suppression');
+        } finally {
+            setIsDeleting(false);
+            setIsDeleteDialogOpen(false);
+        }
+    };
+
     return (
         <div className="space-y-12 pb-20">
             {isLoadingArticle && (
@@ -498,6 +546,21 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
 
                 {/* Action Buttons - Top */}
                 <div className="flex justify-end gap-3">
+                    {/* Delete Button (Only in Edition Mode) */}
+                    {editSlug && (
+                        <button
+                            type="button"
+                            onClick={() => setIsDeleteDialogOpen(true)}
+                            className="px-4 py-3 rounded-xl font-semibold transition-all whitespace-nowrap flex items-center gap-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50"
+                            title="Supprimer définitivement cet article"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            <span className="hidden sm:inline">Supprimer</span>
+                        </button>
+                    )}
+
                     {/* Clear Draft Button */}
                     <button
                         type="button"
@@ -889,6 +952,15 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
                     </button>
                 </div>
             </form>
+
+            <DeleteConfirmationModal
+                isOpen={isDeleteDialogOpen}
+                onClose={() => setIsDeleteDialogOpen(false)}
+                onConfirm={handleDelete}
+                title={title}
+                slug={editSlug}
+                isDeleting={isDeleting}
+            />
 
             <div className="max-w-4xl mx-auto pt-12 border-t border-gray-200 dark:border-gray-800">
                 <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-6">Aperçu de votre carte auteur</h2>
