@@ -3,6 +3,7 @@ import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 import KindeAuthProvider from '../KindeAuthProvider';
 import AdminGuard from './AdminGuard';
 import { api } from '../../lib/api';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 
 function AdminDashboardContent() {
     const { user, isLoading: authLoading } = useKindeAuth();
@@ -10,31 +11,59 @@ function AdminDashboardContent() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // Deletion state
+    const [deleteModal, setDeleteModal] = useState({ isOpen: false, article: null });
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const fetchUserArticles = React.useCallback(async () => {
+        if (!user?.email) return;
+
+        setIsLoading(true);
+        try {
+            // Fetch all articles for this user, including drafts
+            const data = await api.getArticles({
+                authorEmail: user.email,
+                includeDrafts: 'true',
+                limit: 100 // Get enough for stats
+            });
+            setArticles(data.items || []);
+        } catch (err) {
+            console.error('Error fetching articles:', err);
+            setError('Impossible de charger vos articles.');
+        } finally {
+            setIsLoading(false);
+        }
+    }, [user?.email]);
+
+    const handleDelete = async () => {
+        if (!deleteModal.article) return;
+
+        setIsDeleting(true);
+        try {
+            const API_URL = import.meta.env.PUBLIC_API_URL || 'https://cloudnive-api.nivekaa.com';
+            const response = await fetch(`${API_URL}/articles/${deleteModal.article.slug}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) throw new Error('Erreur lors de la suppression');
+
+            // Refresh list
+            await fetchUserArticles();
+            setDeleteModal({ isOpen: false, article: null });
+            alert('✅ Article supprimé avec succès');
+        } catch (err) {
+            console.error('Delete error:', err);
+            alert('❌ Erreur lors de la suppression');
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchUserArticles = async () => {
-            if (!user?.email) return;
-
-            setIsLoading(true);
-            try {
-                // Fetch all articles for this user, including drafts
-                const data = await api.getArticles({
-                    authorEmail: user.email,
-                    includeDrafts: 'true',
-                    limit: 100 // Get enough for stats
-                });
-                setArticles(data.items || []);
-            } catch (err) {
-                console.error('Error fetching articles:', err);
-                setError('Impossible de charger vos articles.');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
         if (!authLoading && user) {
             fetchUserArticles();
         }
-    }, [user, authLoading]);
+    }, [user, authLoading, fetchUserArticles]);
 
     // Calculate stats
     const stats = useMemo(() => {
@@ -215,6 +244,7 @@ function AdminDashboardContent() {
                                                 </svg>
                                             </a>
                                             <button
+                                                onClick={() => setDeleteModal({ isOpen: true, article })}
                                                 className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"
                                                 title="Supprimer"
                                             >
@@ -242,6 +272,15 @@ function AdminDashboardContent() {
                     </div>
                 )}
             </div>
+            {/* Deletion Modal */}
+            <DeleteConfirmationModal
+                isOpen={deleteModal.isOpen}
+                onClose={() => setDeleteModal({ isOpen: false, article: null })}
+                onConfirm={handleDelete}
+                title={deleteModal.article?.title}
+                slug={deleteModal.article?.slug}
+                isDeleting={isDeleting}
+            />
         </div>
     );
 }

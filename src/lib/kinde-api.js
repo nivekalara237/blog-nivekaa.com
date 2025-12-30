@@ -6,18 +6,24 @@ class KindeAuthApi {
     constructor() {
         this.apiUrl = import.meta.env.PUBLIC_API_URL || 'https://cloudnive-api.nivekaa.com';
         this.tokenKey = 'kinde_m2m_token';
+        this.tokenPromise = null;
     }
 
     /**
      * Get a valid Kinde M2M token from local storage or backend
      */
     async getValidToken() {
+        // If a request is already in progress, return that promise
+        if (this.tokenPromise) {
+            return this.tokenPromise;
+        }
+
         try {
             const cached = localStorage.getItem(this.tokenKey);
             if (cached) {
                 const { token, expiresAt } = JSON.parse(cached);
-                // Refresh if token expires in less than 5 minutes
-                if (Date.now() < expiresAt - 300000) {
+                // Return cached token if it's still valid for at least 1 minute
+                if (Date.now() < expiresAt - 60000) {
                     return token;
                 }
             }
@@ -25,25 +31,40 @@ class KindeAuthApi {
             console.warn('Failed to parse cached token', e);
         }
 
-        // Fetch new token from backend
-        try {
-            const response = await fetch(`${this.apiUrl}/user/token`, {
-                method: 'POST'
-            });
-            if (!response.ok) throw new Error('Failed to fetch M2M token');
-            const data = await response.json();
+        // Create new request promise
+        this.tokenPromise = (async () => {
+            try {
+                const response = await fetch(`${this.apiUrl}/user/token`, {
+                    method: 'POST'
+                });
 
-            const expiresAt = Date.now() + (data.expires_in * 1000);
-            localStorage.setItem(this.tokenKey, JSON.stringify({
-                token: data.access_token,
-                expiresAt
-            }));
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to fetch M2M token');
+                }
 
-            return data.access_token;
-        } catch (error) {
-            console.error('KindeAuthApi.getValidToken error:', error);
-            throw error;
-        }
+                const data = await response.json();
+
+                // default to 1 day if expires_in is missing
+                const expiresInSeconds = data.expires_in || 86400;
+                const expiresAt = Date.now() + (expiresInSeconds * 1000);
+
+                localStorage.setItem(this.tokenKey, JSON.stringify({
+                    token: data.access_token,
+                    expiresAt
+                }));
+
+                return data.access_token;
+            } catch (error) {
+                console.error('KindeAuthApi.getValidToken fetch error:', error);
+                throw error;
+            } finally {
+                // Clear the promise when done so next calls can retry if needed
+                this.tokenPromise = null;
+            }
+        })();
+
+        return this.tokenPromise;
     }
 
     /**
