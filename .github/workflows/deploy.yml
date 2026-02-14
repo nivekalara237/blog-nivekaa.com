@@ -45,7 +45,7 @@ jobs:
         env:
           PUBLIC_KINDE_CLIENT_ID: ${{ secrets.KINDE_DEV_CLIENT_ID }}
           PUBLIC_KINDE_DOMAIN: ${{ vars.KINDE_DEV_DOMAIN }}
-          PUBLIC_API_URL: 'https://cloudnive-api-dev.nivekaa.com/api'
+          PUBLIC_API_URL: 'https://cloudnive-api-dev.nivekaa.com'
           PUBLIC_IMAGE_URL: 'https://cloudnive-api-dev.nivekaa.com/images'
 
       - name: Build prod project
