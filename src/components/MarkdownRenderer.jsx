@@ -52,6 +52,7 @@ const Mermaid = ({ chart }) => {
         );
     }
 
+    console.log(svg);
     return (
         <div className="mermaid my-8 flex justify-center overflow-x-auto" dangerouslySetInnerHTML={{ __html: svg }} />
     );
@@ -122,7 +123,7 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
     // Block code with highlighting
     if (html) {
         return (
-            <div className="not-prose my-8 rounded-xl overflow-hidden shadow-sm relative group" style={{ maxWidth: '100%' }}>
+            <div className="not-prose my-4 rounded-xl overflow-hidden shadow-sm relative group" style={{ maxWidth: '100%' }}>
                 <button
                     onClick={copyToClipboard}
                     className="absolute top-3 right-3 p-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-100 dark:hover:bg-gray-600 z-10"
@@ -145,7 +146,7 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
 
     // Fallback
     return (
-        <div className="relative group">
+        <div className="relative group">·
             <button
                 onClick={copyToClipboard}
                 className="absolute top-3 right-3 p-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-100 dark:hover:bg-gray-600 z-10"
@@ -301,9 +302,9 @@ export default function MarkdownRenderer({ content, className = '', ...props }) 
                         return <h5 id={id} className="text-base font-bold mt-4 mb-2 scroll-mt-24" {...props}>{children}</h5>;
                     },
                     p: ({ node, ...props }) => <div className="mb-4 leading-relaxed" {...props} />,
-                    ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-4 space-y-2" {...props} />,
-                    ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-4 space-y-2" {...props} />,
-                    li: ({ node, ...props }) => <li className="ml-4" {...props} />,
+                    ul: ({ node, ...props }) => <ul className="list-disc !pl-0 list-inside !my-2 space-y-2" {...props} />,
+                    ol: ({ node, ...props }) => <ol className="list-decimal !pl-0 list-inside mb-4 space-y-2" {...props} />,
+                    li: ({ node, ...props }) => <li className="ml-4 !mb-0" {...props} />,
                     a: ({ node, ...props }) => <a className="text-indigo-600 dark:text-indigo-400 hover:underline" {...props} />,
                     em: ({ node, ...props }) => <i className="italic underline underline-offset-4" {...props} />,
                     blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-indigo-500 pl-4 italic my-4" {...props} />,

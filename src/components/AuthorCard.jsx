@@ -39,7 +39,7 @@ export default function AuthorCard({ author }) {
     const hideName = author.hideName === true || author.hideName === 'true';
 
     return (
-        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-3xl p-8 border border-indigo-100 dark:border-gray-700 shadow-sm transition-all duration-300">
+        <div className="mt-12 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-3xl p-8 border border-indigo-100 dark:border-gray-700 shadow-sm transition-all duration-300">
             <h3 className="text-xl !mt-0 font-bold text-gray-900 dark:text-gray-100 mb-6">À propos de l'auteur</h3>
             <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-6">
                 <img
