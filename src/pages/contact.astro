@@ -3,29 +3,40 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Contact - MyBlog">
-  <section class="max-w-2xl mx-auto">
-    <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-8">
-      Contactez-nous
-    </h1>
+  <section class="max-w-2xl mx-auto px-6 py-12">
+    <div class="mb-12 text-center">
+      <h1
+        class="text-4xl md:text-5xl font-black mb-4 uppercase tracking-tight"
+        style="font-family: 'Space Grotesk', sans-serif; color: var(--text-primary);"
+      >
+        <span style="color: var(--yellow-dark);">//</span> Contactez-nous
+      </h1>
 
-    <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
-      Une question ? Une suggestion ? N'hésitez pas à nous envoyer un message.
-    </p>
+      <p
+        class="text-lg"
+        style="font-family: 'Inter', sans-serif; color: var(--text-secondary);"
+      >
+        Une question ? Une suggestion ? N'hésitez pas à nous envoyer un message.
+      </p>
+    </div>
 
     <form
-      class="space-y-6 bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700"
+      class="pixel-box p-8 md:p-10 space-y-6"
+      style="background: var(--bg-panel);"
     >
       <div>
         <label
           for="name"
-          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          class="block text-sm font-bold mb-2 uppercase tracking-wider"
+          style="font-family: 'JetBrains Mono', monospace; color: var(--green-light);"
           >Nom</label
         >
         <input
           type="text"
           id="name"
           name="name"
-          class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+          class="w-full px-4 py-3 bg-[var(--bg-deep)] text-[var(--text-primary)] border-2 border-[var(--bg-border)] focus:border-[var(--green-light)] focus:ring-0 outline-none transition-colors"
+          style="font-family: 'Inter', sans-serif;"
           placeholder="Votre nom"
         />
       </div>
@@ -33,14 +44,16 @@ import Layout from "../layouts/Layout.astro";
       <div>
         <label
           for="email"
-          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          class="block text-sm font-bold mb-2 uppercase tracking-wider"
+          style="font-family: 'JetBrains Mono', monospace; color: var(--green-light);"
           >Email</label
         >
         <input
           type="email"
           id="email"
           name="email"
-          class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+          class="w-full px-4 py-3 bg-[var(--bg-deep)] text-[var(--text-primary)] border-2 border-[var(--bg-border)] focus:border-[var(--green-light)] focus:ring-0 outline-none transition-colors"
+          style="font-family: 'Inter', sans-serif;"
           placeholder="votre@email.com"
         />
       </div>
@@ -48,20 +61,25 @@ import Layout from "../layouts/Layout.astro";
       <div>
         <label
           for="message"
-          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          class="block text-sm font-bold mb-2 uppercase tracking-wider"
+          style="font-family: 'JetBrains Mono', monospace; color: var(--green-light);"
           >Message</label
         >
         <textarea
           id="message"
           name="message"
           rows="5"
-          class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+          class="w-full px-4 py-3 bg-[var(--bg-deep)] text-[var(--text-primary)] border-2 border-[var(--bg-border)] focus:border-[var(--green-light)] focus:ring-0 outline-none transition-colors"
+          style="font-family: 'Inter', sans-serif; resize: vertical;"
           placeholder="Votre message..."></textarea>
       </div>
 
       <button
         type="submit"
-        class="w-full bg-indigo-600 text-white font-medium py-3 rounded-lg hover:bg-indigo-700 transition-colors"
+        class="w-full py-4 font-black uppercase tracking-widest transition-all duration-200"
+        style="font-family: 'Space Grotesk', sans-serif; background: var(--yellow-dark); color: #0A0F0A; border: 2px solid #FFAA00;"
+        onmouseover="this.style.background='var(--yellow-light)'; this.style.transform='translate(-2px, -2px)'; this.style.boxShadow='4px 4px 0 rgba(255,170,0,0.3)';"
+        onmouseout="this.style.background='var(--yellow-dark)'; this.style.transform='translate(0,0)'; this.style.boxShadow='none';"
       >
         Envoyer le message
       </button>
