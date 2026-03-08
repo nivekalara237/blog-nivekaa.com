@@ -3,28 +3,162 @@ const currentYear = new Date().getFullYear();
 ---
 
 <footer
-  class="bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 py-8 mt-12 transition-colors duration-200"
+  style="background: var(--bg-surface); border-top: 3px solid var(--bg-border);"
 >
-  <div class="container mx-auto px-4 text-center">
-    <p class="text-gray-600 dark:text-gray-400 mb-4">
-      &copy; {currentYear}. Tous droits réservés.
-    </p>
-    <div class="flex justify-center gap-6">
-      <a
-        href="#"
-        class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-        >Twitter</a
+  <div class="max-w-7xl mx-auto px-6 py-10">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+      <!-- Brand -->
+      <div class="lg:col-span-1">
+        <div
+          class="text-base font-black uppercase tracking-widest mb-3"
+          style="font-family: 'Space Grotesk', sans-serif; color: var(--text-primary);"
+        >
+          Cloud<span style="color: var(--yellow-dark);">Nive</span>
+        </div>
+        <p
+          class="text-sm mb-5"
+          style="color: var(--text-secondary); font-family: 'Inter', sans-serif; line-height: 1.7;"
+        >
+          Blog technique sur le Cloud, l'IaC et le développement logiciel.
+          Chaque article = un niveau débloqué. 🎮
+        </p>
+        <div class="flex flex-wrap gap-2">
+          <span class="game-tag">☁ AWS</span>
+          <span class="game-tag">⚙ Terraform</span>
+          <span class="game-tag game-tag--gold">☸ K8s</span>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div>
+        <div
+          class="text-xs font-bold uppercase tracking-widest mb-4"
+          style="font-family: 'Inter', sans-serif; color: var(--text-dim);"
+        >
+          <span style="color: var(--green-dark);">// </span>Navigation
+        </div>
+        <ul class="flex flex-col gap-2 list-none p-0 m-0">
+          {
+            [
+              { label: "Accueil", href: "/" },
+              { label: "Articles", href: "/articles" },
+              { label: "Catégories", href: "/categories" },
+              { label: "Contact", href: "/contact" },
+            ].map(({ label, href }) => (
+              <li>
+                <a
+                  href={href}
+                  class="text-sm no-underline footer-link flex items-center gap-2"
+                  style="color: var(--text-secondary); font-family: 'Inter', sans-serif; font-weight: 600; transition: color 0.1s;"
+                >
+                  <span style="color: var(--green-dark); font-size: 10px;">
+                    ▸
+                  </span>
+                  {label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!-- Topics -->
+      <div>
+        <div
+          class="text-xs font-bold uppercase tracking-widest mb-4"
+          style="font-family: 'Inter', sans-serif; color: var(--text-dim);"
+        >
+          <span style="color: var(--green-dark);">// </span>Sujets
+        </div>
+        <ul class="flex flex-col gap-2 list-none p-0 m-0">
+          {
+            [
+              { label: "Cloud AWS", href: "/category/cloud" },
+              { label: "Terraform", href: "/category/terraform" },
+              { label: "Kubernetes", href: "/category/kubernetes" },
+              { label: "CI/CD", href: "/category/cicd" },
+              { label: "Dev Backend", href: "/category/dev-backend" },
+            ].map(({ label, href }) => (
+              <li>
+                <a
+                  href={href}
+                  class="text-sm no-underline footer-link flex items-center gap-2"
+                  style="color: var(--text-secondary); font-family: 'Inter', sans-serif; font-weight: 600; transition: color 0.1s;"
+                >
+                  <span style="color: var(--green-dark); font-size: 10px;">
+                    ▸
+                  </span>
+                  {label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!-- Links -->
+      <div>
+        <div
+          class="text-xs font-bold uppercase tracking-widest mb-4"
+          style="font-family: 'Inter', sans-serif; color: var(--text-dim);"
+        >
+          <span style="color: var(--green-dark);">// </span>Liens
+        </div>
+        <ul class="flex flex-col gap-2 list-none p-0 m-0">
+          {
+            [
+              { label: "Newsletter", href: "#newsletter" },
+              { label: "À propos", href: "/about" },
+              { label: "GitHub", href: "#" },
+              { label: "LinkedIn", href: "#" },
+            ].map(({ label, href }) => (
+              <li>
+                <a
+                  href={href}
+                  class="text-sm no-underline footer-link flex items-center gap-2"
+                  style="color: var(--text-secondary); font-family: 'Inter', sans-serif; font-weight: 600; transition: color 0.1s;"
+                >
+                  <span style="color: var(--green-dark); font-size: 10px;">
+                    ▸
+                  </span>
+                  {label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div
+      class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4"
+      style="border-top: 2px solid var(--bg-border);"
+    >
+      <span
+        class="text-xs"
+        style="font-family: 'JetBrains Mono', monospace; color: var(--text-dim);"
       >
-      <a
-        href="#"
-        class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-        >GitHub</a
+        // © {currentYear} CloudNive — Mission: partager le savoir
+      </span>
+
+      <!-- XP bar -->
+      <div
+        class="flex items-center gap-2"
+        style="font-family: 'JetBrains Mono', monospace; font-size: 11px;"
       >
-      <a
-        href="#"
-        class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-        >LinkedIn</a
-      >
+        <span style="color: var(--text-dim);">SITE XP:</span>
+        <div class="xp-bar-track" style="width: 80px;">
+          <div class="xp-bar-fill" style="width: 88%;"></div>
+        </div>
+        <span style="color: var(--yellow-dark);">LVL 42</span>
+      </div>
     </div>
   </div>
 </footer>
+
+<style>
+  .footer-link:hover {
+    color: var(--yellow-light) !important;
+  }
+</style>

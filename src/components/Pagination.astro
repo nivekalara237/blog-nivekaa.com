@@ -1,37 +1,25 @@
 ---
 const { page } = Astro.props;
 
-// Determine which page numbers to show
-// We want to show: 1 ... 4 5 6 ... 10
-// Or if few pages: 1 2 3 4 5
 const totalPages = page.lastPage;
 const currentPage = page.currentPage;
-const range = 2; // How many pages around current to show
+const range = 2;
 
-let pages = [];
-
-// Always include page 1
+let pages: (number | string)[] = [];
 pages.push(1);
 
 for (let i = currentPage - range; i <= currentPage + range; i++) {
     if (i > 1 && i < totalPages) {
-        if (pages[pages.length - 1] !== i - 1) {
-            pages.push("...");
-        }
+        if (pages[pages.length - 1] !== i - 1) pages.push("...");
         pages.push(i);
     }
 }
 
-// Always include last page if it's not 1
 if (totalPages > 1) {
-    if (pages[pages.length - 1] !== totalPages - 1) {
-        pages.push("...");
-    }
+    if (pages[pages.length - 1] !== totalPages - 1) pages.push("...");
     pages.push(totalPages);
 }
 
-// Logic to fix the weird case where we might get 1 ... 2 or similar gaps logic can be simple
-// If total pages is small (e.g. < 7), just show all
 if (totalPages <= 7) {
     pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 }
@@ -40,85 +28,137 @@ if (totalPages <= 7) {
 {
     totalPages > 1 && (
         <nav
-            class="flex justify-center items-center font-mono text-sm mt-12 mb-8"
+            class="flex justify-center items-center gap-2 mt-12 mb-8"
             aria-label="Pagination"
+            style="font-family: 'JetBrains Mono', monospace;"
         >
-            {/* Previous Button (Design 1 Arrows) */}
+            {/* Prev */}
             {page.url.prev ? (
                 <a
                     href={page.url.prev}
-                    class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors"
+                    class="pagination-btn"
                     aria-label="Previous page"
+                    style={`
+                    display:inline-flex; align-items:center; justify-content:center;
+                    width:36px; height:36px;
+                    background: var(--bg-surface);
+                    border: 3px solid var(--bg-border);
+                    color: var(--text-secondary);
+                    text-decoration: none;
+                    font-size: 16px;
+                    box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
+                    transition: all 0.1s;
+                `}
                 >
-                    <span class="text-xl">&larr;</span>
+                    ◀
                 </a>
             ) : (
-                <span class="w-10 h-10 flex items-center justify-center rounded-full text-gray-300 dark:text-gray-700 cursor-not-allowed">
-                    <span class="text-xl">&larr;</span>
+                <span
+                    style={`
+                    display:inline-flex; align-items:center; justify-content:center;
+                    width:36px; height:36px;
+                    background: var(--bg-panel);
+                    border: 3px solid var(--bg-border);
+                    color: var(--text-dim);
+                    font-size: 16px;
+                    opacity: 0.4;
+                `}
+                >
+                    ◀
                 </span>
             )}
 
-            <span class="mx-4 text-gray-300 dark:text-gray-700">|</span>
+            {/* Page numbers */}
+            {pages.map((pageNum) => (
+                <>
+                    {pageNum === "..." ? (
+                        <span style="color: var(--text-dim); padding: 0 4px;">
+                            …
+                        </span>
+                    ) : (
+                        <a
+                            href={
+                                pageNum === 1
+                                    ? "/articles"
+                                    : `/page/${pageNum}`.replace(
+                                          "/page/1",
+                                          "/articles",
+                                      )
+                            }
+                            class="pagination-num"
+                            aria-current={
+                                pageNum === currentPage ? "page" : undefined
+                            }
+                            style={`
+                            display:inline-flex; align-items:center; justify-content:center;
+                            width:36px; height:36px;
+                            border: 3px solid;
+                            text-decoration: none;
+                            font-size: 12px;
+                            font-weight: 700;
+                            transition: all 0.1s;
+                            box-shadow: 3px 3px 0 rgba(0,0,0,0.35);
+                            ${
+                                pageNum === currentPage
+                                    ? "background:var(--green-dark); border-color:var(--green-light); color:var(--yellow-light);"
+                                    : "background:var(--bg-surface); border-color:var(--bg-border); color:var(--text-secondary);"
+                            }
+                        `}
+                        >
+                            {String(pageNum).padStart(2, "0")}
+                        </a>
+                    )}
+                </>
+            ))}
 
-            {/* Page Numbers (Design 4 Tech Mono) */}
-            <div class="flex items-center space-x-2">
-                {pages.map((pageNum) => (
-                    <>
-                        {pageNum === "..." ? (
-                            <span class="px-2 py-1 text-gray-400 dark:text-gray-600">
-                                ...
-                            </span>
-                        ) : (
-                            <a
-                                href={
-                                    pageNum === 1
-                                        ? "/articles"
-                                        : `/page/${pageNum}`.replace(
-                                              "/page/1",
-                                              "/articles",
-                                          )
-                                }
-                                class={`
-                                    border-b-2 px-2 py-1 transition-all
-                                    ${
-                                        pageNum === currentPage
-                                            ? "border-indigo-600 font-bold text-indigo-600 dark:text-indigo-400 dark:border-indigo-400"
-                                            : "border-transparent hover:border-indigo-600 text-gray-500 dark:text-gray-400 dark:hover:border-indigo-400"
-                                    }
-                                `}
-                                aria-current={
-                                    pageNum === currentPage ? "page" : undefined
-                                }
-                                onclick={
-                                    pageNum === 1 &&
-                                    typeof page.url.prev === "undefined"
-                                        ? "event.preventDefault(); window.location.href='/articles'"
-                                        : undefined
-                                }
-                            >
-                                {String(pageNum).padStart(2, "0")}
-                            </a>
-                        )}
-                    </>
-                ))}
-            </div>
-
-            <span class="mx-4 text-gray-300 dark:text-gray-700">|</span>
-
-            {/* Next Button (Design 1 Arrows) */}
+            {/* Next */}
             {page.url.next ? (
                 <a
                     href={page.url.next}
-                    class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors"
+                    class="pagination-btn"
                     aria-label="Next page"
+                    style={`
+                    display:inline-flex; align-items:center; justify-content:center;
+                    width:36px; height:36px;
+                    background: var(--bg-surface);
+                    border: 3px solid var(--bg-border);
+                    color: var(--text-secondary);
+                    text-decoration: none;
+                    font-size: 16px;
+                    box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
+                    transition: all 0.1s;
+                `}
                 >
-                    <span class="text-xl">&rarr;</span>
+                    ▶
                 </a>
             ) : (
-                <span class="w-10 h-10 flex items-center justify-center rounded-full text-gray-300 dark:text-gray-700 cursor-not-allowed">
-                    <span class="text-xl">&rarr;</span>
+                <span
+                    style={`
+                    display:inline-flex; align-items:center; justify-content:center;
+                    width:36px; height:36px;
+                    background: var(--bg-panel);
+                    border: 3px solid var(--bg-border);
+                    color: var(--text-dim);
+                    font-size: 16px;
+                    opacity: 0.4;
+                `}
+                >
+                    ▶
                 </span>
             )}
         </nav>
     )
 }
+
+<style>
+    .pagination-btn:hover {
+        border-color: var(--green-dark) !important;
+        color: var(--yellow-light) !important;
+        transform: translate(-1px, -1px);
+        box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.4) !important;
+    }
+    .pagination-num:hover {
+        border-color: var(--green-dark) !important;
+        color: var(--yellow-light) !important;
+    }
+</style>

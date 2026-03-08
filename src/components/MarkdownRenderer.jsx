@@ -112,7 +112,13 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
     if (isInline) {
         return (
             <code
-                className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 font-bold dark:text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono"
+                className="px-1.5 py-0.5 mx-1 text-sm font-bold tracking-wide"
+                style={{
+                    backgroundColor: 'rgba(255, 170, 0, 0.15)',
+                    color: 'var(--yellow-dark)',
+                    border: '1px solid rgba(255, 170, 0, 0.3)',
+                    fontFamily: "'JetBrains Mono', monospace"
+                }}
                 {...props}
             >
                 {children}
@@ -123,47 +129,65 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
     // Block code with highlighting
     if (html) {
         return (
-            <div className="not-prose my-4 rounded-xl overflow-hidden shadow-sm relative group" style={{ maxWidth: '100%' }}>
-                <button
-                    onClick={copyToClipboard}
-                    className="absolute top-3 right-3 p-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-100 dark:hover:bg-gray-600 z-10"
-                    title={copied ? "Copié!" : "Copier le code"}
-                >
-                    {copied ? (
-                        <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                    ) : (
-                        <svg className="w-4 h-4 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
+            <div className="not-prose my-6 relative group" style={{ maxWidth: '100%' }}>
+                <div className="absolute top-2 right-2 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                    {lang && lang !== 'text' && (
+                        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--text-secondary)', fontFamily: "'JetBrains Mono', monospace" }}>
+                            {lang}
+                        </span>
                     )}
-                </button>
-                <div className="overflow-x-auto" dangerouslySetInnerHTML={{ __html: html }} />
+                    <button
+                        onClick={copyToClipboard}
+                        className="p-2 bg-[var(--bg-surface)] border-2 border-[var(--bg-border)] transition-colors duration-200 hover:border-[var(--green-light)]"
+                        title={copied ? "Copié!" : "Copier le code"}
+                    >
+                        {copied ? (
+                            <svg className="w-4 h-4 text-[var(--yellow-dark)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                        ) : (
+                            <svg className="w-4 h-4 text-[var(--green-light)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                        )}
+                    </button>
+                </div>
+                <div
+                    className="overflow-x-auto border border-[var(--bg-border)] p-1 [&>pre]:!bg-transparent [&>pre]:!m-0 [&>pre]:!p-4"
+                    style={{ background: 'var(--bg-deep)' }}
+                    dangerouslySetInnerHTML={{ __html: html }}
+                />
             </div>
         );
     }
 
     // Fallback
     return (
-        <div className="relative group">·
-            <button
-                onClick={copyToClipboard}
-                className="absolute top-3 right-3 p-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-100 dark:hover:bg-gray-600 z-10"
-                title={copied ? "Copié!" : "Copier le code"}
-            >
-                {copied ? (
-                    <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                ) : (
-                    <svg className="w-4 h-4 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
+        <div className="relative group my-6">
+            <div className="absolute top-2 right-2 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                {lang && lang !== 'text' && (
+                    <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--text-secondary)', fontFamily: "'JetBrains Mono', monospace" }}>
+                        {lang}
+                    </span>
                 )}
-            </button>
-            <pre className="bg-gray-50 dark:bg-gray-800/60 p-6 rounded-xl overflow-x-auto my-8 shadow-sm border-none">
-                <code className={`${className} text-sm text-gray-800 dark:text-gray-100 leading-relaxed`} {...props}>
+                <button
+                    onClick={copyToClipboard}
+                    className="p-2 bg-[var(--bg-surface)] border-2 border-[var(--bg-border)] transition-colors duration-200 hover:border-[var(--green-light)]"
+                    title={copied ? "Copié!" : "Copier le code"}
+                >
+                    {copied ? (
+                        <svg className="w-4 h-4 text-[var(--yellow-dark)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                    ) : (
+                        <svg className="w-4 h-4 text-[var(--green-light)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                    )}
+                </button>
+            </div>
+            <pre className="border border-[var(--bg-border)] p-4 overflow-x-auto" style={{ background: 'var(--bg-deep)' }}>
+                <code className={`${className} text-sm leading-relaxed`} style={{ fontFamily: "'JetBrains Mono', monospace", color: 'var(--green-light)' }} {...props}>
                     {children}
                 </code>
             </pre>

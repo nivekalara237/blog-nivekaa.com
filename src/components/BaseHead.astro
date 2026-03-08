@@ -44,7 +44,7 @@ const {
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={new URL(image, Astro.url)} />
 
-<!-- Google Fonts -->
+<!-- Google Fonts: Gaming Design System -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
@@ -53,9 +53,13 @@ const {
 />
 
 <script is:inline>
-    // Dark mode initialization (light mode by default)
-    const theme = localStorage.getItem("theme");
-    if (theme === "dark") {
+    // Dark mode — DEFAULT is DARK unless user explicitly chose light
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+        document.documentElement.classList.remove("dark");
+    } else {
+        // No preference or "dark" → apply dark
         document.documentElement.classList.add("dark");
+        if (!savedTheme) localStorage.setItem("theme", "dark");
     }
 </script>

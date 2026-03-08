@@ -4,105 +4,99 @@ import MobileMenu from "./MobileMenu.jsx";
 import AuthButtons from "./AuthButtons.jsx";
 ---
 
-<header class="sticky top-6 z-50 transition-all duration-200 px-4 mb-8">
-    <!-- Floating Pill Container -->
-    <nav
-        class="max-w-5xl mx-auto bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl rounded-full border border-gray-200 dark:border-gray-700 shadow-2xl shadow-indigo-500/10 px-6 py-3"
-    >
-        <div class="flex items-center justify-between">
-            <!-- Logo: CloudNive -->
-            <a href="/" class="flex items-center gap-2 group">
-                <div
-                    class="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center transform group-hover:scale-110 transition-transform duration-200 shadow-md"
-                >
-                    <svg
-                        class="w-5 h-5 text-white"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                    >
-                        <path
-                            d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z"
-                        ></path>
-                    </svg>
-                </div>
-                <span
-                    class="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors tracking-tight"
-                >
-                    Cloud<span class="font-bold">Nive</span>
-                </span>
+<header
+    class="sticky top-0 z-50"
+    style="background: var(--bg-deep); border-bottom: 3px solid var(--green-dark); box-shadow: 0 4px 0 rgba(35,114,39,0.25);"
+>
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <!-- Logo -->
+        <a href="/" class="flex items-center gap-3 no-underline group">
+            <div
+                class="w-9 h-9 flex items-center justify-center text-lg font-bold"
+                style="background: var(--green-dark); border: 3px solid var(--green-light); box-shadow: 3px 3px 0 rgba(0,0,0,0.5); color: var(--yellow-light);"
+            >
+                ☁
+            </div>
+            <span
+                class="text-sm font-black uppercase tracking-widest"
+                style="font-family: 'Space Grotesk', sans-serif; color: var(--text-primary);"
+            >
+                Cloud<span style="color: var(--yellow-dark);">Nive</span>
+            </span>
+        </a>
+
+        <!-- Desktop Nav -->
+        <ul class="hidden md:flex items-center gap-1 list-none m-0 p-0">
+            {
+                [
+                    { label: "Accueil", href: "/" },
+                    { label: "Articles", href: "/articles" },
+                    { label: "Catégories", href: "/categories" },
+                    { label: "Contact", href: "/contact" },
+                ].map(({ label, href }) => (
+                    <li>
+                        <a
+                            href={href}
+                            class="px-3 py-1.5 text-xs font-bold uppercase tracking-widest no-underline transition-all duration-100 nav-link"
+                            style="font-family: 'Inter', sans-serif; color: var(--text-secondary); border: 2px solid transparent; letter-spacing: 1.5px;"
+                        >
+                            {label}
+                        </a>
+                    </li>
+                ))
+            }
+        </ul>
+
+        <!-- Right actions -->
+        <div class="flex items-center gap-3">
+            <div class="hidden md:block">
+                <DarkModeToggle client:load />
+            </div>
+
+            <a
+                href="#newsletter"
+                class="hidden md:inline-flex btn btn--primary text-xs"
+                style="font-size: 11px; padding: 7px 16px;"
+            >
+                ▶ Newsletter
             </a>
 
-            <!-- Desktop Navigation -->
-            <ul class="hidden md:flex items-center gap-8">
-                <li>
-                    <a
-                        href="/"
-                        class="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors relative group"
-                    >
-                        Home
-                    </a>
-                </li>
-                <li>
-                    <a
-                        href="/articles"
-                        class="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors relative group"
-                    >
-                        Articles
-                    </a>
-                </li>
-                <li>
-                    <a
-                        href="/categories"
-                        class="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors relative group"
-                    >
-                        Categories
-                    </a>
-                </li>
-                <li>
-                    <a
-                        href="/contact"
-                        class="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors relative group"
-                    >
-                        About
-                    </a>
-                </li>
-            </ul>
-
-            <!-- Right Side: Dark Mode + Button + Mobile Menu -->
-            <div class="flex items-center gap-4">
-                <DarkModeToggle client:load />
-
-                <!-- Mobile Menu Button -->
-                <button
-                    id="mobile-menu-button"
-                    class="md:hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                    aria-label="Open menu"
+            <!-- Mobile menu button -->
+            <button
+                id="mobile-menu-button"
+                class="md:hidden p-2 transition-colors"
+                style="border: 2px solid var(--bg-border); color: var(--text-secondary); background: transparent;"
+                aria-label="Open menu"
+            >
+                <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                 >
-                    <svg
-                        class="w-6 h-6 text-gray-700 dark:text-gray-300"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-            </div>
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
         </div>
-    </nav>
-
-    <!-- Mobile Menu Component (Rendered outside the pill often for full width, or keep existing logic) -->
-    <div class="mt-4 px-2">
-        <MobileMenu client:load />
     </div>
 </header>
 
+<!-- Mobile Menu -->
+<MobileMenu client:load />
+
+<style>
+    .nav-link:hover {
+        color: var(--yellow-light) !important;
+        border-color: var(--green-dark) !important;
+        background: rgba(35, 114, 39, 0.15);
+    }
+</style>
+
 <script>
-    // Mobile menu toggle
     const button = document.getElementById("mobile-menu-button");
     if (button) {
         button.addEventListener("click", () => {

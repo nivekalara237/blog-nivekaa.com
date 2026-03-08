@@ -35,15 +35,26 @@ const { category } = Astro.params;
 ---
 
 <Layout title={`Articles - ${category}`}>
-    <section class="mb-12">
-        <div class="mb-8">
+    <section class="max-w-7xl mx-auto px-6 lg:px-8 mb-12 py-12">
+        <div
+            class="mb-8 border-b-2 pb-6"
+            style="border-color: var(--bg-border);"
+        >
             <a
                 href="/categories"
-                class="text-sm text-indigo-600 hover:text-indigo-800 font-medium mb-4 inline-block"
-                >&larr; Toutes les catégories</a
+                style="font-family:'Inter',sans-serif; font-size:14px; color:var(--text-dim); text-decoration:none; display:inline-block; margin-bottom:16px;"
+                onmouseover="this.style.color='var(--green-light)'"
+                onmouseout="this.style.color='var(--text-dim)'"
             >
-            <h1 class="text-3xl font-bold text-gray-900">
-                Catégorie : <span class="text-indigo-600">{category}</span>
+                &larr; Toutes les catégories
+            </a>
+            <h1
+                class="m-0"
+                style="font-family:'Space Grotesk',sans-serif; font-weight:900; font-size:clamp(28px,4vw,40px); line-height:1.1; letter-spacing:-1px; color:var(--text-primary);"
+            >
+                Catégorie <span style="color:var(--yellow-dark);"
+                    >//{category}</span
+                >
             </h1>
         </div>
 
@@ -55,13 +66,16 @@ const { category } = Astro.params;
                     ))}
                 </div>
             ) : (
-                <div class="text-center py-20 bg-gray-50 dark:bg-gray-800 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700">
-                    <p class="text-xl text-gray-500 dark:text-gray-400">
+                <div
+                    class="pixel-box p-12 text-center"
+                    style="background:var(--bg-panel);"
+                >
+                    <p style="font-family:'JetBrains Mono',monospace; color:var(--text-secondary); font-size:16px;">
                         Aucun article trouvé dans cette catégorie.
                     </p>
                     <a
                         href="/articles"
-                        class="inline-block mt-4 text-indigo-600 hover:text-indigo-800 font-medium"
+                        class="btn btn--secondary mt-6 inline-block"
                     >
                         Voir tous les articles
                     </a>

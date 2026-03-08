@@ -1,68 +1,76 @@
 import React from 'react';
-import CategoryCard from './CategoryCard';
+import CategoryCard from './CategoryCard.jsx';
 
-export default function CategoryCards({ counts }) {
-    const priority = ['Cloud', 'Frontend', 'DevOps'];
+// All-categories definition with icon keys + priority order
+const ALL_CATEGORIES = [
+    { name: 'Cloud', icon: 'cloud', key: 'cloud' },
+    { name: 'AWS', icon: 'cloud', key: 'aws' },
+    { name: 'Terraform', icon: 'cog', key: 'terraform' },
+    { name: 'Docker', icon: 'box', key: 'docker' },
+    { name: 'Kubernetes', icon: 'box', key: 'kubernetes' },
+    { name: 'CI/CD', icon: 'refresh', key: 'cicd' },
+    { name: 'DevOps', icon: 'refresh', key: 'devops' },
+    { name: 'Dev Backend', icon: 'code', key: 'backend' },
+    { name: 'Sécurité', icon: 'lock', key: 'securite' },
+    { name: 'Dev Frontend', icon: 'desktop', key: 'frontend' },
+    { name: 'Linux', icon: 'terminal', key: 'linux' },
+];
 
+export default function CategoryCards({ counts = {} }) {
+    // Normalize counts to find total
+    const total = Object.values(counts).reduce((a, b) => a + b, 0);
+
+    // Build list: filter to categories that have articles, keep rest as-is
     const normalizedCounts = {};
-    const originalKeys = {};
-
-    if (counts) {
-        Object.keys(counts).forEach(key => {
-            const lower = key.toLowerCase();
-            normalizedCounts[lower] = counts[key];
-            originalKeys[lower] = key;
-        });
-    }
-
-    let displayKeys = priority.filter(cat => normalizedCounts[cat.toLowerCase()] !== undefined);
-
-    if (displayKeys.length < 3) {
-        const used = new Set(displayKeys.map(k => k.toLowerCase()));
-        const others = Object.keys(normalizedCounts).filter(k => !used.has(k));
-        displayKeys = [...displayKeys, ...others].slice(0, 3);
-    }
-
-    const cards = displayKeys.map(key => {
-        const isPriority = priority.some(p => p.toLowerCase() === key.toLowerCase());
-        const displayName = isPriority
-            ? priority.find(p => p.toLowerCase() === key.toLowerCase())
-            : originalKeys[key.toLowerCase()];
-
-        return {
-            name: displayName,
-            count: normalizedCounts[key.toLowerCase()]
-        };
+    Object.keys(counts).forEach(key => {
+        normalizedCounts[key.toLowerCase()] = counts[key];
     });
 
+    // Map ALL_CATEGORIES, enrich with count if available
+    const enriched = ALL_CATEGORIES.map(cat => ({
+        ...cat,
+        count: normalizedCounts[cat.key] || normalizedCounts[cat.name.toLowerCase()] || null,
+    })).filter(cat => cat.count); // only show categories with articles
+
+    // If nothing matched, fall back to raw counts
+    const display = enriched.length > 0
+        ? enriched
+        : Object.keys(counts).map(name => ({
+            name,
+            icon: 'document',
+            count: counts[name],
+        }));
+
     return (
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-center gap-6 mb-16 px-4 w-full">
-
-            {/* Label Section */}
-            <div className="hidden lg:block text-left flex-shrink-0">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white !m-0 !p-0 leading-none">
-                    Plus de contenus
-                </h2>
-            </div>
-
-            {/* Buttons List - Wrapped Left on Mobile, Wrapped Center on Desktop */}
-            <div className="flex flex-wrap items-center justify-start gap-3 lg:justify-center lg:gap-4">
-                {cards.map(card => (
+        <div
+            className="w-full"
+            style={{
+                background: 'var(--bg-surface)',
+                borderTop: '3px solid var(--bg-border)',
+                borderBottom: '3px solid var(--bg-border)',
+            }}
+        >
+            {/* Inner container to center items */}
+            <div className="max-w-7xl mx-auto flex justify-center items-stretch overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+                <CategoryCard
+                    category="Tous"
+                    href="/articles"
+                    count={total}
+                    icon="globe"
+                    active={false}
+                />
+                {display.map(cat => (
                     <CategoryCard
-                        key={card.name}
-                        category={card.name}
+                        key={cat.name}
+                        category={cat.name}
+                        count={cat.count}
+                        icon={cat.icon}
                     />
                 ))}
-
-                {/* 'View All' Button (Reusing CategoryCard styling) */}
                 <CategoryCard
                     category="Voir tout"
                     href="/categories"
-                    icon={
-                        <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 12H5m14 0-4 4m4-4-4-4" />
-                        </svg>
-                    }
+                    icon="arrowRight"
                 />
             </div>
         </div>

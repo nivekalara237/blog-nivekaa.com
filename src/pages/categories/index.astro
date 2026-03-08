@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { getCategories, getArticles } from "../../utils/api.js";
+import { getCategoryIconComponent } from "../../components/IconHelper.jsx";
 
 const categoriesList = await getCategories();
 const allArticles = await getArticles();
@@ -12,114 +13,66 @@ const categories = categoriesList.map((name) => {
   ).length;
   return { name, count };
 });
-
-// Helper for category styles
-/** @type {Record<string, {color: string, icon: string}>} */
-const categoryConfig = {
-  Cloud: {
-    color: "indigo",
-    icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>`,
-  },
-  Frontend: {
-    color: "pink",
-    icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>`,
-  },
-  DevOps: {
-    color: "emerald",
-    icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>`,
-  },
-  Backend: {
-    color: "blue",
-    icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>`,
-  },
-  Security: {
-    color: "red",
-    icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>`,
-  },
-  Mobile: {
-    color: "purple",
-    icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>`,
-  },
-  Database: {
-    color: "yellow",
-    icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>`,
-  },
-};
-
-const defaultConfig = {
-  color: "gray",
-  icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>`,
-};
-
-/** @param {string} name */
-function getCategoryStyle(name) {
-  return categoryConfig[name] || defaultConfig;
-}
-
-// Map Tailwind color classes safely
-/** @type {Record<string, {bg: string, shadow: string}>} */
-const colorClasses = {
-  indigo: { bg: "bg-indigo-600", shadow: "shadow-indigo-200" },
-  pink: { bg: "bg-pink-500", shadow: "shadow-pink-200" },
-  emerald: { bg: "bg-emerald-500", shadow: "shadow-emerald-200" },
-  blue: { bg: "bg-blue-500", shadow: "shadow-blue-200" },
-  red: { bg: "bg-red-500", shadow: "shadow-red-200" },
-  purple: { bg: "bg-purple-500", shadow: "shadow-purple-200" },
-  yellow: { bg: "bg-yellow-500", shadow: "shadow-yellow-200" },
-  gray: { bg: "bg-gray-500", shadow: "shadow-gray-200" },
-};
 ---
 
 <Layout title="Catégories - MyBlog">
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="text-center mb-16">
-      <h1 class="text-4xl font-extrabold text-gray-900 dark:text-gray-100 mb-4">
-        Explorez par catégories
+    <div class="mb-12 border-b-2 pb-6" style="border-color: var(--bg-border);">
+      <h1
+        class="m-0 mb-3"
+        style="font-family:'Space Grotesk',sans-serif; font-weight:900; font-size:clamp(28px,4vw,40px); line-height:1.1; letter-spacing:-1px; color:var(--text-primary);"
+      >
+        Base de données <span style="color:var(--yellow-dark);"
+          >//Catégories</span
+        >
       </h1>
-      <p class="text-lg text-gray-600 dark:text-gray-400">
-        Découvrez nos articles classés par thématiques techniques
+      <p
+        style="font-family:'Inter',sans-serif; font-size:16px; color:var(--text-secondary); max-width:600px; margin:0;"
+      >
+        Filtrez nos articles par thématique technique. Choisissez votre zone
+        d'exploration.
       </p>
     </div>
 
     <div
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 px-4 md:px-0"
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-16"
     >
       {
         categories.map((category) => {
-          const style = getCategoryStyle(category.name);
-          const colors = colorClasses[style.color] || colorClasses.gray;
+          const IconComponent = getCategoryIconComponent(category.name);
 
           return (
-            <a href={`/category/${category.name}`} class="group block h-full">
-              <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 flex flex-col items-center text-center border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full min-h-[200px] justify-center">
+            <a
+              href={`/category/${category.name}`}
+              class="group block h-full no-underline"
+            >
+              <div
+                class="pixel-box p-8 flex flex-col items-center text-center h-full min-h-[180px] justify-center transition-all duration-100"
+                style="background: var(--bg-surface);"
+                onmouseover="this.style.borderColor='var(--green-dark)'; this.style.transform='translate(-3px,-3px)'; this.style.boxShadow='4px 4px 0 rgba(35,114,39,0.3)';"
+                onmouseout="this.style.borderColor='var(--bg-border)'; this.style.transform='translate(0,0)'; this.style.boxShadow='4px 4px 0 rgba(0,0,0,0.5)';"
+              >
                 <div
-                  class={`w-16 h-16 rounded-2xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110 ${colors.bg} text-white shadow-lg ${colors.shadow}`}
+                  class="mb-5"
+                  style="color:var(--yellow-dark); transition:color 0.1s;"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-8 w-8"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    set:html={style.icon}
-                  />
+                  <IconComponent className="h-10 w-10 text-current transition-colors" />
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 capitalize">
+                <h3
+                  class="m-0 mb-3 uppercase tracking-widest"
+                  style="font-family:'Inter',sans-serif; font-weight:700; font-size:14px; color:var(--text-primary);"
+                >
                   {category.name}
                 </h3>
-                <p class="text-gray-500 dark:text-gray-400 font-medium text-sm">
-                  {category.count} article{category.count !== 1 ? "s" : ""}
-                </p>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--green-light); padding:2px 8px; background:rgba(35,114,39,0.15); border:1px solid var(--green-dark);">
+                  Lv. {category.count}{" "}
+                  <span style="color:var(--text-dim);">(articles)</span>
+                </div>
               </div>
             </a>
           );
         })
       }
     </div>
-
-    <!-- Debugging script (check browser console) -->
-    <script define:vars={{ categories, allArticles }}>
-      console.log("Categories Page Debug:", { categories, allArticles });
-    </script>
   </section>
 </Layout>

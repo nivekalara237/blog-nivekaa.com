@@ -7,7 +7,7 @@ export default function AdminGuard({ children }) {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-300"></div>
             </div>
         );
     }

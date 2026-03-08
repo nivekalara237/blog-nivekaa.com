@@ -9,33 +9,28 @@ import { getCategories } from "../utils/api.js";
 
 const PAGE_SIZE = 24;
 
-const response = await api.getArticles({ limit: 100 }); // Fetch more to calculate total pages if needed, or just enough for first page
+const response = await api.getArticles({ limit: 100 });
 const allArticles = response.items || [];
-const validCategories = await getCategories(); // Fetch static categories
+const validCategories = await getCategories();
 
 // Calculate category counts
 const categoryCounts = allArticles.reduce((acc: any, article: any) => {
 	const cat = article.category;
-	if (cat) {
-		acc[cat] = (acc[cat] || 0) + 1;
-	}
+	if (cat) acc[cat] = (acc[cat] || 0) + 1;
 	return acc;
 }, {});
 
-// Ensure default categories exist with 0 count if not present
+// Ensure default categories exist
 validCategories.forEach((cat: string) => {
 	if (categoryCounts[cat] === undefined) {
-		// Check case-insensitive existence before adding
 		const exists = Object.keys(categoryCounts).some(
 			(k) => k.toLowerCase() === cat.toLowerCase(),
 		);
-		if (!exists) {
-			categoryCounts[cat] = 0;
-		}
+		if (!exists) categoryCounts[cat] = 0;
 	}
 });
 
-// Sort by date descending (newest first)
+// Sort by date desc
 allArticles.sort(
 	(a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime(),
 );
@@ -43,20 +38,18 @@ allArticles.sort(
 const articles = allArticles.slice(0, PAGE_SIZE);
 const recentArticles = articles;
 
-// Construct a fake page object for the Pagination component
-// We assume there are more pages if we fetched more items than we displayed
 const totalItems = allArticles.length;
-const pageSize = PAGE_SIZE;
-const lastPage = Math.ceil(totalItems / pageSize);
+const lastPage = Math.ceil(totalItems / PAGE_SIZE);
 
 const page = {
 	currentPage: 1,
-	lastPage: lastPage,
+	lastPage,
 	url: {
 		prev: undefined,
 		next: lastPage > 1 ? "/page/2" : undefined,
 	},
 };
+
 const siteUrl = Astro.site || "https://cloud.nivekaa.com";
 const jsonLd = {
 	"@context": "https://schema.org",
@@ -64,7 +57,7 @@ const jsonLd = {
 	url: siteUrl,
 	name: "CloudNive Blog",
 	description:
-		"Découvrez nos derniers articles sur le développement web, le cloud et bien plus encore.",
+		"Expertise technique sur le Cloud, le DevOps et le Développement Logiciel.",
 	potentialAction: {
 		"@type": "SearchAction",
 		target: `${siteUrl}/articles?q={search_term_string}`,
@@ -79,38 +72,244 @@ const jsonLd = {
 >
 	<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
-	<section class="mb-12 text-center">
-		<h1 class="text-4xl font-extrabold text-gray-900 mb-4">
-			Bienvenue sur <span class="text-indigo-600">CLOUD.NIVEKAA.COM</span>
-		</h1>
-		<p
-			class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-10"
+	<!-- ===== HERO ===== -->
+	<section class="relative overflow-hidden" style="padding: 72px 0 56px;">
+		<!-- Top accent line -->
+		<div
+			style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--green-dark);"
 		>
-			Découvrez nos derniers articles sur le développement web, le cloud
-			et bien plus encore.
-		</p>
+		</div>
 
-		<!-- Newsletter Section -->
-		<NewsletterForm client:load />
+		<div class="max-w-7xl mx-auto px-6">
+			<div class="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
+				<!-- Left: copy -->
+				<div>
+					<!-- Badge -->
+					<div
+						class="inline-flex items-center gap-2 mb-5"
+						style="background:rgba(35,114,39,0.18); border:2px solid var(--green-dark); color:var(--green-light); font-family:'Inter',sans-serif; font-weight:700; font-size:11px; letter-spacing:2px; text-transform:uppercase; padding:4px 12px;"
+					>
+						<span style="color:var(--green-light); font-size:9px;"
+							>▶</span
+						>
+						Niveau MAX en Cloud & DevOps
+					</div>
+
+					<!-- Title -->
+					<h1
+						class="m-0 mb-5"
+						style="font-family:'Space Grotesk',sans-serif; font-weight:900; font-size:clamp(28px,5vw,52px); line-height:1.1; letter-spacing:-1px; color:var(--text-primary);"
+					>
+						<span style="color:var(--yellow-dark); display:block;"
+							>CLOUD.NIVEKAA</span
+						>
+						<span style="color:var(--green-light);">.COM</span>
+					</h1>
+
+					<p
+						class="mb-8"
+						style="font-size:16px; color:var(--text-secondary); max-width:480px; line-height:1.7; font-family:'Inter',sans-serif;"
+					>
+						Tutoriels, guides et retours d'expérience sur le Cloud
+						AWS/Azure, Terraform, Kubernetes, CI/CD et le
+						développement logiciel moderne. Chaque article = un
+						niveau débloqué.
+					</p>
+
+					<!-- CTAs -->
+					<div class="flex items-center gap-3 flex-wrap mb-8">
+						<a href="/articles" class="btn btn--gold"
+							>▶ Explorer les articles</a
+						>
+						<a href="/categories" class="btn btn--secondary"
+							>// Catégories</a
+						>
+					</div>
+
+					<!-- XP Bar -->
+					<div
+						class="flex items-center gap-3"
+						style="font-family:'JetBrains Mono',monospace; font-size:11px;"
+					>
+						<span style="color:var(--text-dim); white-space:nowrap;"
+							>XP CLOUD:</span
+						>
+						<div
+							class="xp-bar-track flex-1"
+							style="max-width:200px;"
+						>
+							<div class="xp-bar-fill" style="width:78%;"></div>
+						</div>
+						<span
+							style="color:var(--yellow-dark); white-space:nowrap;"
+							>78 / 100</span
+						>
+					</div>
+				</div>
+
+				<!-- Right: Terminal widget (desktop only) -->
+				<div class="hidden lg:block">
+					<div
+						style="background:var(--bg-surface); border:3px solid var(--bg-border); box-shadow: inset 2px 2px 0 rgba(255,255,255,0.03), 8px 8px 0 rgba(0,0,0,0.4), 0 0 30px rgba(35,114,39,0.1);"
+					>
+						<!-- Terminal title bar -->
+						<div
+							class="flex items-center gap-2 px-4 py-2"
+							style="background:var(--bg-panel); border-bottom:2px solid var(--bg-border);"
+						>
+							<span
+								style="width:10px;height:10px;background:#FF5F56;border:2px solid #FF5F56;display:inline-block;"
+							></span>
+							<span
+								style="width:10px;height:10px;background:#FFBB2C;border:2px solid #FFBB2C;display:inline-block;"
+							></span>
+							<span
+								style="width:10px;height:10px;background:var(--green-light);border:2px solid var(--green-light);display:inline-block;"
+							></span>
+							<span
+								style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);margin-left:8px;"
+								>cloud@nivekaa ~ terraform apply</span
+							>
+						</div>
+						<!-- Terminal body -->
+						<div
+							class="p-5"
+							style="font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.9;"
+						>
+							<div class="flex gap-2">
+								<span style="color:var(--green-light);">$</span>
+								<span style="color:var(--text-primary);"
+									>terraform <span
+										style="color:var(--yellow-dark);"
+										>apply</span
+									>
+									<span style="color:var(--yellow-light);"
+										>-auto-approve</span
+									></span
+								>
+							</div>
+							<div
+								style="padding-left:22px; color:var(--text-secondary);"
+							>
+								<span style="color:var(--green-light);"
+									>aws_s3_bucket</span
+								>.blog_assets: Creating...
+							</div>
+							<div
+								style="padding-left:22px; color:var(--text-secondary);"
+							>
+								<span style="color:var(--green-light);"
+									>aws_cloudfront_distribution</span
+								>.cdn: Done.
+							</div>
+							<div
+								style="padding-left:22px; color:var(--green-light);"
+							>
+								✓ Apply complete! Resources: 4 added.
+							</div>
+							<br />
+							<div class="flex gap-2">
+								<span style="color:var(--green-light);">$</span>
+								<span style="color:var(--text-primary);"
+									>kubectl <span
+										style="color:var(--yellow-dark);"
+										>get pods</span
+									>
+									<span style="color:var(--yellow-light);"
+										>-n production</span
+									></span
+								>
+							</div>
+							<div
+								style="padding-left:22px; color:var(--text-secondary);"
+							>
+								NAME
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								STATUS<br />
+								<span style="color:var(--green-light);"
+									>blog-api-7d8f &nbsp; Running</span
+								><br />
+								<span style="color:var(--green-light);"
+									>blog-cdn-2a1c &nbsp; Running</span
+								>
+							</div>
+							<br />
+							<div class="flex items-center gap-2">
+								<span style="color:var(--green-light);">$</span>
+								<span
+									style="display:inline-block;width:8px;height:2px;background:var(--green-light);animation:blink 1.1s step-end infinite;vertical-align:middle;margin-left:2px;"
+								></span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</section>
 
-	<section class="mb-6">
+	<!-- ===== PIXEL DIVIDER ===== -->
+	<hr class="pixel-divider hidden" />
+
+	<!-- ===== STATS ROW ===== -->
+	<div class="max-w-7xl mx-auto px-6 py-10 hidden">
+		<div
+			class="grid grid-cols-2 lg:grid-cols-4"
+			style="border:3px solid var(--bg-border);"
+		>
+			{
+				[
+					{
+						value: String(totalItems || "48"),
+						label: "Articles publiés",
+						icon: "📄",
+					},
+					{ value: "12+", label: "Sujets Cloud", icon: "☁" },
+					{ value: "9", label: "Outils couverts", icon: "🔧" },
+					{ value: "2K+", label: "Lecteurs / mois", icon: "🚀" },
+				].map(({ value, label, icon }, i) => (
+					<div
+						class="relative text-center p-6"
+						style={`background:var(--bg-surface); border-right:${i < 3 ? "3px solid var(--bg-border)" : "none"};`}
+					>
+						<span style="position:absolute;top:10px;right:12px;font-size:18px;opacity:0.35;">
+							{icon}
+						</span>
+						<div style="font-family:'Space Grotesk',sans-serif; font-weight:900; font-size:clamp(24px,4vw,36px); color:var(--yellow-dark); line-height:1; margin-bottom:6px;">
+							{value}
+						</div>
+						<div style="font-family:'Inter',sans-serif; font-weight:600; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--text-dim);">
+							{label}
+						</div>
+					</div>
+				))
+			}
+		</div>
+	</div>
+
+	<!-- ===== CATEGORY STRIP ===== -->
+	<div class="mb-10">
 		<CategoryCards client:load counts={categoryCounts} />
-	</section>
+	</div>
 
-	<section class="mb-16">
-		<div class="flex justify-between items-center mb-8">
-			<h2 class="hidden lg:block text-2xl font-bold text-gray-900">
-				Articles récents
-			</h2>
+	<!-- ===== ARTICLES SECTION ===== -->
+	<section class="max-w-7xl mx-auto px-6 pb-12">
+		<!-- Section head -->
+		<div class="flex items-center gap-4 mb-8">
+			<span style="color:var(--yellow-dark); font-size:14px;">▶</span>
+			<span
+				style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--text-secondary); white-space:nowrap;"
+				>Articles récents</span
+			>
+			<div style="flex:1; height:2px; background:var(--bg-border);"></div>
 			<a
 				href="/articles"
-				class="text-indigo-600 font-medium hover:text-indigo-800"
+				class="btn btn--secondary"
+				style="font-size:11px; padding:4px 14px;">Voir tout →</a
 			>
-				Voir tous les articles &rarr;
-			</a>
 		</div>
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+		<!-- Grid -->
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 			{
 				recentArticles.map((article: any) => (
 					<ArticleCard client:load article={article} />
@@ -119,7 +318,58 @@ const jsonLd = {
 		</div>
 	</section>
 
-	<div class="mt-8 mb-16">
+	<!-- ===== CODE SNIPPET DECORATION ===== -->
+	<div class="max-w-7xl mx-auto px-6 pb-12">
+		<div
+			style="background:var(--bg-panel); border:3px solid var(--bg-border); border-left:5px solid var(--green-dark); padding:16px 20px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-secondary); position:relative;"
+		>
+			<span
+				style="position:absolute;top:-1px;right:-1px;background:var(--green-dark);color:var(--yellow-light);font-size:9px;letter-spacing:1px;padding:2px 8px;font-family:'Inter',sans-serif;font-weight:700;text-transform:uppercase;"
+				>terraform</span
+			>
+			<span style="color:var(--yellow-dark);">resource</span>
+			<span style="color:var(--yellow-light);"
+				>"aws_ecs_cluster" "production"</span
+			> &#123;<br />
+			&nbsp; <span style="color:var(--green-light);">name</span> = <span
+				style="color:var(--yellow-light);">"cloudnive-prod"</span
+			><br />
+			&nbsp; <span style="color:var(--green-light);"
+				>capacity_providers</span
+			> = [<span style="color:var(--yellow-light);">"FARGATE"</span>, <span
+				style="color:var(--yellow-light);">"FARGATE_SPOT"</span
+			>]<br />
+			&nbsp; <span style="color:var(--text-dim);"
+				># 🎮 +50 XP : Infrastructure scalable débloquée</span
+			><br />
+			&#125;
+		</div>
+	</div>
+
+	<!-- ===== NEWSLETTER ===== -->
+	<section class="max-w-7xl mx-auto px-6 pb-16">
+		<div
+			style="background:var(--bg-surface); border:3px solid var(--green-dark); box-shadow: inset 2px 2px 0 rgba(255,255,255,0.02), 6px 6px 0 rgba(0,0,0,0.4), 0 0 40px rgba(35,114,39,0.12); padding:48px 40px; position:relative; overflow:hidden;"
+		>
+			<!-- Decorative mail icon -->
+			<span
+				style="position:absolute;right:40px;top:50%;transform:translateY(-50%);font-size:120px;opacity:0.04;color:var(--green-light);pointer-events:none;user-select:none;"
+				>✉</span
+			>
+			<NewsletterForm client:load />
+		</div>
+	</section>
+
+	<!-- ===== PAGINATION ===== -->
+	<div class="max-w-7xl mx-auto px-6 pb-16">
 		<Pagination page={page} />
 	</div>
 </Layout>
+
+<style>
+	@keyframes blink {
+		50% {
+			opacity: 0;
+		}
+	}
+</style>

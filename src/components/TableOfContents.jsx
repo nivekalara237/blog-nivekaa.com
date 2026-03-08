@@ -92,8 +92,8 @@ export default function TableOfContents({ content }) {
     return (
         <nav className="sticky top-8">
             <div className="py-4">
-                <h2 className="text-xs font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-4 pb-2 border-b-2 border-gray-200 dark:border-gray-700">
-                    📑 Table des matières
+                <h2 className="text-xs font-bold uppercase tracking-wider mb-4 pb-2 border-b-2" style={{ color: 'var(--text-primary)', borderColor: 'var(--bg-border)', fontFamily: "'Space Grotesk', sans-serif" }}>
+                    <span style={{ color: 'var(--yellow-dark)' }}>//</span> INDEX
                 </h2>
                 <ul className="space-y-1">
                     {headings.map((heading) => (
@@ -103,15 +103,16 @@ export default function TableOfContents({ content }) {
                         >
                             <button
                                 onClick={() => scrollToHeading(heading.id)}
-                                className={`group block w-full text-left pb-1 px-3 rounded-md transition-all duration-200 ${activeId === heading.id
-                                    ? 'text-indigo-600 dark:text-indigo-400 font-semibold bg-indigo-50/50 dark:bg-indigo-900/20'
-                                    : 'text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-50 dark:hover:bg-gray-800/50'
+                                className={`group block w-full text-left py-1.5 px-3 border-l-2 transition-all duration-100 ${activeId === heading.id
+                                        ? 'border-[var(--green-light)] bg-[rgba(81,154,102,0.15)] text-[var(--yellow-light)]'
+                                        : 'border-transparent text-[var(--text-secondary)] hover:bg-[var(--green-light)] hover:text-[var(--yellow-dark)] hover:border-[var(--yellow-dark)]'
                                     }`}
+                                style={{ fontFamily: "'Inter', sans-serif" }}
                             >
                                 <span className={`block relative ${activeId === heading.id
-                                    ? 'before:content-["→"] before:absolute before:-left-4 before:text-indigo-600 dark:before:text-indigo-400 before:font-bold'
-                                    : 'group-hover:before:content-["→"] group-hover:before:absolute group-hover:before:-left-4 group-hover:before:text-gray-400 group-hover:before:opacity-50'
-                                    } ${heading.level > 1 ? 'text-xs' : 'text-sm font-medium'}`}>
+                                    ? 'before:content-[">"] before:absolute before:-left-4 before:text-yellow-light before:font-bold'
+                                    : 'group-hover:before:content-[">"] group-hover:before:absolute group-hover:before:-left-4 group-hover:before:text-yellow-dark'
+                                    } ${heading.level > 1 ? 'text-xs' : 'text-sm font-bold'}`}>
                                     {heading.text}
                                 </span>
                             </button>

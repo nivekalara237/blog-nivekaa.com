@@ -3,7 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 import { api } from "../../lib/api";
 import MarkdownRenderer from "../../components/MarkdownRenderer";
 import TableOfContents from "../../components/TableOfContents";
-import AuthorCard from "../../components/AuthorCard";
+import PublicAuthorCard from "../../components/PublicAuthorCard";
 import AdPanel from "../../components/AdPanel";
 import CoverImage from "../../components/CoverImage";
 import { DEFAULT_AUTHOR } from "../../config/author";
@@ -80,13 +80,14 @@ const jsonLd = {
     type="article"
 >
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-    <div class="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 py-12xxxx">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 py-12">
         <!-- Cover Image or Gradient Fallback -->
         <CoverImage
             client:load
             cover={article.cover}
             title={article.title}
             category={article.category}
+            slug={article.slug}
         />
 
         <!-- Tags (right after image) -->
@@ -95,9 +96,7 @@ const jsonLd = {
                 article.tags && article.tags.length > 0 && (
                     <div class="flex flex-wrap gap-2">
                         {article.tags.map((tag: any) => (
-                            <span class="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded-md text-xs font-medium border border-indigo-100 dark:border-indigo-800">
-                                {tag}
-                            </span>
+                            <span class="game-tag">#{tag}</span>
                         ))}
                     </div>
                 )
@@ -108,7 +107,8 @@ const jsonLd = {
         <div class="max-w-4xl ml-0 mb-10">
             <!-- Title -->
             <h1
-                class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-6 leading-tight"
+                class="mb-6 leading-tight"
+                style="font-family:'Space Grotesk',sans-serif; font-weight:900; font-size:clamp(28px,4vw,48px); letter-spacing:-1px; color:var(--text-primary);"
             >
                 {article.title}
             </h1>
@@ -140,7 +140,7 @@ const jsonLd = {
                 <span>•</span>
                 <span>{readingTime} min read</span>
                 <span>•</span>
-                <span class="text-indigo-600 dark:text-indigo-400 font-medium"
+                <span class="font-medium" style="color:var(--green-light);"
                     >{article.category}</span
                 >
             </div>
@@ -161,12 +161,8 @@ const jsonLd = {
         <div class="lg:flex lg:gap-8">
             <!-- Main Content -->
             <article class="lg:w-3/4">
-                <div
-                    class="bg-white dark:bg-gray-800 rounded-2xl p-8 md:p-12 transition-colors duration-200"
-                >
-                    <div
-                        class="prose prose-lg prose-indigo dark:prose-invert max-w-none"
-                    >
+                <div class="pixel-box p-8 md:p-12 mb-8">
+                    <div class="prose max-w-none">
                         <MarkdownRenderer client:load content={content} />
                     </div>
                 </div>
@@ -183,7 +179,7 @@ const jsonLd = {
                 }
 
                 <!-- Author Card (Always displayed with fallback to default) -->
-                <AuthorCard client:load author={author} />
+                <PublicAuthorCard client:load author={author} />
             </article>
 
             <!-- Sidebar: Table of Contents (hidden on mobile) -->

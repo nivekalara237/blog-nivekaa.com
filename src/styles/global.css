@@ -1,102 +1,260 @@
 @import "tailwindcss";
 
-/* Dark mode will use class-based strategy */
-
+/* Dark mode uses class-based strategy */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ========================================
-   Modern Typography System - Ultra-Moderne (Option 1)
+   GAMING DESIGN SYSTEM — CloudNive
+   Palette: #237227 / #519A66 / #FFAA00 / #FFD786
    ======================================== */
 
-/* Base Typography - Inter for clean, modern reading */
-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-size: 17px;
-    line-height: 1.8;
-    /* Augmenté pour plus d'air */
-    color: #1f2937;
-    font-weight: 400;
-    letter-spacing: 0.01em;
-    /* Légèrement espacé pour modernité */
-    word-spacing: 0.05em;
-    /* Espacement des mots plus généreux */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
+@layer base {
+    :root {
+        /* Color palette */
+        --green-dark: #237227;
+        --green-light: #519A66;
+        --yellow-dark: #FFAA00;
+        --yellow-light: #FFD786;
+
+        /* Surface system — DARK (default) */
+        --bg-deep: #0A0F0A;
+        --bg-surface: #0E1A0E;
+        --bg-panel: #142014;
+        --bg-border: #1E321E;
+
+        /* Text — DARK */
+        --text-primary: #E8F5E8;
+        --text-secondary: #8DB09A;
+        --text-dim: #4A6B52;
+        --text-accent: #FFD786;
+    }
+
+    /* ── Light mode overrides ── */
+    html:not(.dark) {
+        --bg-deep: #F4F9F4;
+        --bg-surface: #FFFFFF;
+        --bg-panel: #EBF5EB;
+        --bg-border: #C8DEC8;
+
+        --text-primary: #0F1A0F;
+        --text-secondary: #3A5A40;
+        --text-dim: #7A9A7A;
+        --text-accent: #FFAA00;
+    }
+
+    /* ── Body base ── */
+    html {
+        color-scheme: dark;
+    }
+
+    html:not(.dark) {
+        color-scheme: light;
+    }
+
+    body {
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+        font-size: 17px;
+        line-height: 1.7;
+        background-color: var(--bg-deep);
+        color: var(--text-primary);
+        font-weight: 400;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+
+
+    /* ── Headings ── */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: 'Space Grotesk', 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+        margin-top: 2rem;
+        margin-bottom: 0.75rem;
+    }
+
+    /* ── Links ── */
+    a {
+        color: inherit;
+    }
 }
 
-.dark body {
-    color: #f3f4f6;
+/* ========================================
+   PIXEL BOX — Minecraft-style border util
+   ======================================== */
+.pixel-box {
+    background: var(--bg-surface);
+    border: 3px solid var(--bg-border);
+    box-shadow:
+        inset 2px 2px 0 rgba(255, 255, 255, 0.04),
+        inset -2px -2px 0 rgba(0, 0, 0, 0.3),
+        4px 4px 0 rgba(0, 0, 0, 0.5);
 }
 
-/* Headings - Space Grotesk for bold, geometric impact */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+.pixel-box--green {
+    border-color: var(--green-dark);
+    box-shadow:
+        inset 2px 2px 0 rgba(255, 255, 255, 0.04),
+        inset -2px -2px 0 rgba(0, 0, 0, 0.3),
+        4px 4px 0 rgba(35, 114, 39, 0.35),
+        0 0 20px rgba(35, 114, 39, 0.15);
+}
+
+.pixel-box--gold {
+    border-color: var(--yellow-dark);
+    box-shadow:
+        inset 2px 2px 0 rgba(255, 255, 255, 0.04),
+        inset -2px -2px 0 rgba(0, 0, 0, 0.3),
+        4px 4px 0 rgba(255, 170, 0, 0.25);
+}
+
+/* ========================================
+   BUTTON SYSTEM
+   ======================================== */
+.btn {
+    font-family: 'Inter', sans-serif;
     font-weight: 700;
-    line-height: 1.15;
-    /* Serré pour les titres - moderne */
-    letter-spacing: -0.03em;
-    /* Négatif pour look condensé */
-    color: #0f172a;
-    margin-top: 2.5rem;
-    /* Plus d'espace avant les titres */
-    margin-bottom: 1rem;
-    /* Espace généreux après */
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 8px 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
+    position: relative;
 }
 
-.dark h1,
-.dark h2,
-.dark h3,
-.dark h4,
-.dark h5,
-.dark h6 {
-    color: #ffffff;
+.btn--primary {
+    background: var(--green-dark);
+    color: var(--yellow-light);
+    border: 3px solid var(--green-light);
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5), 0 0 12px rgba(35, 114, 39, 0.25);
 }
 
-/* Article Content - Optimized for tech-focused reading */
+.btn--primary:hover {
+    background: var(--green-light);
+    color: #0A0F0A;
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5), 0 0 20px rgba(81, 154, 102, 0.35);
+}
+
+.btn--secondary {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 2px solid var(--bg-border);
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.35);
+}
+
+.btn--secondary:hover {
+    color: var(--yellow-light);
+    border-color: var(--yellow-dark);
+    box-shadow: 3px 3px 0 rgba(255, 170, 0, 0.2);
+}
+
+.btn--gold {
+    background: var(--yellow-dark);
+    color: #0A0F0A;
+    border: 3px solid var(--yellow-light);
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5), 0 0 12px rgba(255, 170, 0, 0.25);
+}
+
+.btn--gold:hover {
+    background: var(--yellow-light);
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 215, 134, 0.4);
+}
+
+/* ========================================
+   PIXEL DIVIDER
+   ======================================== */
+.pixel-divider {
+    width: 100%;
+    height: 3px;
+    border: none;
+    background: repeating-linear-gradient(90deg,
+            var(--green-dark) 0, var(--green-dark) 8px,
+            transparent 8px, transparent 16px);
+}
+
+/* ========================================
+   XP BAR
+   ======================================== */
+.xp-bar-track {
+    height: 8px;
+    background: var(--bg-panel);
+    border: 2px solid var(--bg-border);
+    overflow: hidden;
+}
+
+.xp-bar-fill {
+    height: 100%;
+    background: var(--green-dark);
+}
+
+.xp-bar-fill::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(90deg,
+            rgba(255, 255, 255, 0.15) 0, rgba(255, 255, 255, 0.15) 4px,
+            transparent 4px, transparent 8px);
+}
+
+/* ========================================
+   GAMING TAG UTILITY
+   ======================================== */
+.game-tag {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(35, 114, 39, 0.15);
+    border: 1px solid var(--green-dark);
+    color: var(--green-light);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 2px 8px;
+}
+
+.game-tag--gold {
+    background: rgba(255, 170, 0, 0.12);
+    border-color: var(--yellow-dark);
+    color: var(--yellow-light);
+}
+
+/* ========================================
+   PROSE (article content)
+   ======================================== */
 .prose {
     font-family: 'Inter', sans-serif;
     font-size: 17px;
     line-height: 1.8;
-    color: #1f2937;
+    color: var(--text-primary);
     max-width: 68ch;
     letter-spacing: 0.01em;
-    word-spacing: 0.05em;
-}
-
-.dark .prose {
-    color: #e5e7eb;
 }
 
 .prose p {
-    margin-bottom: 1.75em;
-    /* Augmenté pour respiration */
-    font-size: 17px;
-    line-height: 1.8;
-    /* Interligne généreux */
-    font-weight: 400;
-    letter-spacing: 0.01em;
-    word-spacing: 0.05em;
+    margin-bottom: 1.6em;
 }
 
-/* Premiers paragraphes - moins d'espacement en haut */
 .prose p:first-of-type {
     margin-top: 0.75em;
 }
 
 .prose strong {
-    font-weight: 600;
-    color: #111827;
-    letter-spacing: 0;
-}
-
-.dark .prose strong {
-    color: #f9fafb;
+    font-weight: 700;
+    color: var(--yellow-light);
 }
 
 .prose h1,
@@ -106,152 +264,90 @@ h6 {
 .prose h5,
 .prose h6 {
     font-family: 'Space Grotesk', sans-serif;
-    margin-top: 3rem;
-    /* Beaucoup d'espace avant */
-    margin-bottom: 1.25rem;
-    /* Bon espacement après */
+    color: var(--text-primary);
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
     font-weight: 700;
-    letter-spacing: -0.03em;
-    color: #0f172a;
-    line-height: 1.15;
+    letter-spacing: -0.02em;
 }
 
-/* Premier titre - moins d'espace en haut */
 .prose h1:first-child,
 .prose h2:first-child,
 .prose h3:first-child {
     margin-top: 0;
 }
 
-.dark .prose h1,
-.dark .prose h2,
-.dark .prose h3,
-.dark .prose h4,
-.dark .prose h5,
-.dark .prose h6 {
-    color: #ffffff;
-}
-
 .prose h1 {
-    font-size: 2.75rem;
-    /* Légèrement plus grand */
+    font-size: 2.2rem;
     line-height: 1.1;
-    font-weight: 700;
-    letter-spacing: -0.035em;
-    /* Extra serré pour impact */
-    margin-top: 0;
-    margin-bottom: 1.5rem;
 }
 
 .prose h2 {
-    font-size: 2.125rem;
+    font-size: 1.7rem;
     line-height: 1.2;
-    font-weight: 700;
-    letter-spacing: -0.03em;
 }
 
 .prose h3 {
-    font-size: 1.625rem;
+    font-size: 1.35rem;
     line-height: 1.3;
-    font-weight: 700;
-    letter-spacing: -0.02em;
 }
 
 .prose h4 {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     line-height: 1.4;
-    font-weight: 600;
-    letter-spacing: -0.01em;
 }
 
-/* Lists - Enhanced spacing */
 .prose ul,
 .prose ol {
-    margin-top: 1.5em;
-    margin-bottom: 2em;
-    /* Plus d'espace après les listes */
+    margin: 1.25em 0 1.75em;
     padding-left: 1.75em;
     line-height: 1.8;
 }
 
 .prose li {
-    margin-bottom: 0.85em;
-    /* Plus d'espace entre les items */
-    line-height: 1.8;
-    padding-left: 0.5em;
-    /* Espacement entre marker et texte */
+    margin-bottom: 0.7em;
+    padding-left: 0.4em;
 }
 
 .prose li::marker {
-    color: #6366f1;
+    color: var(--green-light);
 }
 
-.dark .prose li::marker {
-    color: #818cf8;
-}
-
-/* Blockquotes - Bold and modern */
 .prose blockquote {
     font-weight: 500;
     font-style: normal;
-    border-left: 5px solid #6366f1;
-    padding-left: 2rem;
-    /* Plus d'espace interne */
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    margin: 2.5rem 0;
-    /* Plus d'espace autour */
-    color: #4b5563;
-    background: rgba(99, 102, 241, 0.05);
-    border-radius: 0 0.5rem 0.5rem 0;
-    line-height: 1.8;
-    letter-spacing: 0.01em;
+    border-left: 5px solid var(--green-dark);
+    padding: 1rem 2rem;
+    margin: 2rem 0;
+    color: var(--text-secondary);
+    background: rgba(35, 114, 39, 0.08);
+    border-radius: 0 2px 2px 0;
 }
 
-.dark .prose blockquote {
-    border-left-color: #818cf8;
-    color: #9ca3af;
-    background: rgba(129, 140, 248, 0.1);
-}
-
-/* Links - Premium hover effects */
 .prose a {
-    color: #6366f1;
+    color: var(--green-light);
     text-decoration: none;
     font-weight: 500;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
+    border-bottom: 1px solid transparent;
+    transition: all 0.15s;
 }
 
 .prose a:hover {
-    color: #4f46e5;
-    border-bottom-color: #6366f1;
+    color: var(--yellow-light);
+    border-bottom-color: var(--yellow-dark);
 }
 
-.dark .prose a {
-    color: #818cf8;
-}
-
-.dark .prose a:hover {
-    color: #a5b4fc;
-    border-bottom-color: #818cf8;
-}
-
-/* Code Blocks - JetBrains Mono for superior code readability */
+/* Code blocks */
 code,
 pre {
-    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    font-family: 'JetBrains Mono', 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
     font-size: 0.875em;
     line-height: 1.6;
-    font-weight: 400;
 }
 
-/* Fix code block horizontal overflow */
 .prose pre {
-    overflow-x: auto !important;
-    max-width: 100% !important;
-    width: 100% !important;
+    overflow-x: auto;
+    max-width: 100%;
 }
 
 .prose pre code {
@@ -260,47 +356,30 @@ pre {
     min-width: 100%;
 }
 
-/* Ensure shiki code blocks respect container width */
 .shiki {
     overflow-x: auto !important;
     max-width: 100% !important;
     padding: 1.5rem !important;
     margin: 0 !important;
-    border: none !important;
-    font-size: 0.9rem !important;
+    font-size: 0.875rem !important;
     line-height: 1.7 !important;
-    border-radius: 0.75rem !important;
-}
-
-/* Shiki generates its own background colors, but we need to ensure proper contrast */
-.shiki[style*="background-color:#fff"] {
-    background-color: #f6f8fa !important;
-}
-
-.dark .shiki[style*="background-color:#fff"] {
-    background-color: #161b22 !important;
+    border-radius: 0 !important;
 }
 
 .shiki code {
     background: transparent !important;
     padding: 0 !important;
-    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace !important;
 }
 
 .shiki .line {
     line-height: 1.7 !important;
 }
 
-/* Style for inline code */
 .prose code:not(pre code) {
-    background-color: rgb(243 244 246) !important;
-    color: rgb(99 102 241) !important;
-    padding: 0.2rem 0.4rem !important;
-    border-radius: 0.25rem !important;
-    font-size: 0.875em !important;
-}
-
-.dark .prose code:not(pre code) {
-    background-color: rgb(55 65 81 / 0.3) !important;
-    color: rgb(165 180 252) !important;
+    background-color: rgba(35, 114, 39, 0.15) !important;
+    color: var(--green-light) !important;
+    padding: 0.15rem 0.4rem !important;
+    border: 1px solid var(--green-dark) !important;
+    font-size: 0.85em !important;
+    border-radius: 0 !important;
 }
