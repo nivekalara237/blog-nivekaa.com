@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
+const navLinks = [
+    { label: 'Accueil', href: '/' },
+    { label: 'Articles', href: '/articles' },
+    { label: 'Catégories', href: '/categories' },
+    { label: 'Contact', href: '/contact' },
+];
+
 export default function MobileMenu() {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -16,43 +23,83 @@ export default function MobileMenu() {
             {/* Backdrop */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 z-40 md:hidden"
+                    className="fixed inset-0 z-40 md:hidden"
+                    style={{ background: 'rgba(0,0,0,0.7)' }}
                     onClick={closeMenu}
                 />
             )}
 
-            {/* Menu Panel */}
+            {/* Slide-in panel */}
             <div
-                className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-800 shadow-2xl z-50 transform transition-transform duration-300 md:hidden ${isOpen ? 'translate-x-0' : 'translate-x-full'
-                    }`}
+                className={`fixed top-0 right-0 h-full w-72 z-50 transform transition-transform duration-200 md:hidden ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+                style={{
+                    background: 'var(--bg-surface)',
+                    borderLeft: '3px solid var(--green-dark)',
+                    boxShadow: '-6px 0 0 rgba(35,114,39,0.2)',
+                }}
             >
                 <div className="p-6">
-                    {/* Close Button */}
-                    <button
-                        onClick={closeMenu}
-                        className="mb-8 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                        aria-label="Close menu"
-                    >
-                        <svg className="w-6 h-6 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-8">
+                        <span
+                            className="text-sm font-black uppercase tracking-widest"
+                            style={{ fontFamily: "'Space Grotesk', sans-serif", color: 'var(--yellow-dark)' }}
+                        >
+                            MENU
+                        </span>
+                        <button
+                            onClick={closeMenu}
+                            className="p-1.5"
+                            style={{
+                                border: '2px solid var(--bg-border)',
+                                color: 'var(--text-secondary)',
+                                background: 'transparent',
+                            }}
+                            aria-label="Close menu"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
 
-                    {/* Navigation Links */}
-                    <nav className="flex flex-col gap-4">
-                        <a href="/" onClick={closeMenu} className="text-lg font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors py-2">
-                            Home
-                        </a>
-                        <a href="/articles" onClick={closeMenu} className="text-lg font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors py-2">
-                            Articles
-                        </a>
-                        <a href="/categories" onClick={closeMenu} className="text-lg font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors py-2">
-                            Categories
-                        </a>
-                        <a href="/contact" onClick={closeMenu} className="text-lg font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors py-2">
-                            Get in Touch
-                        </a>
+                    {/* Divider */}
+                    <div style={{ height: '2px', background: 'var(--bg-border)', marginBottom: '24px' }} />
+
+                    {/* Links */}
+                    <nav className="flex flex-col gap-2">
+                        {navLinks.map(({ label, href }) => (
+                            <a
+                                key={href}
+                                href={href}
+                                onClick={closeMenu}
+                                className="px-4 py-3 font-bold uppercase tracking-widest text-sm no-underline transition-all duration-100"
+                                style={{
+                                    fontFamily: "'Inter', sans-serif",
+                                    color: 'var(--text-secondary)',
+                                    border: '2px solid var(--bg-border)',
+                                    letterSpacing: '1.5px',
+                                }}
+                                onMouseEnter={e => {
+                                    e.currentTarget.style.color = 'var(--yellow-light)';
+                                    e.currentTarget.style.borderColor = 'var(--green-dark)';
+                                    e.currentTarget.style.background = 'rgba(35,114,39,0.15)';
+                                }}
+                                onMouseLeave={e => {
+                                    e.currentTarget.style.color = 'var(--text-secondary)';
+                                    e.currentTarget.style.borderColor = 'var(--bg-border)';
+                                    e.currentTarget.style.background = 'transparent';
+                                }}
+                            >
+                                ▸ {label}
+                            </a>
+                        ))}
                     </nav>
+
+                    {/* Footer tag */}
+                    <div className="mt-8" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'var(--text-dim)' }}>
+                        // Cloud & Infrastructure
+                    </div>
                 </div>
             </div>
         </>

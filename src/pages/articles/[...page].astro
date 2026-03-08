@@ -21,9 +21,14 @@ const { page } = Astro.props as any;
 ---
 
 <Layout title="Articles">
-    <section class="mb-12">
-        <h1 class="text-3xl font-bold text-gray-900 mb-8">Tous les articles</h1>
-
+    <section class="max-w-7xl mx-auto px-6 lg:px-8 py-12 mb-12">
+        <h1
+            class="m-0 mb-8 pb-3"
+            style="font-family:'Space Grotesk',sans-serif; font-weight:900; font-size:clamp(28px,4vw,40px); line-height:1.1; letter-spacing:-1px; color:var(--text-primary); border-bottom:3px solid var(--bg-border);"
+        >
+            Tous les articles
+            <span style="color:var(--yellow-dark);">.log</span>
+        </h1>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {
                 page.data.map((article: any) => (

@@ -31,11 +31,12 @@ const {
         />
     </head>
     <body
-        class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen flex flex-col transition-colors duration-200"
+        class="min-h-screen flex flex-col"
+        style="background-color: var(--bg-deep); color: var(--text-primary);"
     >
         <KindeAuthProvider client:only="react">
             <Header />
-            <main class="flex-grow container mx-auto px-4 py-8">
+            <main class="flex-grow">
                 <slot />
             </main>
             <Footer />

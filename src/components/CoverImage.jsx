@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
  * CoverImage - Component for article cover with elegant error handling
  * Displays gradient fallback when image fails to load
  */
-export default function CoverImage({ cover, title, category }) {
+export default function CoverImage({ cover, title, category, slug }) {
     const [imageError, setImageError] = useState(false);
     const imgRef = useRef(null);
 
@@ -31,34 +31,42 @@ export default function CoverImage({ cover, title, category }) {
 
     const showGradient = !cover || imageError;
 
-    if (showGradient) {
-        // Gradient fallback
-        return (
-            <div className="mb-6 rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 h-64 md:h-80 flex items-center justify-center relative">
-                {/* Decorative circles */}
-                <div className="absolute top-8 right-8 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
-                <div className="absolute bottom-8 left-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+    const getCategorySvg = (cat) => {
+        if (!cat) return 'default';
+        const clean = cat.toLowerCase().replace(/[^a-z0-9/]/g, '');
+        if (clean.includes('cloud') || clean.includes('aws')) return 'cloud';
+        if (clean.includes('terraform') || clean.includes('iac')) return 'terraform';
+        if (clean.includes('docker')) return 'docker';
+        if (clean.includes('kubernetes') || clean.includes('k8s')) return 'kubernetes';
+        if (clean.includes('cicd') || clean.includes('devops')) return 'cicd';
+        if (clean.includes('backend') || clean.includes('java')) return 'backend';
+        if (clean.includes('securite') || clean.includes('security')) return 'securite';
+        if (clean.includes('frontend') || clean.includes('react')) return 'frontend';
+        if (clean.includes('linux')) return 'linux';
+        return 'default';
+    };
 
-                <div className="text-center text-white p-8 relative z-10">
-                    <div className="text-sm font-semibold uppercase tracking-wider mb-2 opacity-90">
-                        {category}
-                    </div>
-                    <div className="text-3xl md:text-4xl font-bold">
-                        {title}
-                    </div>
-                </div>
+    if (showGradient) {
+        // Fallback: render generated SVG
+        return (
+            <div className="mb-8 pixel-box overflow-hidden h-64 md:h-[400px]">
+                <img
+                    src={`/api/cover/${slug}.svg`}
+                    alt={`Default ${category || 'Article'} cover`}
+                    className="w-full h-full object-cover"
+                />
             </div>
         );
     }
 
     // Image loaded successfully
     return (
-        <div className="mb-6 rounded-2xl overflow-hidden shadow-lg">
+        <div className="mb-8 pixel-box overflow-hidden h-64 md:h-[400px]">
             <img
                 ref={imgRef}
                 src={cover}
                 alt={title}
-                className="w-full h-64 md:h-80 object-cover"
+                className="w-full h-full object-cover"
                 onError={handleImageError}
                 loading="eager"
             />

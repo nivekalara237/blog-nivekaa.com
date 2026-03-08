@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CloudNive – Design Mockup (Gaming Style)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap"
+        rel="stylesheet" />
+    <style>
+        /* ============================================
+       DESIGN SYSTEM — CloudNive Gaming Theme
+       ============================================ */
+
+        :root {
+            /* Palette */
+            --green-dark: #237227;
+            --green-light: #519A66;
+            --yellow-dark: #FFAA00;
+            --yellow-light: #FFD786;
+
+            /* Dark Background system */
+            --bg-deep: #0A0F0A;
+            /* deepest dark */
+            --bg-surface: #0E1A0E;
+            /* cards / panels */
+            --bg-panel: #142014;
+            /* slightly lighter panel */
+            --bg-border: #1E321E;
+            /* pixel-style border */
+
+            /* Text */
+            --text-primary: #E8F5E8;
+            --text-secondary: #8DB09A;
+            --text-accent: #FFD786;
+            --text-dim: #4A6B52;
+
+            /* UI accents */
+            --pixel-green: #237227;
+            --neon-green: #4ADE80;
+            --neon-yellow: #FFAA00;
+
+            /* Spacing & radius */
+            --radius-none: 0px;
+            /* pixel-sharp edges */
+            --radius-sm: 2px;
+            --pixel-border: 3px solid var(--bg-border);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ============================================
+       PIXEL / SCANLINE OVERLAY
+       ============================================ */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 0, 0, 0.08) 2px,
+                    rgba(0, 0, 0, 0.08) 4px);
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* ============================================
+       PIXEL BOX UTILITY  (Minecraft-style border)
+       ============================================ */
+        .pixel-box {
+            background: var(--bg-surface);
+            border: 3px solid var(--bg-border);
+            box-shadow:
+                inset 2px 2px 0 rgba(255, 255, 255, 0.04),
+                inset -2px -2px 0 rgba(0, 0, 0, 0.4),
+                4px 4px 0 rgba(0, 0, 0, 0.6);
+            position: relative;
+        }
+
+        .pixel-box--highlight {
+            border-color: var(--green-dark);
+            box-shadow:
+                inset 2px 2px 0 rgba(255, 255, 255, 0.06),
+                inset -2px -2px 0 rgba(0, 0, 0, 0.5),
+                4px 4px 0 rgba(35, 114, 39, 0.4),
+                0 0 16px rgba(35, 114, 39, 0.2);
+        }
+
+        .pixel-box--gold {
+            border-color: var(--yellow-dark);
+            box-shadow:
+                inset 2px 2px 0 rgba(255, 255, 255, 0.06),
+                inset -2px -2px 0 rgba(0, 0, 0, 0.5),
+                4px 4px 0 rgba(255, 170, 0, 0.3),
+                0 0 16px rgba(255, 170, 0, 0.15);
+        }
+
+        /* ============================================
+       TYPOGRAPHY
+       ============================================ */
+        .font-pixel {
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        .font-mono {
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .font-title {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .font-body {
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .text-green-dark {
+            color: var(--green-dark);
+        }
+
+        .text-green-light {
+            color: var(--green-light);
+        }
+
+        .text-yellow-dark {
+            color: var(--yellow-dark);
+        }
+
+        .text-yellow-light {
+            color: var(--yellow-light);
+        }
+
+        .text-dim {
+            color: var(--text-dim);
+        }
+
+        .text-secondary {
+            color: var(--text-secondary);
+        }
+
+        /* ============================================
+       NAVIGATION  —  top bar
+       ============================================ */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg-deep);
+            border-bottom: 3px solid var(--green-dark);
+            box-shadow: 0 4px 0 rgba(35, 114, 39, 0.3);
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navbar__logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .navbar__logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--green-dark);
+            border: 3px solid var(--green-light);
+            box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.6);
+            display: grid;
+            place-items: center;
+            font-size: 16px;
+        }
+
+        .navbar__logo-text {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 14px;
+            color: var(--text-primary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .navbar__logo-text span {
+            color: var(--yellow-dark);
+        }
+
+        .navbar__links {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            list-style: none;
+        }
+
+        .navbar__link {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 6px 14px;
+            border: 2px solid transparent;
+            transition: all 0.1s;
+        }
+
+        .navbar__link:hover,
+        .navbar__link--active {
+            color: var(--yellow-light);
+            border-color: var(--green-dark);
+            background: rgba(35, 114, 39, 0.2);
+        }
+
+        .navbar__actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ============================================
+       BUTTON SYSTEM
+       ============================================ */
+        .btn {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 8px 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.1s;
+            position: relative;
+        }
+
+        .btn--primary {
+            background: var(--green-dark);
+            color: var(--yellow-light);
+            border: 3px solid var(--green-light);
+            box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.6), 0 0 12px rgba(35, 114, 39, 0.3);
+        }
+
+        .btn--primary:hover {
+            background: var(--green-light);
+            color: #0A0F0A;
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.6), 0 0 20px rgba(81, 154, 102, 0.4);
+        }
+
+        .btn--secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 2px solid var(--bg-border);
+            box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        .btn--secondary:hover {
+            color: var(--yellow-light);
+            border-color: var(--yellow-dark);
+            box-shadow: 3px 3px 0 rgba(255, 170, 0, 0.2);
+        }
+
+        .btn--gold {
+            background: var(--yellow-dark);
+            color: #0A0F0A;
+            border: 3px solid var(--yellow-light);
+            box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.6), 0 0 12px rgba(255, 170, 0, 0.3);
+        }
+
+        .btn--gold:hover {
+            background: var(--yellow-light);
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 215, 134, 0.5);
+        }
+
+        /* ============================================
+       LAYOUT WRAPPERS
+       ============================================ */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        section {
+            padding: 60px 0;
+        }
+
+        /* ============================================
+       HERO SECTION
+       ============================================ */
+        .hero {
+            position: relative;
+            padding: 80px 0 60px;
+            overflow: hidden;
+        }
+
+        /* Pixel grid background */
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--bg-border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--bg-border) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.35;
+        }
+
+        /* Corner decorations */
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--green-dark);
+        }
+
+        .hero__inner {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero__badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(35, 114, 39, 0.2);
+            border: 2px solid var(--green-dark);
+            color: var(--green-light);
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            margin-bottom: 20px;
+        }
+
+        .hero__badge::before {
+            content: '▶';
+            color: var(--green-light);
+            font-size: 9px;
+        }
+
+        .hero__title {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: clamp(28px, 4vw, 52px);
+            line-height: 1.1;
+            letter-spacing: -1px;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+
+        .hero__title .accent {
+            color: var(--yellow-dark);
+            display: block;
+        }
+
+        .hero__title .accent2 {
+            color: var(--green-light);
+        }
+
+        .hero__description {
+            font-size: 17px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            max-width: 480px;
+            line-height: 1.7;
+        }
+
+        .hero__cta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* Terminal-style widget */
+        .hero__terminal {
+            background: var(--bg-surface);
+            border: 3px solid var(--bg-border);
+            box-shadow:
+                inset 2px 2px 0 rgba(255, 255, 255, 0.03),
+                8px 8px 0 rgba(0, 0, 0, 0.5),
+                0 0 30px rgba(35, 114, 39, 0.1);
+            overflow: hidden;
+        }
+
+        .terminal__bar {
+            background: var(--bg-panel);
+            border-bottom: 2px solid var(--bg-border);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal__dot {
+            width: 10px;
+            height: 10px;
+            border: 2px solid;
+        }
+
+        .terminal__dot--red {
+            border-color: #FF5F56;
+            background: #FF5F56;
+        }
+
+        .terminal__dot--yellow {
+            border-color: #FFBB2C;
+            background: #FFBB2C;
+        }
+
+        .terminal__dot--green {
+            border-color: var(--green-light);
+            background: var(--green-light);
+        }
+
+        .terminal__title {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-left: 8px;
+        }
+
+        .terminal__body {
+            padding: 20px 20px 24px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        .terminal__line {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .terminal__prompt {
+            color: var(--green-light);
+            flex-shrink: 0;
+        }
+
+        .terminal__cmd {
+            color: var(--text-primary);
+        }
+
+        .terminal__cmd .flag {
+            color: var(--yellow-dark);
+        }
+
+        .terminal__cmd .string {
+            color: var(--yellow-light);
+        }
+
+        .terminal__out {
+            color: var(--text-secondary);
+            padding-left: 24px;
+        }
+
+        .terminal__out .field {
+            color: var(--green-light);
+        }
+
+        .terminal__out .value {
+            color: var(--text-primary);
+        }
+
+        .terminal__cursor {
+            display: inline-block;
+            width: 8px;
+            height: 2px;
+            background: var(--green-light);
+            animation: blink 1.1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* ============================================
+       SECTION HEADERS
+       ============================================ */
+        .section-head {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 36px;
+        }
+
+        .section-head__line {
+            flex: 1;
+            height: 2px;
+            background: var(--bg-border);
+        }
+
+        .section-head__title {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .section-head__icon {
+            color: var(--yellow-dark);
+            font-size: 16px;
+        }
+
+        .section__title {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: clamp(22px, 3vw, 36px);
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .section__subtitle {
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-bottom: 40px;
+        }
+
+        /* ============================================
+       CATEGORY PILLS — Compact horizontal list
+       ============================================ */
+        .category-strip {
+            background: var(--bg-surface);
+            border-top: 3px solid var(--bg-border);
+            border-bottom: 3px solid var(--bg-border);
+            overflow: hidden;
+        }
+
+        .category-strip__inner {
+            display: flex;
+            align-items: stretch;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .category-strip__inner::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-pill {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 18px 28px;
+            border-right: 2px solid var(--bg-border);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.1s;
+            min-width: 120px;
+            flex-shrink: 0;
+        }
+
+        .category-pill:hover,
+        .category-pill--active {
+            background: rgba(35, 114, 39, 0.15);
+        }
+
+        .category-pill__icon {
+            font-size: 22px;
+            line-height: 1;
+        }
+
+        .category-pill__name {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .category-pill:hover .category-pill__name,
+        .category-pill--active .category-pill__name {
+            color: var(--yellow-light);
+        }
+
+        .category-pill__count {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            color: var(--green-light);
+            background: rgba(35, 114, 39, 0.25);
+            padding: 1px 6px;
+            border: 1px solid var(--green-dark);
+        }
+
+        /* ============================================
+       ARTICLE CARDS
+       ============================================ */
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .article-card {
+            background: var(--bg-surface);
+            border: 3px solid var(--bg-border);
+            box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.12s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .article-card:hover {
+            border-color: var(--green-dark);
+            transform: translate(-3px, -3px);
+            box-shadow:
+                7px 7px 0 rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(35, 114, 39, 0.2);
+        }
+
+        .article-card--featured {
+            grid-column: span 2;
+            grid-row: span 2;
+        }
+
+        .article-card__cover {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: var(--bg-panel);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .article-card--featured .article-card__cover {
+            aspect-ratio: 16/10;
+        }
+
+        /* Pixel art placeholder for cover image */
+        .cover-placeholder {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            place-items: center;
+            font-size: 48px;
+            position: relative;
+        }
+
+        .cover-placeholder::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(35, 114, 39, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(35, 114, 39, 0.15) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Category tag on card */
+        .article-card__tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: var(--green-dark);
+            color: var(--yellow-light);
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border: 2px solid var(--green-light);
+            z-index: 2;
+        }
+
+        .article-card__body {
+            padding: 18px 20px 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .article-card__meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .article-card__meta .dot {
+            color: var(--green-dark);
+        }
+
+        .article-card__meta .date {
+            color: var(--text-dim);
+        }
+
+        .article-card__meta .read {
+            color: var(--green-light);
+        }
+
+        .article-card__title {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            line-height: 1.4;
+            color: var(--text-primary);
+            transition: color 0.1s;
+        }
+
+        .article-card--featured .article-card__title {
+            font-size: 20px;
+        }
+
+        .article-card:hover .article-card__title {
+            color: var(--yellow-light);
+        }
+
+        .article-card__excerpt {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .article-card__footer {
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px solid var(--bg-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .article-card__author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .author-avatar {
+            width: 24px;
+            height: 24px;
+            background: var(--green-dark);
+            border: 2px solid var(--green-light);
+            display: grid;
+            place-items: center;
+            font-size: 10px;
+            color: var(--yellow-light);
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .article-card__arrow {
+            color: var(--text-dim);
+            font-size: 12px;
+            transition: all 0.1s;
+        }
+
+        .article-card:hover .article-card__arrow {
+            color: var(--yellow-dark);
+            transform: translateX(4px);
+        }
+
+        /* ============================================
+       STATS COUNTERS ROW
+       ============================================ */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+        }
+
+        .stat-item {
+            background: var(--bg-surface);
+            border: 3px solid var(--bg-border);
+            padding: 28px 24px;
+            position: relative;
+            text-align: center;
+        }
+
+        .stat-item+.stat-item {
+            border-left: none;
+        }
+
+        .stat-item__value {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 36px;
+            color: var(--yellow-dark);
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .stat-item__label {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        .stat-item__icon {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            font-size: 20px;
+            opacity: 0.4;
+        }
+
+        /* ============================================
+       NEWSLETTER FORM
+       ============================================ */
+        .newsletter {
+            background: var(--bg-surface);
+            border: 3px solid var(--green-dark);
+            box-shadow:
+                inset 2px 2px 0 rgba(255, 255, 255, 0.03),
+                6px 6px 0 rgba(0, 0, 0, 0.5),
+                0 0 40px rgba(35, 114, 39, 0.15);
+            padding: 48px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .newsletter::before {
+            content: '✉';
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 120px;
+            opacity: 0.04;
+            color: var(--green-light);
+            pointer-events: none;
+        }
+
+        .newsletter__inner {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: center;
+        }
+
+        .newsletter__title {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 26px;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+
+        .newsletter__title .accent {
+            color: var(--yellow-dark);
+        }
+
+        .newsletter__desc {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .newsletter__form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .input-pixel {
+            background: var(--bg-deep);
+            border: 3px solid var(--bg-border);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            padding: 12px 16px;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.1s;
+            box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .input-pixel::placeholder {
+            color: var(--text-dim);
+        }
+
+        .input-pixel:focus {
+            border-color: var(--green-light);
+        }
+
+        /* ============================================
+       FOOTER
+       ============================================ */
+        .footer {
+            background: var(--bg-surface);
+            border-top: 3px solid var(--bg-border);
+            padding: 40px 0 24px;
+        }
+
+        .footer__inner {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer__brand-title {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 16px;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .footer__brand-title span {
+            color: var(--yellow-dark);
+        }
+
+        .footer__brand-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .footer__col-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .footer__col-title::before {
+            content: '//';
+            color: var(--green-dark);
+        }
+
+        .footer__links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .footer__links a {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.1s;
+        }
+
+        .footer__links a::before {
+            content: '▸';
+            color: var(--green-dark);
+            font-size: 10px;
+        }
+
+        .footer__links a:hover {
+            color: var(--yellow-light);
+        }
+
+        .footer__bottom {
+            border-top: 2px solid var(--bg-border);
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer__copy {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        /* ============================================
+       FLOATING LABELS / TAGS
+       ============================================ */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(35, 114, 39, 0.15);
+            border: 1px solid var(--green-dark);
+            color: var(--green-light);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            padding: 2px 8px;
+        }
+
+        .tag--yellow {
+            background: rgba(255, 170, 0, 0.1);
+            border-color: var(--yellow-dark);
+            color: var(--yellow-light);
+        }
+
+        /* ============================================
+       NOTICE BARS (pixel info panels)
+       ============================================ */
+        .notice {
+            background: rgba(35, 114, 39, 0.1);
+            border: 2px solid var(--green-dark);
+            border-left: 6px solid var(--green-dark);
+            padding: 10px 16px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notice .icon {
+            color: var(--green-light);
+        }
+
+        /* ============================================
+       PIXEL DIVIDER
+       ============================================ */
+        .pixel-divider {
+            width: 100%;
+            height: 3px;
+            background: repeating-linear-gradient(90deg,
+                    var(--green-dark) 0, var(--green-dark) 8px,
+                    transparent 8px, transparent 16px);
+            margin: 0;
+            border: none;
+        }
+
+        /* ============================================
+       XP / LEVEL BAR — Decorative element
+       ============================================ */
+        .xp-bar-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+        }
+
+        .xp-label {
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
+
+        .xp-track {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-panel);
+            border: 2px solid var(--bg-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .xp-fill {
+            height: 100%;
+            background: var(--green-dark);
+            position: relative;
+        }
+
+        .xp-fill::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(90deg,
+                    rgba(255, 255, 255, 0.15) 0, rgba(255, 255, 255, 0.15) 4px,
+                    transparent 4px, transparent 8px);
+        }
+
+        .xp-value {
+            color: var(--yellow-dark);
+            white-space: nowrap;
+        }
+
+        /* ============================================
+       TOOLTIP-STYLE SNIPPET — Code decoration
+       ============================================ */
+        .code-snippet {
+            background: var(--bg-panel);
+            border: 2px solid var(--bg-border);
+            border-left: 4px solid var(--green-dark);
+            padding: 12px 16px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            color: var(--text-secondary);
+            position: relative;
+        }
+
+        .code-snippet__lang {
+            position: absolute;
+            top: -1px;
+            right: -1px;
+            background: var(--green-dark);
+            color: var(--yellow-light);
+            font-size: 9px;
+            letter-spacing: 1px;
+            padding: 2px 7px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-snippet .kw {
+            color: var(--yellow-dark);
+        }
+
+        .code-snippet .fn {
+            color: var(--green-light);
+        }
+
+        .code-snippet .str {
+            color: var(--yellow-light);
+        }
+
+        .code-snippet .cm {
+            color: var(--text-dim);
+        }
+
+        .code-snippet .num {
+            color: #68D391;
+        }
+
+        /* ============================================
+       RESPONSIVE
+       ============================================ */
+        @media (max-width: 1024px) {
+            .hero__inner {
+                grid-template-columns: 1fr;
+            }
+
+            .hero__terminal {
+                display: none;
+            }
+
+            .articles-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .article-card--featured {
+                grid-column: span 2;
+            }
+
+            .newsletter__inner {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .footer__inner {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stat-item+.stat-item {
+                border-left: 3px solid var(--bg-border);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .articles-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .article-card--featured {
+                grid-column: span 1;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .footer__inner {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ====== NAVBAR ====== -->
+    <nav class="navbar">
+        <a href="#" class="navbar__logo">
+            <div class="navbar__logo-icon">☁</div>
+            <div class="navbar__logo-text">Cloud<span>Nive</span></div>
+        </a>
+
+        <ul class="navbar__links">
+            <li><a href="#" class="navbar__link navbar__link--active">Accueil</a></li>
+            <li><a href="#" class="navbar__link">Articles</a></li>
+            <li><a href="#" class="navbar__link">Cloud</a></li>
+            <li><a href="#" class="navbar__link">Infrastructure</a></li>
+            <li><a href="#" class="navbar__link">Dev</a></li>
+            <li><a href="#" class="navbar__link">À propos</a></li>
+        </ul>
+
+        <div class="navbar__actions">
+            <a href="#" class="btn btn--secondary">🔍</a>
+            <a href="#" class="btn btn--primary">Newsletter ▶</a>
+        </div>
+    </nav>
+
+    <!-- ====== HERO ====== -->
+    <div class="hero">
+        <div class="container">
+            <div class="hero__inner">
+                <!-- Left side -->
+                <div>
+                    <div class="hero__badge">Niveau MAX en Cloud & DevOps</div>
+
+                    <h1 class="hero__title">
+                        <span class="accent">CLOUD.NIVEKAA</span>
+                        <span class="accent2">.COM</span>
+                    </h1>
+
+                    <p class="hero__description">
+                        Tutoriels, guides et retours d'expérience sur le Cloud AWS/Azure,
+                        Terraform, Kubernetes, CI/CD et le développement logiciel moderne.
+                        Chaque article = un niveau débloqué.
+                    </p>
+
+                    <div class="hero__cta">
+                        <a href="#" class="btn btn--gold">▶ Explorer les articles</a>
+                        <a href="#" class="btn btn--secondary">// Catégories</a>
+                    </div>
+
+                    <div style="margin-top: 28px;">
+                        <div class="xp-bar-wrap">
+                            <span class="xp-label">XP CLOUD:</span>
+                            <div class="xp-track">
+                                <div class="xp-fill" style="width:78%"></div>
+                            </div>
+                            <span class="xp-value">78 / 100</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right side — Terminal widget -->
+                <div class="hero__terminal">
+                    <div class="terminal__bar">
+                        <div class="terminal__dot terminal__dot--red"></div>
+                        <div class="terminal__dot terminal__dot--yellow"></div>
+                        <div class="terminal__dot terminal__dot--green"></div>
+                        <span class="terminal__title">cloud@nivekaa ~ terraform apply</span>
+                    </div>
+                    <div class="terminal__body">
+                        <div class="terminal__line">
+                            <span class="terminal__prompt">$</span>
+                            <span class="terminal__cmd">terraform <span class="flag">apply</span> <span
+                                    class="string">-auto-approve</span></span>
+                        </div>
+                        <div class="terminal__out">
+                            <span class="field">aws_s3_bucket</span><span class="value">.blog_assets</span>: Creating...
+                        </div>
+                        <div class="terminal__out">
+                            <span class="field">aws_cloudfront_distribution</span><span class="value">.cdn</span>:
+                            Creating...
+                        </div>
+                        <div class="terminal__out" style="color: var(--green-light);">
+                            ✓ Apply complete! Resources: 4 added.
+                        </div>
+                        <br />
+                        <div class="terminal__line">
+                            <span class="terminal__prompt">$</span>
+                            <span class="terminal__cmd">kubectl <span class="flag">get pods</span> <span
+                                    class="string">-n production</span></span>
+                        </div>
+                        <div class="terminal__out">
+                            NAME &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; STATUS<br />
+                            <span style="color:var(--green-light)">blog-api-7d8f9b &nbsp; Running</span><br />
+                            <span style="color:var(--green-light)">blog-cdn-2a1c4e &nbsp; Running</span>
+                        </div>
+                        <br />
+                        <div class="terminal__line">
+                            <span class="terminal__prompt">$</span>
+                            <span class="terminal__cmd" style="color:var(--text-dim)"><span
+                                    class="terminal__cursor"></span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="pixel-divider" />
+
+    <!-- ====== STATS ROW ====== -->
+    <div class="container" style="padding-top: 0; padding-bottom: 0; margin-top: 40px; margin-bottom: 40px;">
+        <div class="stats-row">
+            <div class="stat-item">
+                <span class="stat-item__icon">📄</span>
+                <div class="stat-item__value">48</div>
+                <div class="stat-item__label">Articles publiés</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-item__icon">☁</span>
+                <div class="stat-item__value">12</div>
+                <div class="stat-item__label">Sujets Cloud</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-item__icon">🔧</span>
+                <div class="stat-item__value">9</div>
+                <div class="stat-item__label">Outils couverts</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-item__icon">🚀</span>
+                <div class="stat-item__value">2K+</div>
+                <div class="stat-item__label">Lecteurs / mois</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== CATEGORY STRIP ====== -->
+    <div class="category-strip" style="margin: 0 0 48px 0;">
+        <div class="container" style="padding: 0;">
+            <div class="category-strip__inner">
+                <a href="#" class="category-pill category-pill--active">
+                    <span class="category-pill__icon">🌐</span>
+                    <span class="category-pill__name">Tous</span>
+                    <span class="category-pill__count">48</span>
+                </a>
+                <a href="#" class="category-pill">
+                    <span class="category-pill__icon">☁</span>
+                    <span class="category-pill__name">AWS</span>
+                    <span class="category-pill__count">14</span>
+                </a>
+                <a href="#" class="category-pill">
+                    <span class="category-pill__icon">⚙</span>
+                    <span class="category-pill__name">Terraform</span>
+                    <span class="category-pill__count">9</span>
+                </a>
+                <a href="#" class="category-pill">
+                    <span class="category-pill__icon">🐳</span>
+                    <span class="category-pill__name">Docker</span>
+                    <span class="category-pill__count">7</span>
+                </a>
+                <a href="#" class="category-pill">
+                    <span class="category-pill__icon">☸</span>
+                    <span class="category-pill__name">Kubernetes</span>
+                    <span class="category-pill__count">6</span>
+                </a>
+                <a href="#" class="category-pill">
+                    <span class="category-pill__icon">🔄</span>
+                    <span class="category-pill__name">CI/CD</span>
+                    <span class="category-pill__count">5</span>
+                </a>
+                <a href="#" class="category-pill">
+                    <span class="category-pill__icon">💻</span>
+                    <span class="category-pill__name">Dev Backend</span>
+                    <span class="category-pill__count">7</span>
+                </a>
+                <a href="#" class="category-pill">
+                    <span class="category-pill__icon">🔐</span>
+                    <span class="category-pill__name">Sécurité</span>
+                    <span class="category-pill__count">3</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== ARTICLES SECTION ====== -->
+    <main class="container" style="padding-top: 0;">
+
+        <div class="section-head">
+            <div class="section-head__icon">▶</div>
+            <div class="section-head__title">Articles récents</div>
+            <div class="section-head__line"></div>
+            <a href="#" class="btn btn--secondary" style="padding: 4px 14px; font-size: 11px;">Voir tout →</a>
+        </div>
+
+        <!-- Articles grid — featured + regular cards -->
+        <div class="articles-grid">
+
+            <!-- FEATURED card (span 2x2) -->
+            <a href="#" class="article-card article-card--featured pixel-box pixel-box--highlight">
+                <div class="article-card__cover">
+                    <div class="cover-placeholder"
+                        style="background: linear-gradient(135deg, #0E1A0E 0%, #142014 100%);">
+                        ☁
+                    </div>
+                    <span class="article-card__tag">⭐ À la une</span>
+                </div>
+                <div class="article-card__body">
+                    <div class="article-card__meta">
+                        <span class="read">☁ AWS</span>
+                        <span class="dot">•</span>
+                        <span class="date">2026-03-05</span>
+                        <span class="dot">•</span>
+                        <span>12 min</span>
+                    </div>
+                    <div class="article-card__title">
+                        Déploiement Multi-Région sur AWS avec Terraform et GitOps : Guide Complet
+                    </div>
+                    <div class="article-card__excerpt">
+                        Découvrez comment orchestrer un déploiement production résilient dans plusieurs régions AWS en
+                        utilisant Terraform, GitHub Actions et les principes GitOps pour une infrastructure as code
+                        efficace.
+                    </div>
+                    <div class="article-card__footer">
+                        <div class="article-card__author">
+                            <div class="author-avatar">NK</div>
+                            <span>Nivekaa</span>
+                        </div>
+                        <span class="article-card__arrow">→</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 2 -->
+            <a href="#" class="article-card pixel-box">
+                <div class="article-card__cover">
+                    <div class="cover-placeholder" style="background: #0E1A0E; font-size: 36px;">🐳</div>
+                    <span class="article-card__tag">Docker</span>
+                </div>
+                <div class="article-card__body">
+                    <div class="article-card__meta">
+                        <span class="read">🐳 Docker</span>
+                        <span class="dot">•</span>
+                        <span class="date">2026-02-28</span>
+                    </div>
+                    <div class="article-card__title">Optimiser vos images Docker pour la production</div>
+                    <div class="article-card__excerpt">Multi-stage builds, layer caching et sécurité des images.</div>
+                    <div class="article-card__footer">
+                        <div class="article-card__author">
+                            <div class="author-avatar">NK</div>
+                            <span>Nivekaa</span>
+                        </div>
+                        <span class="article-card__arrow">→</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 3 -->
+            <a href="#" class="article-card pixel-box">
+                <div class="article-card__cover">
+                    <div class="cover-placeholder" style="background: #0E1A0E; font-size: 36px;">⚙</div>
+                    <span class="article-card__tag">Terraform</span>
+                </div>
+                <div class="article-card__body">
+                    <div class="article-card__meta">
+                        <span class="read">⚙ Terraform</span>
+                        <span class="dot">•</span>
+                        <span class="date">2026-02-20</span>
+                    </div>
+                    <div class="article-card__title">Modules Terraform réutilisables : patterns avancés</div>
+                    <div class="article-card__excerpt">Structurer vos modules pour la scalabilité et la maintenabilité.
+                    </div>
+                    <div class="article-card__footer">
+                        <div class="article-card__author">
+                            <div class="author-avatar">NK</div>
+                            <span>Nivekaa</span>
+                        </div>
+                        <span class="article-card__arrow">→</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 4 -->
+            <a href="#" class="article-card pixel-box">
+                <div class="article-card__cover">
+                    <div class="cover-placeholder" style="background: #0E1A0E; font-size: 36px;">☸</div>
+                    <span class="article-card__tag">K8s</span>
+                </div>
+                <div class="article-card__body">
+                    <div class="article-card__meta">
+                        <span class="read">☸ Kubernetes</span>
+                        <span class="dot">•</span>
+                        <span class="date">2026-02-14</span>
+                    </div>
+                    <div class="article-card__title">Kubernetes HPA et scaling automatique en production</div>
+                    <div class="article-card__excerpt">Configurer l'autoscaling horizontal avec des métriques
+                        personnalisées.</div>
+                    <div class="article-card__footer">
+                        <div class="article-card__author">
+                            <div class="author-avatar">NK</div>
+                            <span>Nivekaa</span>
+                        </div>
+                        <span class="article-card__arrow">→</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 5 -->
+            <a href="#" class="article-card pixel-box">
+                <div class="article-card__cover">
+                    <div class="cover-placeholder" style="background: #0E1A0E; font-size: 36px;">🔄</div>
+                    <span class="article-card__tag">CI/CD</span>
+                </div>
+                <div class="article-card__body">
+                    <div class="article-card__meta">
+                        <span class="read">🔄 CI/CD</span>
+                        <span class="dot">•</span>
+                        <span class="date">2026-02-07</span>
+                    </div>
+                    <div class="article-card__title">Pipeline GitHub Actions pour déploiement AWS ECS</div>
+                    <div class="article-card__excerpt">Automatiser build, test et déploiement avec GitHub Actions et
+                        ECR.</div>
+                    <div class="article-card__footer">
+                        <div class="article-card__author">
+                            <div class="author-avatar">NK</div>
+                            <span>Nivekaa</span>
+                        </div>
+                        <span class="article-card__arrow">→</span>
+                    </div>
+                </div>
+            </a>
+
+        </div><!-- /.articles-grid -->
+
+        <!-- Code snippet decoration -->
+        <div style="margin: 48px 0 0 0;">
+            <div class="code-snippet">
+                <div class="code-snippet__lang">terraform</div>
+                <span class="kw">resource</span> <span class="str">"aws_ecs_cluster"</span> <span
+                    class="str">"production"</span> {<br />
+                &nbsp; <span class="fn">name</span> = <span class="str">"cloudnive-prod"</span><br />
+                &nbsp; <span class="fn">capacity_providers</span> = [<span class="str">"FARGATE"</span>, <span
+                    class="str">"FARGATE_SPOT"</span>]<br />
+                &nbsp; <span class="cm"># 🎮 +50 XP : Infrastructure scalable débloquée</span><br />
+                }
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ====== NEWSLETTER ====== -->
+    <section style="padding: 60px 0;">
+        <div class="container">
+            <div class="newsletter">
+                <div class="newsletter__inner">
+                    <div>
+                        <div class="notice" style="margin-bottom: 20px; display: inline-flex;">
+                            <span class="icon">📡</span>
+                            NEW SIGNAL DETECTED — Rejoins la communauté
+                        </div>
+                        <h2 class="newsletter__title">
+                            Garde ton <span class="accent">niveau MAX</span><br />
+                            sur le Cloud & Dev
+                        </h2>
+                        <p class="newsletter__desc">
+                            Reçois les nouveaux articles, tips Terraform, guides AWS et
+                            retours d'expérience directement dans ta boite mail.
+                            Pas de spam. Juste du contenu technique de qualité.
+                        </p>
+                    </div>
+                    <div>
+                        <form class="newsletter__form">
+                            <input type="text" class="input-pixel" placeholder="// Ton prénom" />
+                            <input type="email" class="input-pixel" placeholder="// ton@email.com" />
+                            <button type="submit" class="btn btn--gold"
+                                style="width: 100%; justify-content: center; font-size: 14px;">
+                                ▶ SUBSCRIBE — Rejoindre la guilde
+                            </button>
+                            <p
+                                style="font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-dim); text-align: center;">
+                                // Désabonnement en 1 clic. Respect garanti.
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== FOOTER ====== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__inner">
+                <div>
+                    <div class="footer__brand-title">Cloud<span>Nive</span></div>
+                    <p class="footer__brand-desc">
+                        Blog technique sur le Cloud, l'infrastructure as code
+                        et le développement logiciel moderne.
+                        Un article = un niveau débloqué. 🎮
+                    </p>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <span class="tag">☁ AWS</span>
+                        <span class="tag">⚙ Terraform</span>
+                        <span class="tag">🐳 Docker</span>
+                        <span class="tag tag--yellow">☸ K8s</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="footer__col-title">Navigation</div>
+                    <ul class="footer__links">
+                        <li><a href="#">Accueil</a></li>
+                        <li><a href="#">Articles</a></li>
+                        <li><a href="#">Catégories</a></li>
+                        <li><a href="#">Tags</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="footer__col-title">Sujets</div>
+                    <ul class="footer__links">
+                        <li><a href="#">Cloud AWS</a></li>
+                        <li><a href="#">Terraform</a></li>
+                        <li><a href="#">Kubernetes</a></li>
+                        <li><a href="#">CI/CD</a></li>
+                        <li><a href="#">Sécurité</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="footer__col-title">Liens</div>
+                    <ul class="footer__links">
+                        <li><a href="#">Newsletter</a></li>
+                        <li><a href="#">À propos</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">RSS Feed</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <span class="footer__copy">// © 2026 CloudNive — Mission: partager le savoir</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="xp-bar-wrap" style="gap: 8px;">
+                        <span class="xp-label">SITE XP:</span>
+                        <div class="xp-track" style="width: 80px;">
+                            <div class="xp-fill" style="width: 88%"></div>
+                        </div>
+                        <span class="xp-value">LVL 42</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

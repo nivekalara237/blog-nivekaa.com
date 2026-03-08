@@ -5,38 +5,26 @@ const API_BASE_URL = import.meta.env.PUBLIC_API_URL || 'https://cloudnive-api.ni
 export default function NewsletterForm() {
     const [email, setEmail] = useState('');
     const [honeypot, setHoneypot] = useState('');
-    const [status, setStatus] = useState('idle'); // idle, loading, success, error
+    const [status, setStatus] = useState('idle'); // idle | loading | success | error
     const [message, setMessage] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Honeypot check (should be empty)
-        if (honeypot) {
-            console.warn('Bot detected');
-            return;
-        }
-
+        if (honeypot) return; // bot trap
         if (!email || !email.includes('@')) {
             setStatus('error');
             setMessage('Veuillez entrer une adresse email valide.');
             return;
         }
-
         setStatus('loading');
         setMessage('');
-
         try {
             const response = await fetch(`${API_BASE_URL}/newsletter/subscribe`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, honeypot }),
             });
-
             const data = await response.json();
-
             if (response.ok) {
                 setStatus('success');
                 setMessage(data.message || 'Inscription réussie ! Vérifiez votre email.');
@@ -45,98 +33,133 @@ export default function NewsletterForm() {
                 setStatus('error');
                 setMessage(data.error || 'Une erreur est survenue.');
             }
-        } catch (error) {
-            console.error('Newsletter subscription error:', error);
+        } catch {
             setStatus('error');
             setMessage('Erreur de connexion. Réessayez plus tard.');
         }
     };
 
     return (
-        <div className="max-w-md mx-auto mb-16 relative z-10">
-            <form onSubmit={handleSubmit}>
-                <div
-                    className="relative flex items-center w-full rounded-full bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-700 p-1.5 focus-within:ring-2 focus-within:ring-indigo-100 transition-all"
-                >
-                    {/* Email Icon */}
-                    <div className="grid place-items-center h-full w-12 text-gray-400">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                            />
-                        </svg>
-                    </div>
+        <div id="newsletter" className="w-full">
+            {/* Notice badge */}
+            <div
+                className="inline-flex items-center gap-2 mb-5"
+                style={{
+                    background: 'rgba(35,114,39,0.12)',
+                    border: '2px solid var(--green-dark)',
+                    borderLeft: '6px solid var(--green-dark)',
+                    padding: '8px 16px',
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: '11px',
+                    color: 'var(--text-secondary)',
+                }}
+            >
+                <span style={{ color: 'var(--green-light)' }}>📡</span>
+                NEW SIGNAL DETECTED — Rejoins la communauté
+            </div>
 
-                    {/* Email Input */}
-                    <input
-                        className="peer h-full w-full outline-none text-sm text-gray-700 dark:text-gray-200 bg-transparent pr-2 placeholder-gray-400"
-                        type="email"
-                        id="newsletter-email"
-                        name="email"
-                        placeholder="Entrez votre adresse email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        disabled={status === 'loading'}
-                        required
-                    />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                {/* Left: copy */}
+                <div>
+                    <h2
+                        className="m-0 mb-3 leading-tight"
+                        style={{
+                            fontFamily: "'Space Grotesk', sans-serif",
+                            fontWeight: 900,
+                            fontSize: 'clamp(20px, 3vw, 28px)',
+                            color: 'var(--text-primary)',
+                        }}
+                    >
+                        Garde ton{' '}
+                        <span style={{ color: 'var(--yellow-dark)' }}>niveau MAX</span>
+                        <br />sur le Cloud & Dev
+                    </h2>
+                    <p className="m-0 text-sm"
+                        style={{ color: 'var(--text-secondary)', fontFamily: "'Inter', sans-serif", lineHeight: 1.7, fontSize: '14px' }}
+                    >
+                        Reçois les nouveaux articles, tips Terraform, guides AWS et retours d'expérience directement dans ta boite mail.
+                        Pas de spam. Juste du contenu technique de qualité.
+                    </p>
+                </div>
 
-                    {/* Honeypot - Hidden from users, visible to bots */}
+                {/* Right: form */}
+                <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+                    {/* Hidden honeypot */}
                     <input
                         type="text"
                         name="website"
                         value={honeypot}
-                        onChange={(e) => setHoneypot(e.target.value)}
+                        onChange={e => setHoneypot(e.target.value)}
                         style={{ position: 'absolute', left: '-9999px', opacity: 0 }}
                         tabIndex={-1}
                         autoComplete="off"
                         aria-hidden="true"
                     />
 
-                    {/* Submit Button */}
+                    <input
+                        type="email"
+                        id="newsletter-email"
+                        name="email"
+                        placeholder="// ton@email.com"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                        disabled={status === 'loading'}
+                        required
+                        className="w-full outline-none"
+                        style={{
+                            background: 'var(--bg-deep)',
+                            border: '3px solid var(--bg-border)',
+                            color: 'var(--text-primary)',
+                            fontFamily: "'JetBrains Mono', monospace",
+                            fontSize: '13px',
+                            padding: '12px 16px',
+                            boxShadow: 'inset 2px 2px 0 rgba(0,0,0,0.25)',
+                            transition: 'border-color 0.1s',
+                        }}
+                        onFocus={e => { e.target.style.borderColor = 'var(--green-light)'; }}
+                        onBlur={e => { e.target.style.borderColor = 'var(--bg-border)'; }}
+                    />
+
                     <button
                         type="submit"
                         disabled={status === 'loading'}
-                        className="flex items-center justify-center px-6 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition-all hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="btn btn--gold w-full justify-center"
+                        style={{ fontSize: '13px', opacity: status === 'loading' ? 0.6 : 1 }}
                     >
                         {status === 'loading' ? (
-                            <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                            </svg>
+                            <span>⟳ Envoi...</span>
                         ) : (
-                            'Rejoindre'
+                            <span>▶ SUBSCRIBE — Rejoindre la guilde</span>
                         )}
                     </button>
-                </div>
-            </form>
 
-            {/* Status Message */}
-            {message && (
-                <p className={`mt-3 text-sm text-center ${status === 'success'
-                        ? 'text-green-600 dark:text-green-400'
-                        : status === 'error'
-                            ? 'text-red-600 dark:text-red-400'
-                            : 'text-gray-400'
-                    }`}>
-                    {message}
-                </p>
-            )}
+                    {/* Status message */}
+                    {message && (
+                        <p
+                            className="text-center text-xs m-0"
+                            style={{
+                                fontFamily: "'JetBrains Mono', monospace",
+                                color: status === 'success'
+                                    ? 'var(--green-light)'
+                                    : status === 'error'
+                                        ? '#F87171'
+                                        : 'var(--text-secondary)',
+                            }}
+                        >
+                            {status === 'success' ? '✓ ' : '✗ '}{message}
+                        </p>
+                    )}
 
-            {/* Default helper text */}
-            {!message && (
-                <p className="mt-3 text-xs text-center text-gray-400 dark:text-gray-500">
-                    Rejoignez 10,000+ développeurs. Désinscription à tout moment.
-                </p>
-            )}
+                    {!message && (
+                        <p
+                            className="text-center m-0"
+                            style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: 'var(--text-dim)' }}
+                        >
+                            // Désabonnement en 1 clic. Respect garanti.
+                        </p>
+                    )}
+                </form>
+            </div>
         </div>
     );
 }
