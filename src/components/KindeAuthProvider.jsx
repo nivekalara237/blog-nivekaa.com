@@ -2,6 +2,13 @@ import React from 'react';
 import { KindeProvider } from "@kinde-oss/kinde-auth-react";
 
 export default function KindeAuthProvider({ children }) {
+    const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+
+    if (!currentPath.includes("/admin/")) {
+      return <>
+        {children}
+      </>;
+    }
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
     return (
         <KindeProvider

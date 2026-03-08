@@ -4,7 +4,16 @@ on:
   push:
     branches:
       - main
+      - feature/**
   workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environnement to deploy"
+        required: false
+        type: choice
+        options:
+          - dev
+          - prod
 
 permissions:
   contents: read
@@ -30,14 +39,23 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Build Project
+      - name: Build dev project
+        if: inputs.environment == null || inputs.environment == 'dev'
         run: npm run build
         env:
-          PUBLIC_KINDE_CLIENT_ID: ${{ secrets.KINDE_CLIENT_ID }}
-          PUBLIC_KINDE_DOMAIN: ${{ vars.KINDE_DOMAIN }}
-          # On peut aussi ajouter d'autres variables si nécessaire
-          PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
-          PUBLIC_IMAGE_URL: ${{ vars.PUBLIC_IMAGE_URL }}
+          PUBLIC_KINDE_CLIENT_ID: ${{ secrets.KINDE_DEV_CLIENT_ID }}
+          PUBLIC_KINDE_DOMAIN: ${{ vars.KINDE_DEV_DOMAIN }}
+          PUBLIC_API_URL: 'https://cloudnive-api-dev.nivekaa.com'
+          PUBLIC_IMAGE_URL: 'https://cloudnive-api-dev.nivekaa.com/images'
+
+      - name: Build prod project
+        if: inputs.environment == 'prod'
+        run: npm run build
+        env:
+          PUBLIC_KINDE_CLIENT_ID: ${{ secrets.KINDE_PROD_CLIENT_ID }}
+          PUBLIC_KINDE_DOMAIN: ${{ vars.KINDE_PROD_DOMAIN }}
+          PUBLIC_API_URL: 'https://cloudnive-api.nivekaa.com'
+          PUBLIC_IMAGE_URL: 'https://cloudnive-api.nivekaa.com/images'
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
@@ -69,6 +87,6 @@ jobs:
           output-env-credentials: true
 
       - name: Deploy to S3
-        run: aws s3 sync dist/ s3://${{ vars.AWS_S3_BUCKET }} --delete --cache-control "public, max-age=31536000, immutable"
+        run: aws s3 sync dist/ s3://${{ vars.AWS_S3_BUCKET }} --delete --cache-control "public, max-age=60, immutable"
         env:
           AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET }}

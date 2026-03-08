@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import ArticleCard from "../components/ArticleCard.jsx";
 import CategoryCards from "../components/CategoryCards.jsx";
+import NewsletterForm from "../components/NewsletterForm.jsx";
 import Pagination from "../components/Pagination.astro";
 import { api } from "../lib/api";
 import { getCategories } from "../utils/api.js";
@@ -77,9 +78,6 @@ const jsonLd = {
 	description="Expertise technique sur le Cloud, le DevOps, et le Développement Web. Tutoriels, articles de fond et partage d'expérience."
 >
 	<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-	<section class="mb-12">
-		<CategoryCards client:load counts={categoryCounts} />
-	</section>
 
 	<section class="mb-12 text-center">
 		<h1 class="text-4xl font-extrabold text-gray-900 mb-4">
@@ -93,51 +91,18 @@ const jsonLd = {
 		</p>
 
 		<!-- Newsletter Section -->
-		<div class="max-w-md mx-auto mb-16 relative z-10">
-			<div
-				class="relative flex items-center w-full rounded-full bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-700 p-1.5 focus-within:ring-2 focus-within:ring-indigo-100 transition-all"
-			>
-				<div class="grid place-items-center h-full w-12 text-gray-400">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						class="h-5 w-5"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-						></path>
-					</svg>
-				</div>
+		<NewsletterForm client:load />
+	</section>
 
-				<input
-					class="peer h-full w-full outline-none text-sm text-gray-700 dark:text-gray-200 bg-transparent pr-2 placeholder-gray-400"
-					type="email"
-					id="email"
-					placeholder="Enter your email address"
-				/>
-
-				<button
-					class="flex items-center justify-center px-6 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition-all hover:shadow-lg hover:-translate-y-0.5"
-				>
-					Join
-				</button>
-			</div>
-			<p
-				class="mt-3 text-xs text-center text-gray-400 dark:text-gray-500"
-			>
-				Join 10,000+ developers. Unsubscribe anytime.
-			</p>
-		</div>
+	<section class="mb-6">
+		<CategoryCards client:load counts={categoryCounts} />
 	</section>
 
 	<section class="mb-16">
 		<div class="flex justify-between items-center mb-8">
-			<h2 class="text-2xl font-bold text-gray-900">Articles récents</h2>
+			<h2 class="hidden lg:block text-2xl font-bold text-gray-900">
+				Articles récents
+			</h2>
 			<a
 				href="/articles"
 				class="text-indigo-600 font-medium hover:text-indigo-800"

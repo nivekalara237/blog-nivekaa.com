@@ -28,13 +28,23 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Build Project
+      - name: Build Project For DEV
+        if: github.event.client_payload.environment == 'dev' || github.event.client_payload.environment == null
         run: npm run build
         env:
-          PUBLIC_KINDE_CLIENT_ID: ${{ secrets.KINDE_CLIENT_ID }}
-          PUBLIC_KINDE_DOMAIN: ${{ vars.KINDE_DOMAIN }}
-          PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
-          PUBLIC_IMAGE_URL: ${{ vars.PUBLIC_IMAGE_URL }}
+          PUBLIC_KINDE_CLIENT_ID: ${{ secrets.KINDE_DEV_CLIENT_ID }}
+          PUBLIC_KINDE_DOMAIN: ${{ vars.KINDE_DEV_DOMAIN }}
+          PUBLIC_API_URL: ${{ github.event.client_payload.api_url }}
+          PUBLIC_IMAGE_URL: ${{ github.event.client_payload.image_api_url }}
+
+      - name: Build Project For PROD
+        if: github.event.client_payload.environment == 'prod'
+        run: npm run build
+        env:
+          PUBLIC_KINDE_CLIENT_ID: ${{ secrets.KINDE_PROD_CLIENT_ID }}
+          PUBLIC_KINDE_DOMAIN: ${{ vars.KINDE_PROD_DOMAIN }}
+          PUBLIC_API_URL: ${{ github.event.client_payload.api_url }}
+          PUBLIC_IMAGE_URL: ${{ github.event.client_payload.image_api_url }}
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
@@ -65,6 +75,6 @@ jobs:
           output-env-credentials: true
 
       - name: Redeploy to S3
-        run: aws s3 sync dist/ s3://${{ vars.AWS_S3_BUCKET }} --delete --cache-control "public, max-age=31536000, immutable"
+        run: aws s3 sync dist/ s3://${{ vars.AWS_S3_BUCKET }} --delete --cache-control "public, max-age=60, immutable"
         env:
           AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET }}
