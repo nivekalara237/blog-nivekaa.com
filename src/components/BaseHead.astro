@@ -52,6 +52,11 @@ const {
     rel="stylesheet"
 />
 
+<!-- Cloudflare Turnstile -->
+<link rel="preconnect" href="https://challenges.cloudflare.com" />
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer
+></script>
+
 <script is:inline>
     // Dark mode — DEFAULT is DARK unless user explicitly chose light
     const savedTheme = localStorage.getItem("theme");

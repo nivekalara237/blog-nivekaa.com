@@ -1,88 +1,104 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import ContactForm from "../components/ContactForm.jsx";
 ---
 
-<Layout title="Contact - MyBlog">
-  <section class="max-w-2xl mx-auto px-6 py-12">
-    <div class="mb-12 text-center">
+<Layout
+  title="Contact - CloudNive Blog"
+  description="Contactez-nous pour toute question, collaboration ou retour d'expérience sur le Cloud et le DevOps."
+>
+  <main class="max-w-4xl mx-auto px-6 py-16">
+    <div class="text-center mb-12">
+      <div
+        class="inline-block px-3 py-1 mb-4 text-[10px] font-bold uppercase tracking-[0.2em]"
+        style="background: rgba(var(--yellow-dark-rgb), 0.1); border: 1px solid var(--yellow-dark); color: var(--yellow-light);"
+      >
+        Communication Channel
+      </div>
       <h1
-        class="text-4xl md:text-5xl font-black mb-4 uppercase tracking-tight"
-        style="font-family: 'Space Grotesk', sans-serif; color: var(--text-primary);"
+        class="text-4xl md:text-5xl font-black mb-4 uppercase italic"
+        style="font-family: 'Space Grotesk', sans-serif; letter-spacing: -1px; background: linear-gradient(to right, var(--text-primary), var(--text-dim)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"
       >
-        <span style="color: var(--yellow-dark);">//</span> Contactez-nous
+        Contact <span
+          style="color: var(--yellow-dark); -webkit-text-fill-color: var(--yellow-dark);"
+          >_</span
+        >
       </h1>
-
       <p
-        class="text-lg"
-        style="font-family: 'Inter', sans-serif; color: var(--text-secondary);"
+        class="text-[var(--text-secondary)] max-w-xl mx-auto leading-relaxed"
+        style="font-family: 'Inter', sans-serif;"
       >
-        Une question ? Une suggestion ? N'hésitez pas à nous envoyer un message.
+        Envoyez-nous un message. Notre équipe technique vous répondra dans les
+        plus brefs délais via une connexion sécurisée.
       </p>
     </div>
 
-    <form
-      class="pixel-box p-8 md:p-10 space-y-6"
-      style="background: var(--bg-panel);"
-    >
-      <div>
-        <label
-          for="name"
-          class="block text-sm font-bold mb-2 uppercase tracking-wider"
-          style="font-family: 'JetBrains Mono', monospace; color: var(--green-light);"
-          >Nom</label
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <!-- Info Sidebar -->
+      <div class="lg:col-span-1 space-y-8">
+        <div class="pixel-box p-6" style="background: var(--bg-surface);">
+          <h3
+            class="text-xs font-black uppercase mb-4 tracking-widest text-[var(--yellow-dark)]"
+            style="font-family: 'JetBrains Mono', monospace;"
+          >
+            // Direct Access
+          </h3>
+          <div class="space-y-4">
+            <a
+              href="mailto:contact@nivekaa.com"
+              class="group flex items-center gap-3 text-sm hover:text-[var(--yellow-dark)] transition-colors"
+            >
+              <span
+                class="w-8 h-8 flex items-center justify-center border border-[var(--bg-border)] group-hover:border-[var(--yellow-dark)] transition-colors"
+                >✉</span
+              >
+              <span>contact@nivekaa.com</span>
+            </a>
+            <div class="flex items-center gap-3 text-sm text-[var(--text-dim)]">
+              <span
+                class="w-8 h-8 flex items-center justify-center border border-[var(--bg-border)]"
+                >🌍</span
+              >
+              <span>Remote First / Paris, FR</span>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="pixel-box p-6 hidden"
+          style="background: var(--bg-surface);"
         >
-        <input
-          type="text"
-          id="name"
-          name="name"
-          class="w-full px-4 py-3 bg-[var(--bg-deep)] text-[var(--text-primary)] border-2 border-[var(--bg-border)] focus:border-[var(--green-light)] focus:ring-0 outline-none transition-colors"
-          style="font-family: 'Inter', sans-serif;"
-          placeholder="Votre nom"
-        />
+          <h3
+            class="text-xs font-black uppercase mb-4 tracking-widest text-[var(--green-light)]"
+            style="font-family: 'JetBrains Mono', monospace;"
+          >
+            // System Status
+          </h3>
+          <div class="space-y-3">
+            <div
+              class="flex items-center justify-between text-[10px] uppercase font-bold"
+            >
+              <span class="text-[var(--text-dim)]">Server</span>
+              <span class="text-[var(--green-light)]">Bf-109 / Online</span>
+            </div>
+            <div class="w-full h-1 bg-[var(--bg-deep)]">
+              <div class="h-full bg-[var(--green-dark)]" style="width: 100%;">
+              </div>
+            </div>
+            <div
+              class="flex items-center justify-between text-[10px] uppercase font-bold"
+            >
+              <span class="text-[var(--text-dim)]">Uptime</span>
+              <span class="text-[var(--green-light)]">99.99%</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div>
-        <label
-          for="email"
-          class="block text-sm font-bold mb-2 uppercase tracking-wider"
-          style="font-family: 'JetBrains Mono', monospace; color: var(--green-light);"
-          >Email</label
-        >
-        <input
-          type="email"
-          id="email"
-          name="email"
-          class="w-full px-4 py-3 bg-[var(--bg-deep)] text-[var(--text-primary)] border-2 border-[var(--bg-border)] focus:border-[var(--green-light)] focus:ring-0 outline-none transition-colors"
-          style="font-family: 'Inter', sans-serif;"
-          placeholder="votre@email.com"
-        />
+      <!-- Contact Form -->
+      <div class="lg:col-span-2">
+        <ContactForm client:load />
       </div>
-
-      <div>
-        <label
-          for="message"
-          class="block text-sm font-bold mb-2 uppercase tracking-wider"
-          style="font-family: 'JetBrains Mono', monospace; color: var(--green-light);"
-          >Message</label
-        >
-        <textarea
-          id="message"
-          name="message"
-          rows="5"
-          class="w-full px-4 py-3 bg-[var(--bg-deep)] text-[var(--text-primary)] border-2 border-[var(--bg-border)] focus:border-[var(--green-light)] focus:ring-0 outline-none transition-colors"
-          style="font-family: 'Inter', sans-serif; resize: vertical;"
-          placeholder="Votre message..."></textarea>
-      </div>
-
-      <button
-        type="submit"
-        class="w-full py-4 font-black uppercase tracking-widest transition-all duration-200"
-        style="font-family: 'Space Grotesk', sans-serif; background: var(--yellow-dark); color: #0A0F0A; border: 2px solid #FFAA00;"
-        onmouseover="this.style.background='var(--yellow-light)'; this.style.transform='translate(-2px, -2px)'; this.style.boxShadow='4px 4px 0 rgba(255,170,0,0.3)';"
-        onmouseout="this.style.background='var(--yellow-dark)'; this.style.transform='translate(0,0)'; this.style.boxShadow='none';"
-      >
-        Envoyer le message
-      </button>
-    </form>
-  </section>
+    </div>
+  </main>
 </Layout>

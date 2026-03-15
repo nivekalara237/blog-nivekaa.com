@@ -48,15 +48,13 @@ import AuthButtons from "./AuthButtons.jsx";
         </ul>
 
         <!-- Right actions -->
-        <div class="flex items-center gap-3">
-            <div class="hidden md:block">
-                <DarkModeToggle client:load />
-            </div>
+        <div class="flex items-center gap-2 md:gap-3">
+            <DarkModeToggle client:load />
 
             <a
                 href="#newsletter"
-                class="hidden md:inline-flex btn btn--primary text-xs"
-                style="font-size: 11px; padding: 7px 16px;"
+                class="inline-flex btn btn--primary"
+                style="font-size: 9px; padding: 5px 10px;"
             >
                 ▶ Newsletter
             </a>
@@ -64,12 +62,12 @@ import AuthButtons from "./AuthButtons.jsx";
             <!-- Mobile menu button -->
             <button
                 id="mobile-menu-button"
-                class="md:hidden p-2 transition-colors"
-                style="border: 2px solid var(--bg-border); color: var(--text-secondary); background: transparent;"
+                class="md:hidden p-2 transition-colors flex items-center justify-center cursor-pointer"
+                style="border: 2px solid var(--bg-border); color: var(--yellow-dark); background: transparent; height: 38px; width: 38px; position: relative; z-index: 60;"
                 aria-label="Open menu"
             >
                 <svg
-                    class="w-5 h-5"
+                    class="w-6 h-6"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -96,12 +94,26 @@ import AuthButtons from "./AuthButtons.jsx";
     }
 </style>
 
-<script>
-    const button = document.getElementById("mobile-menu-button");
-    if (button) {
-        button.addEventListener("click", () => {
-            const event = new CustomEvent("toggle-mobile-menu");
-            window.dispatchEvent(event);
-        });
-    }
+<script is:inline>
+    // Use a more robust approach that works with MPAs and potential re-renders
+    const setupMenu = () => {
+        const button = document.getElementById("mobile-menu-button");
+        if (button) {
+            // Remove existing to avoid double listeners
+            const newButton = button.cloneNode(true);
+            button.parentNode.replaceChild(newButton, button);
+            
+            newButton.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.dispatchEvent(new CustomEvent("toggle-mobile-menu"));
+            });
+        }
+    };
+
+    // Run immediately
+    setupMenu();
+    
+    // Also run on DOMContentLoaded to be sure
+    document.addEventListener('DOMContentLoaded', setupMenu);
 </script>

@@ -34,7 +34,7 @@ const {
         class="min-h-screen flex flex-col"
         style="background-color: var(--bg-deep); color: var(--text-primary);"
     >
-        <KindeAuthProvider client:only="react">
+        <KindeAuthProvider client:load>
             <Header />
             <main class="flex-grow">
                 <slot />
