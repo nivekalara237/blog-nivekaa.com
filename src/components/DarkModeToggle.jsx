@@ -50,7 +50,7 @@ export default function DarkModeToggle() {
             aria-label="Toggle dark mode"
         >
             <span style={{ fontSize: '14px' }}>{isDark ? '☀' : '🌙'}</span>
-            <span>{isDark ? 'LIGHT' : 'DARK'}</span>
+            <span className="hidden md:inline">{isDark ? 'LIGHT' : 'DARK'}</span>
         </button>
     );
 }

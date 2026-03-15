@@ -47,6 +47,7 @@ jobs:
           PUBLIC_KINDE_DOMAIN: ${{ vars.KINDE_DEV_DOMAIN }}
           PUBLIC_API_URL: 'https://cloudnive-api-dev.nivekaa.com'
           PUBLIC_IMAGE_URL: 'https://cloudnive-api-dev.nivekaa.com/images'
+          PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.TURNSTILE_SITE_KEY }}
 
       - name: Build prod project
         if: inputs.environment == 'prod'
@@ -56,6 +57,7 @@ jobs:
           PUBLIC_KINDE_DOMAIN: ${{ vars.KINDE_PROD_DOMAIN }}
           PUBLIC_API_URL: 'https://cloudnive-api.nivekaa.com'
           PUBLIC_IMAGE_URL: 'https://cloudnive-api.nivekaa.com/images'
+          PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.TURNSTILE_SITE_KEY }}
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4

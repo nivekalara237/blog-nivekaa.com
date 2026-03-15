@@ -23,4 +23,12 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
+
+  server: {
+    headers: {
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      // 'Content-Security-Policy': "default-src 'self'; script-src 'self';"
+    }
+  }
 });

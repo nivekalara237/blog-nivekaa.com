@@ -36,6 +36,7 @@ jobs:
           PUBLIC_KINDE_DOMAIN: ${{ vars.KINDE_DEV_DOMAIN }}
           PUBLIC_API_URL: ${{ github.event.client_payload.api_url }}
           PUBLIC_IMAGE_URL: ${{ github.event.client_payload.image_api_url }}
+          PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.TURNSTILE_SITE_KEY }}
 
       - name: Build Project For PROD
         if: github.event.client_payload.environment == 'prod'
@@ -45,6 +46,7 @@ jobs:
           PUBLIC_KINDE_DOMAIN: ${{ vars.KINDE_PROD_DOMAIN }}
           PUBLIC_API_URL: ${{ github.event.client_payload.api_url }}
           PUBLIC_IMAGE_URL: ${{ github.event.client_payload.image_api_url }}
+          PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.TURNSTILE_SITE_KEY }}
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4

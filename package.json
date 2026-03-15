@@ -9,6 +9,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/check": "^0.9.6",
     "@astrojs/react": "^4.4.2",
     "@astrojs/sitemap": "^3.7.0",
     "@kinde-oss/kinde-auth-react": "^5.10.1",
@@ -25,7 +26,8 @@
     "rehype-sanitize": "^6.0.0",
     "remark-gfm": "^4.0.1",
     "shiki": "^3.15.0",
-    "tailwindcss": "^4.1.17"
+    "tailwindcss": "^4.1.17",
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
     "baseline-browser-mapping": "^2.9.19"

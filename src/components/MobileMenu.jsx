@@ -11,7 +11,10 @@ export default function MobileMenu() {
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
-        const handleToggle = () => setIsOpen(prev => !prev);
+        const handleToggle = () => {
+            console.log('MobileMenu: Toggle event received');
+            setIsOpen(prev => !prev);
+        };
         window.addEventListener('toggle-mobile-menu', handleToggle);
         return () => window.removeEventListener('toggle-mobile-menu', handleToggle);
     }, []);
@@ -50,6 +53,7 @@ export default function MobileMenu() {
                         <button
                             onClick={closeMenu}
                             className="p-1.5"
+                            type='button'
                             style={{
                                 border: '2px solid var(--bg-border)',
                                 color: 'var(--text-secondary)',
