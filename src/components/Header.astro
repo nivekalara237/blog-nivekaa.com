@@ -1,7 +1,12 @@
 ---
 import DarkModeToggle from "./DarkModeToggle.jsx";
 import MobileMenu from "./MobileMenu.jsx";
-import AuthButtons from "./AuthButtons.jsx";
+import LanguageSwitcher from "./LanguageSwitcher.astro";
+import { getLangFromUrl, useTranslations, useTranslatedPath } from "../i18n/utils";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
 ---
 
 <header
@@ -29,14 +34,14 @@ import AuthButtons from "./AuthButtons.jsx";
         <ul class="hidden md:flex items-center gap-1 list-none m-0 p-0">
             {
                 [
-                    { label: "Accueil", href: "/" },
-                    { label: "Articles", href: "/articles" },
-                    { label: "Catégories", href: "/categories" },
-                    { label: "Contact", href: "/contact" },
+                    { label: t('nav.home'), href: "/" },
+                    { label: t('nav.articles'), href: "/articles" },
+                    { label: t('nav.categories'), href: "/categories" },
+                    { label: t('nav.contact'), href: "/contact" },
                 ].map(({ label, href }) => (
                     <li>
                         <a
-                            href={href}
+                            href={translatePath(href)}
                             class="px-3 py-1.5 text-xs font-bold uppercase tracking-widest no-underline transition-all duration-100 nav-link"
                             style="font-family: 'Inter', sans-serif; color: var(--text-secondary); border: 2px solid transparent; letter-spacing: 1.5px;"
                         >
@@ -49,14 +54,15 @@ import AuthButtons from "./AuthButtons.jsx";
 
         <!-- Right actions -->
         <div class="flex items-center gap-2 md:gap-3">
+            <LanguageSwitcher />
             <DarkModeToggle client:load />
 
             <a
                 href="#newsletter"
-                class="inline-flex btn btn--primary"
+                class="hidden sm:inline-flex btn btn--primary"
                 style="font-size: 9px; padding: 5px 10px;"
             >
-                ▶ Newsletter
+                ▶ {t('nav.newsletter')}
             </a>
 
             <!-- Mobile menu button -->

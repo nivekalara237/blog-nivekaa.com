@@ -27,20 +27,26 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
             fetchAuthorData();
         }
     }, [isLoading, user]);
-    const [title, setTitle] = useState('');
+    // i18n: active language tab ('en' | 'fr')
+    const [activeLang, setActiveLang] = useState('en');
+
+    // Per-locale fields
+    const [locales, setLocales] = useState({
+        en: { title: '', description: '', content: '# My Article\n\nWrite your content here...', isDrafted: false },
+        fr: { title: '', description: '', content: '', isDrafted: true },
+    });
+
     const [slug, setSlug] = useState('');
-    const [description, setDescription] = useState('');
-    const [content, setContent] = useState('# Mon Article\n\nÉcrivez votre contenu ici...');
     const [selectedTags, setSelectedTags] = useState([]);
-    const [activeTab, setActiveTab] = useState('write');
+    const [activeTab, setActiveTab] = useState('write'); // 'write' | 'preview'
     const [selectedCategory, setSelectedCategory] = useState(categories[0] || '');
     const [tagInput, setTagInput] = useState('');
     const [coverImage, setCoverImage] = useState(null);
     const [coverPreview, setCoverPreview] = useState('');
     const [isUploading, setIsUploading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [uploadedImages, setUploadedImages] = useState(new Map()); // Track uploaded images {key: {url, filename, timestamp}}
-    const [status, setStatus] = useState('published'); // 'draft' | 'published'
+    const [uploadedImages, setUploadedImages] = useState(new Map());
+    const [status, setStatus] = useState('published');
     const [isLoadingArticle, setIsLoadingArticle] = useState(false);
     const [existingCoverKey, setExistingCoverKey] = useState('');
     const textareaRef = useRef(null);
@@ -49,14 +55,22 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
     const contentImageInputRef = useRef(null);
     const isInitialMount = useRef(true);
 
+    // Helper: update a single field in a locale
+    const updateLocale = (lang, field, value) => {
+        setLocales(prev => ({ ...prev, [lang]: { ...prev[lang], [field]: value } }));
+    };
+
+    // Shortcut: current locale data
+    const currentLocale = locales[activeLang] || locales['en'];
+
     // Deletion state
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const API_URL = import.meta.env.PUBLIC_API_URL || 'https://cloudnive-api.nivekaa.com';
 
-    // Check if form is valid
-    const isFormValid = title.trim() !== '' && content.trim() !== '' && selectedCategory !== '';
+    // Form is valid if EN locale has title + content
+    const isFormValid = locales.en.title.trim() !== '' && locales.en.content.trim() !== '' && selectedCategory !== '';
 
     // Filter tags based on input
     const filteredTags = tags.filter(tag =>
@@ -64,14 +78,14 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
         !selectedTags.includes(tag)
     );
 
-    // Auto-slug generation
+    // Auto-slug generation from EN title
     useEffect(() => {
-        const newSlug = title
+        const newSlug = locales.en.title
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/(^-|-$)+/g, '');
         setSlug(newSlug);
-    }, [title]);
+    }, [locales.en.title]);
 
     // Auto-resize textarea
     useEffect(() => {
@@ -80,7 +94,7 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
             textarea.style.height = 'auto';
             textarea.style.height = textarea.scrollHeight + 'px';
         }
-    }, [content]);
+    }, [currentLocale.content]);
 
     // Auto-resize title textarea
     useEffect(() => {
@@ -89,7 +103,7 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
             textarea.style.height = 'auto';
             textarea.style.height = textarea.scrollHeight + 'px';
         }
-    }, [title]);
+    }, [currentLocale.title]);
 
     // Auto-save to localStorage (skip on initial mount)
     useEffect(() => {
@@ -99,16 +113,14 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
         }
 
         const draftData = {
-            title,
-            description,
-            content,
+            locales,
             selectedTags,
             selectedCategory,
             coverPreview,
             timestamp: Date.now()
         };
         localStorage.setItem('articleDraft', JSON.stringify(draftData));
-    }, [title, description, content, selectedTags, selectedCategory, coverPreview]);
+    }, [locales, selectedTags, selectedCategory, coverPreview]);
 
     // Restore from API (Edition) or localStorage (Auto-save) on mount
     useEffect(() => {
@@ -119,28 +131,47 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
 
             if (slugFromUrl) {
                 setEditSlug(slugFromUrl);
-                // EDITION MODE: Fetch specific article from API
+                // EDITION MODE: Fetch from API with admin drafts access
                 try {
                     setIsLoadingArticle(true);
-                    const response = await fetch(`${API_URL}/articles/${slugFromUrl}`);
+                    const response = await fetch(`${API_URL}/articles/${slugFromUrl}?includeDrafts=true`);
                     if (response.ok) {
                         const article = await response.json();
-                        setTitle(article.title || '');
-                        setDescription(article.description || '');
-                        setContent(article.contentMarkdown || '');
+
+                        // Build locale state from API response
+                        const apiLocales = article.locales || {
+                            en: {
+                                title: article.title || '',
+                                description: article.description || '',
+                                isDrafted: article.isDrafted || false,
+                            }
+                        };
+
+                        setLocales({
+                            en: {
+                                title: apiLocales.en?.title || '',
+                                description: apiLocales.en?.description || '',
+                                content: article.contentMarkdown || '',
+                                isDrafted: apiLocales.en?.isDrafted || false,
+                            },
+                            fr: {
+                                title: apiLocales.fr?.title || '',
+                                description: apiLocales.fr?.description || '',
+                                content: apiLocales.fr?.content || '',
+                                isDrafted: apiLocales.fr?.isDrafted !== false,
+                            }
+                        });
+
                         setSelectedTags(article.tags || []);
                         setSelectedCategory(article.category || categories[0]);
                         setCoverPreview(article.cover || '');
-                        // Store the existing key to preserve it if not changed
                         if (article.cover) {
-                            // Extract key from URL or use as is if it's already a key
                             const keyMatch = article.cover.match(/images\/covers\/[^/?#]+/);
                             setExistingCoverKey(keyMatch ? keyMatch[0] : article.cover);
                         }
-                        console.log('Loaded article for edition:', slugFromUrl);
                     } else {
                         console.error('Failed to load article for edition');
-                        alert('❌ Impossible de charger l\'article pour modification');
+                        alert('[x] Impossible de charger l\'article pour modification');
                     }
                 } catch (error) {
                     console.error('Error loading article:', error);
@@ -151,14 +182,13 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
                 // CREATE MODE: Start empty OR restore draft
                 setEditSlug(null);
 
-                // Check for saved draft
                 const savedDraft = localStorage.getItem('articleDraft');
                 if (savedDraft) {
                     try {
                         const draft = JSON.parse(savedDraft);
-                        setTitle(draft.title || '');
-                        setDescription(draft.description || '');
-                        setContent(draft.content || '');
+                        if (draft.locales) {
+                            setLocales(draft.locales);
+                        }
                         setSelectedTags(draft.selectedTags || []);
                         setSelectedCategory(draft.selectedCategory || categories[0]);
                         setCoverPreview(draft.coverPreview || '');
@@ -166,8 +196,6 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
                     } catch (e) {
                         console.error('Failed to parse draft', e);
                     }
-                } else {
-                    console.log('Create mode: starting with empty form');
                 }
             }
         };
@@ -284,10 +312,10 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
     const clearDraft = () => {
         if (confirm('⚠️ Êtes-vous sûr de vouloir supprimer le brouillon ? Cette action est irréversible.')) {
             localStorage.removeItem('articleDraft');
-            // Reset form
-            setTitle('');
-            setDescription('');
-            setContent('# Mon Article\n\nÉcrivez votre contenu ici...');
+            setLocales({
+                en: { title: '', description: '', content: '# My Article\n\nWrite your content here...', isDrafted: false },
+                fr: { title: '', description: '', content: '', isDrafted: true },
+            });
             setSelectedTags([]);
             setSelectedCategory(categories[0] || '');
             setCoverImage(null);
@@ -300,13 +328,13 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
         const textarea = textareaRef.current;
         const start = textarea.selectionStart;
         const end = textarea.selectionEnd;
-        const selectedText = content.substring(start, end);
+        const currentContent = currentLocale.content;
+        const selectedText = currentContent.substring(start, end);
 
         let newText;
         if (isBlock) {
-            // For block elements, add newlines before and after
-            const beforeCursor = content.substring(0, start);
-            const afterCursor = content.substring(end);
+            const beforeCursor = currentContent.substring(0, start);
+            const afterCursor = currentContent.substring(end);
             const needsNewlineBefore = beforeCursor.length > 0 && !beforeCursor.endsWith('\n');
             const needsNewlineAfter = afterCursor.length > 0 && !afterCursor.startsWith('\n');
 
@@ -316,14 +344,14 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
                 (needsNewlineAfter ? '\n' : '') +
                 afterCursor;
         } else {
-            newText = content.substring(0, start) + prefix + selectedText + suffix + content.substring(end);
+            newText = currentContent.substring(0, start) + prefix + selectedText + suffix + currentContent.substring(end);
         }
 
-        setContent(newText);
+        updateLocale(activeLang, 'content', newText);
 
         setTimeout(() => {
             textarea.focus();
-            const newCursorPos = start + prefix.length + (isBlock && !content.substring(0, start).endsWith('\n') ? 1 : 0);
+            const newCursorPos = start + prefix.length + (isBlock && !currentContent.substring(0, start).endsWith('\n') ? 1 : 0);
             textarea.setSelectionRange(newCursorPos, newCursorPos + selectedText.length);
         }, 0);
     };
@@ -348,21 +376,19 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
             const { key, url } = await uploadImage(file);
             const imageUrl = `${url}`;
 
-            // Track the uploaded image
             setUploadedImages(prev => new Map(prev).set(key, {
                 url: imageUrl,
                 filename: file.name,
                 timestamp: Date.now()
             }));
 
-            // Insert markdown at cursor position
             const textarea = textareaRef.current;
             const start = textarea.selectionStart;
-            const altText = file.name.replace(/\.[^/.]+$/, ''); // Remove extension
+            const altText = file.name.replace(/\.[^/.]+$/, '');
             const markdownImage = `![${altText}](${imageUrl})`;
 
-            const newContent = content.substring(0, start) + markdownImage + content.substring(start);
-            setContent(newContent);
+            const newContent = currentLocale.content.substring(0, start) + markdownImage + currentLocale.content.substring(start);
+            updateLocale(activeLang, 'content', newContent);
 
             // Reset file input
             if (contentImageInputRef.current) {
@@ -393,7 +419,7 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
         return urls;
     };
 
-    // Clean up unused images from S3
+    // Clean up unused images from S3 (check across all locales' content)
     const cleanupUnusedImages = async (currentContent) => {
         const usedImageUrls = extractImageUrls(currentContent);
         const imagesToDelete = [];
@@ -431,24 +457,39 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
         setStatus(submitStatus);
 
         try {
-            // Clean up unused images first
-            await cleanupUnusedImages(content);
-            // Upload cover image if present
+            await cleanupUnusedImages(locales.en.content);
+
             let finalCoverKey = existingCoverKey;
             if (coverImage) {
                 const { key } = await uploadImage(coverImage);
                 finalCoverKey = key;
             }
 
-            // Create article
+            // Build locales payload for the API
+            const localesToSend = {
+                en: {
+                    title: locales.en.title,
+                    description: locales.en.description,
+                    content: locales.en.content,
+                    isDrafted: submitStatus === 'draft' ? true : (locales.en.isDrafted || false),
+                },
+            };
+
+            // Only include FR if it has at least a title
+            if (locales.fr.title.trim()) {
+                localesToSend.fr = {
+                    title: locales.fr.title,
+                    description: locales.fr.description,
+                    content: locales.fr.content,
+                    isDrafted: locales.fr.isDrafted !== false,
+                };
+            }
+
             const articleData = {
-                title,
-                description,
-                content,
+                locales: localesToSend,
                 category: selectedCategory,
                 tags: selectedTags,
                 cover: finalCoverKey,
-                isDrafted: submitStatus === 'draft',
                 authorEmail: user?.email || '',
                 authorName: author?.name || '',
                 author: {
@@ -464,24 +505,19 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
             const method = editSlug ? 'PUT' : 'POST';
 
             const response = await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                method,
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(articleData)
             });
 
             if (!response.ok) {
-                throw new Error('Erreur lors de la création de l\'article');
+                throw new Error('Erreur lors de la sauvegarde de l\'article');
             }
 
             const result = await response.json();
-            console.log('Article créé:', result);
-
             const statusMessage = submitStatus === 'draft' ? 'Brouillon enregistré' : 'Article publié';
             alert(`✅ ${statusMessage} avec succès !\nSlug: ${result.slug}`);
 
-            // NEW: Clear local storage upon successful server save
             localStorage.removeItem('articleDraft');
 
             if (onSaveSuccess) {
@@ -490,9 +526,10 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
             }
 
             // Reset form
-            setTitle('');
-            setDescription('');
-            setContent('# Mon Article\n\nÉcrivez votre contenu ici...');
+            setLocales({
+                en: { title: '', description: '', content: '# My Article\n\nWrite your content here...', isDrafted: false },
+                fr: { title: '', description: '', content: '', isDrafted: true },
+            });
             setSelectedTags([]);
             setCoverImage(null);
             setCoverPreview('');
@@ -501,7 +538,7 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
 
         } catch (error) {
             console.error('Error:', error);
-            alert('❌ Erreur lors de la création de l\'article: ' + error.message);
+            alert('❌ Erreur lors de la sauvegarde de l\'article: ' + error.message);
         } finally {
             setIsSubmitting(false);
         }
@@ -695,17 +732,54 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
                     )}
                 </div>
 
+                {/* ── Language Tabs ── */}
+                <div className="flex items-center gap-3 pt-2">
+                    <span className="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Language</span>
+                    <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
+                        {['en', 'fr'].map(lang => (
+                            <button
+                                key={lang}
+                                type="button"
+                                onClick={() => setActiveLang(lang)}
+                                className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5 ${
+                                    activeLang === lang
+                                        ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                                }`}
+                            >
+                                {lang === 'en' ? '🇬🇧' : '🇫🇷'} {lang.toUpperCase()}
+                                {lang === 'en' && <span className="text-[9px] bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 px-1 rounded">DEFAULT</span>}
+                                {locales[lang]?.isDrafted && (
+                                    <span className="w-2 h-2 rounded-full bg-amber-400" title="Draft" />
+                                )}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Per-locale Draft toggle */}
+                    <label className="flex items-center gap-2 ml-auto cursor-pointer select-none">
+                        <input
+                            type="checkbox"
+                            checked={currentLocale.isDrafted || false}
+                            onChange={e => updateLocale(activeLang, 'isDrafted', e.target.checked)}
+                            className="rounded border-gray-300 text-amber-500 focus:ring-amber-400"
+                        />
+                        <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">Brouillon ({activeLang.toUpperCase()})</span>
+                    </label>
+                </div>
+
                 {/* Title Input */}
                 <div>
                     <textarea
                         ref={titleTextareaRef}
                         id="title"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        required
+                        key={`title-${activeLang}`}
+                        value={currentLocale.title}
+                        onChange={(e) => updateLocale(activeLang, 'title', e.target.value)}
+                        required={activeLang === 'en'}
                         rows={1}
                         className="w-full text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 bg-transparent border-none focus:outline-none placeholder-gray-300 dark:placeholder-gray-700 resize-none overflow-hidden"
-                        placeholder="Titre de l'article..."
+                        placeholder={activeLang === 'en' ? "Article title..." : "Titre de l'article..."}
                         style={{ minHeight: '3rem' }}
                     />
                 </div>
@@ -745,11 +819,11 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
                         type="text"
                         id="description"
                         name="description"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        required
+                        key={`desc-${activeLang}`}
+                        value={currentLocale.description}
+                        onChange={(e) => updateLocale(activeLang, 'description', e.target.value)}
                         className="w-full text-xl text-gray-600 dark:text-gray-400 bg-transparent border-none focus:outline-none placeholder-gray-300 dark:placeholder-gray-700"
-                        placeholder="Description courte et accrocheuse..."
+                        placeholder={activeLang === 'en' ? 'Short, catchy description...' : 'Description courte et accrocheuse...'}
                     />
                 </div>
 
@@ -816,7 +890,19 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
 
                 {/* Content Editor */}
                 <div className="pt-8 border-t border-gray-200 dark:border-gray-700">
-                    <label className="block text-xs font-medium text-gray-500 dark:text-gray-500 mb-3">CONTENU</label>
+                    <div className="flex items-center gap-3 mb-3">
+                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-500 uppercase">CONTENU</label>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${
+                            activeLang === 'en'
+                                ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300'
+                                : 'bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300'
+                        }`}>
+                            {activeLang === 'en' ? '🇬🇧 English' : '🇫🇷 Français'}
+                        </span>
+                        {activeLang === 'fr' && !locales.en.content && (
+                            <span className="text-[10px] text-amber-500">⚠️ Rédigez d'abord la version EN</span>
+                        )}
+                    </div>
 
                     {/* Toolbar and Edit/Preview buttons on same line */}
                     <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
@@ -907,15 +993,16 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
                     {activeTab === 'write' ? (
                         <textarea
                             ref={textareaRef}
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
+                            key={`content-${activeLang}`}
+                            value={currentLocale.content}
+                            onChange={(e) => updateLocale(activeLang, 'content', e.target.value)}
                             className="w-full p-0 text-gray-900 dark:text-gray-100 bg-transparent border-none resize-none focus:outline-none font-mono text-sm leading-relaxed"
-                            placeholder="# Entrez le contenu de votre article..."
+                            placeholder={activeLang === 'en' ? '# Start writing...' : '# Commencez la traduction...'}
                             style={{ minHeight: '500px' }}
                         />
                     ) : (
                         <MarkdownRenderer
-                            content={content}
+                            content={currentLocale.content}
                             className="min-h-[500px]"
                         />
                     )}
@@ -957,7 +1044,7 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
                 isOpen={isDeleteDialogOpen}
                 onClose={() => setIsDeleteDialogOpen(false)}
                 onConfirm={handleDelete}
-                title={title}
+                title={currentLocale.title || editSlug}
                 slug={editSlug}
                 isDeleting={isDeleting}
             />

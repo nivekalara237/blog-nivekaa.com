@@ -1,0 +1,59 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ArticleCard from "../../../components/ArticleCard.jsx";
+import Pagination from "../../../components/Pagination.astro";
+import { api } from "../../../lib/api";
+
+export async function getStaticPaths({ paginate }: any) {
+    // Fetch articles for both languages
+    const responseEn = await api.getArticles({ limit: 1000, lang: 'en' });
+    const responseFr = await api.getArticles({ limit: 1000, lang: 'fr' });
+    
+    let articlesEn = responseEn.items || [];
+    let articlesFr = responseFr.items || [];
+
+    // Trier par date du plus récent au plus ancien
+    const sortFn = (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime();
+    articlesEn.sort(sortFn);
+    articlesFr.sort(sortFn);
+
+    const enPages = paginate(articlesEn, { params: { lang: undefined }, pageSize: 24 });
+    const frPages = paginate(articlesFr, { params: { lang: 'fr' }, pageSize: 24 });
+
+    return [...enPages, ...frPages];
+}
+export const prerender = true;
+
+const { page } = Astro.props as any;
+const { lang: paramLang } = Astro.params;
+const lang = paramLang === 'fr' ? 'fr' : 'en';
+
+const SITE_URL = 'https://cloud.nivekaa.com';
+const currentPath = Astro.url.pathname.replace(/^\/fr/, '') || '/articles';
+---
+
+<Layout 
+    title={lang === 'fr' ? "Articles" : "Articles"}
+    lang={lang}
+    hreflangEn={`${SITE_URL}${currentPath}`}
+    hreflangFr={`${SITE_URL}/fr${currentPath}`}
+>
+    <section class="max-w-7xl mx-auto px-6 lg:px-8 py-12 mb-12">
+        <h1
+            class="m-0 mb-8 pb-3"
+            style="font-family:'Space Grotesk',sans-serif; font-weight:900; font-size:clamp(28px,4vw,40px); line-height:1.1; letter-spacing:-1px; color:var(--text-primary); border-bottom:3px solid var(--bg-border);"
+        >
+            {lang === 'fr' ? 'Tous les articles' : 'All articles'}
+            <span style="color:var(--yellow-dark);">.log</span>
+        </h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {
+                page.data.map((article: any) => (
+                    <ArticleCard client:load article={article} />
+                ))
+            }
+        </div>
+
+        <Pagination page={page} lang={lang} />
+    </section>
+</Layout>

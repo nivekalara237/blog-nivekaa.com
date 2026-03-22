@@ -89,6 +89,6 @@ jobs:
           output-env-credentials: true
 
       - name: Deploy to S3
-        run: aws s3 sync dist/ s3://${{ vars.AWS_S3_BUCKET }} --delete --cache-control "public, max-age=60, immutable"
+        run: aws s3 sync dist/ s3://${{ env.AWS_S3_BUCKET }} --delete --cache-control "public, max-age=60, immutable"
         env:
-          AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET }}
+          AWS_S3_BUCKET: ${{ inputs.environment == 'prod' && 'cloud.nivekaa.com' || 'cloud-dev.nivekaa.com' }}

@@ -399,7 +399,8 @@ Pour le guide complet, consultez la documentation officielle ou nos formations d
 export const categories = ["DevOps", "Frontend", "Backend", "Cloud"];
 export const tags = ["kubernetes", "containers", "astro", "javascript", "react", "aws"];
 
-export async function getArticles() {
+export async function getArticles(options = {}) {
+  // Option arguments ignored in this static mock
   return articles;
 }
 

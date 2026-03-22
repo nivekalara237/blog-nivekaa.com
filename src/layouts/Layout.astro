@@ -10,6 +10,9 @@ interface Props {
     description?: string;
     image?: string;
     type?: "website" | "article";
+    lang?: string;
+    hreflangEn?: string;
+    hreflangFr?: string;
 }
 
 const {
@@ -17,17 +20,22 @@ const {
     description = "Bienvenue sur mon blog technique ! Découvrez des articles sur le Cloud, le DevOps et le développement web.",
     image,
     type,
+    lang = "en",
+    hreflangEn,
+    hreflangFr,
 } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="fr">
+<html lang={lang}>
     <head>
         <BaseHead
             title={title}
             description={description}
             image={image}
             type={type}
+            hreflangEn={hreflangEn}
+            hreflangFr={hreflangFr}
         />
     </head>
     <body

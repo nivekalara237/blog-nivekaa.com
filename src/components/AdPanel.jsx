@@ -3,8 +3,9 @@ import React from 'react';
 /**
  * AdPanel - Composant de panneau publicitaire élégant
  * 
- * @param {Object} ad - Contenu de la publicité
- * @param {string} variant - Style variant: 'banner', 'sidebar', 'card'
+ * @param {Object} props
+ * @param {Object} [props.ad] - Contenu de la publicité
+ * @param {string} [props.variant] - Style variant: 'banner', 'sidebar', 'card'
  */
 export default function AdPanel({ ad, variant = 'banner' }) {
     if (!ad) return null;

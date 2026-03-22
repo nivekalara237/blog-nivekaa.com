@@ -1,28 +1,59 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import { api } from "../../lib/api";
-import MarkdownRenderer from "../../components/MarkdownRenderer";
-import TableOfContents from "../../components/TableOfContents";
-import PublicAuthorCard from "../../components/PublicAuthorCard";
-import AdPanel from "../../components/AdPanel";
-import CoverImage from "../../components/CoverImage";
-import { DEFAULT_AUTHOR } from "../../config/author";
-import { ADS_ENABLED, AD_CONFIG, AD_SLOTS } from "../../config/ads";
+import Layout from "../../../layouts/Layout.astro";
+import { api } from "../../../lib/api";
+import MarkdownRenderer from "../../../components/MarkdownRenderer.jsx";
+import TableOfContents from "../../../components/TableOfContents.jsx";
+import PublicAuthorCard from "../../../components/PublicAuthorCard.jsx";
+import AdPanel from "../../../components/AdPanel.jsx";
+import CoverImage from "../../../components/CoverImage.jsx";
+import { DEFAULT_AUTHOR } from "../../../config/author";
+import { ADS_ENABLED, AD_CONFIG, AD_SLOTS } from "../../../config/ads";
+import { useTranslations } from "../../../i18n/utils";
 
 // Active le mode statique (SSG)
 export const prerender = true;
 
-export async function getStaticPaths() {
-    const data = await api.getArticles({ limit: 1000 });
-    const articles = Array.isArray(data) ? data : data.items || [];
+const SITE_URL = 'https://cloud.nivekaa.com';
 
-    return articles.map((article: any) => ({
-        params: { slug: article.slug },
-        props: { article },
-    }));
+export async function getStaticPaths() {
+    const SITE_URL = 'https://cloud.nivekaa.com';
+    const dataEn = await api.getArticles({ limit: 1000, lang: 'en' });
+    const dataFr = await api.getArticles({ limit: 1000, lang: 'fr' });
+    
+    const articlesEn = Array.isArray(dataEn) ? dataEn : dataEn.items || [];
+    const articlesFr = Array.isArray(dataFr) ? dataFr : dataFr.items || [];
+
+    const paths: any[] = [];
+
+    articlesEn.forEach((article: any) => {
+        paths.push({
+            params: { lang: undefined, slug: article.slug },
+            props: {
+                article,
+                lang: 'en',
+                hreflangEn: `${SITE_URL}/article/${article.slug}`,
+                hreflangFr: article.translationAvailable ? `${SITE_URL}/fr/article/${article.slug}` : undefined,
+            }
+        });
+    });
+
+    articlesFr.forEach((article: any) => {
+        // Assume article object from FR query is already translated
+        paths.push({
+            params: { lang: 'fr', slug: article.slug },
+            props: {
+                article,
+                lang: 'fr',
+                hreflangEn: article.translationAvailable ? `${SITE_URL}/article/${article.slug}` : undefined,
+                hreflangFr: `${SITE_URL}/fr/article/${article.slug}`,
+            }
+        });
+    });
+
+    return paths;
 }
 
-const { article }: any = Astro.props;
+const { article, lang, hreflangEn, hreflangFr }: any = Astro.props;
 
 // Use article author or default author
 const author = article.author || DEFAULT_AUTHOR;
@@ -32,16 +63,16 @@ const content = article.content || article.contentMarkdown;
 const wordCount = content?.split(/\s+/).length || 0;
 const readingTime = Math.ceil(wordCount / 200);
 
-// Format date like "February 12, 2025"
+// Format date
 const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString("fr-FR", {
+    return date.toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', {
         year: "numeric",
         month: "long",
         day: "numeric",
     });
 };
-const siteUrl = Astro.site || "https://cloud.nivekaa.com";
+const siteUrl = Astro.site || SITE_URL;
 const articleUrl = new URL(Astro.url.pathname, siteUrl);
 
 const jsonLd = {
@@ -78,6 +109,9 @@ const jsonLd = {
     description={article.description}
     image={article.cover}
     type="article"
+    lang={lang}
+    hreflangEn={hreflangEn}
+    hreflangFr={hreflangFr}
 >
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     <div class="max-w-7xl mx-auto px-6 lg:px-8 py-12">
@@ -138,7 +172,7 @@ const jsonLd = {
             >
                 <time>{formatDate(article.date)}</time>
                 <span>•</span>
-                <span>{readingTime} min read</span>
+                <span>{readingTime} {lang === 'fr' ? 'min de lecture' : 'min read'}</span>
                 <span>•</span>
                 <span class="font-medium" style="color:var(--green-light);"
                     >{article.category}</span

@@ -5,14 +5,18 @@ interface Props {
     image?: string;
     canonicalURL?: URL;
     type?: "website" | "article";
+    hreflangEn?: string;
+    hreflangFr?: string;
 }
 
 const {
     title,
     description,
-    image = "/images/og-default.jpg", // On pourra générer/ajouter cette image plus tard
+    image = "/images/og-default.jpg",
     canonicalURL = new URL(Astro.url.pathname, Astro.site),
     type = "website",
+    hreflangEn,
+    hreflangFr,
 } = Astro.props;
 ---
 
@@ -24,6 +28,11 @@ const {
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
+
+<!-- hreflang alternate links (i18n SEO) -->
+{hreflangEn && <link rel="alternate" hreflang="en" href={hreflangEn} />}
+{hreflangFr && <link rel="alternate" hreflang="fr" href={hreflangFr} />}
+{hreflangEn && <link rel="alternate" hreflang="x-default" href={hreflangEn} />}
 
 <!-- Primary Meta Tags -->
 <title>{title}</title>

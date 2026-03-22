@@ -254,7 +254,7 @@
 
 .prose strong {
     font-weight: 700;
-    color: var(--yellow-light);
+    color: var(--yellow-dark);
 }
 
 .prose h1,

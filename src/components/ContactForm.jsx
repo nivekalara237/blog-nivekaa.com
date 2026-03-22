@@ -2,7 +2,41 @@ import React, { useState, useEffect, useRef } from 'react';
 
 const API_BASE_URL = import.meta.env.PUBLIC_API_URL || 'https://cloudnive-api.nivekaa.com';
 
-export default function ContactForm() {
+const translations = {
+    en: {
+        nameLabel: 'Name',
+        namePlaceholder: 'Your name',
+        emailLabel: 'Email',
+        emailPlaceholder: 'your@email.com',
+        messageLabel: 'Message',
+        messagePlaceholder: 'Your message...',
+        submitLoading: 'Sending...',
+        submitIdle: 'Send Message',
+        errCaptcha: 'Please validate the captcha.',
+        errFields: 'All fields are required.',
+        successMsg: 'Message sent successfully!',
+        errMsg: 'An error occurred.',
+        errConn: 'Connection error. Please try again later.',
+    },
+    fr: {
+        nameLabel: 'Nom',
+        namePlaceholder: 'Votre nom',
+        emailLabel: 'Email',
+        emailPlaceholder: 'votre@email.com',
+        messageLabel: 'Message',
+        messagePlaceholder: 'Votre message...',
+        submitLoading: 'Envoi en cours...',
+        submitIdle: 'Envoyer le message',
+        errCaptcha: 'Veuillez valider le captcha.',
+        errFields: 'Tous les champs sont obligatoires.',
+        successMsg: 'Message envoyé avec succès !',
+        errMsg: 'Une erreur est survenue.',
+        errConn: 'Erreur de connexion. Veuillez réessayer plus tard.',
+    }
+};
+
+export default function ContactForm({ lang = 'en' }) {
+    const t = translations[lang] || translations.en;
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -72,13 +106,13 @@ export default function ContactForm() {
 
         if (!formData['cf-turnstile-response']) {
             setStatus('error');
-            setFeedback('Veuillez valider le captcha.');
+            setFeedback(t.errCaptcha);
             return;
         }
 
         if (!formData.name || !formData.email || !formData.message) {
             setStatus('error');
-            setFeedback('Tous les champs sont obligatoires.');
+            setFeedback(t.errFields);
             return;
         }
 
@@ -96,7 +130,7 @@ export default function ContactForm() {
 
             if (response.ok) {
                 setStatus('success');
-                setFeedback(data.message || 'Message envoyé avec succès !');
+                setFeedback(data.message || t.successMsg);
                 setFormData({ name: '', email: '', message: '', website: '', 'cf-turnstile-response': '' });
 
                 // Reset Turnstile if available
@@ -105,11 +139,11 @@ export default function ContactForm() {
                 }
             } else {
                 setStatus('error');
-                setFeedback(data.error || 'Une erreur est survenue.');
+                setFeedback(data.error || t.errMsg);
             }
         } catch (error) {
             setStatus('error');
-            setFeedback('Erreur de connexion. Veuillez réessayer plus tard.');
+            setFeedback(t.errConn);
         }
     };
 
@@ -129,7 +163,7 @@ export default function ContactForm() {
 
             <div>
                 <label htmlFor="name" className="block text-sm font-bold mb-2 uppercase tracking-wider" style={{ fontFamily: "'JetBrains Mono', monospace", color: 'var(--green-light)' }}>
-                    Nom
+                    {t.nameLabel}
                 </label>
                 <input
                     type="text"
@@ -140,13 +174,13 @@ export default function ContactForm() {
                     onChange={handleChange}
                     className="w-full px-4 py-3 bg-[var(--bg-deep)] text-[var(--text-primary)] border-2 border-[var(--bg-border)] focus:border-[var(--green-light)] focus:ring-0 outline-none transition-colors"
                     style={{ fontFamily: "'Inter', sans-serif" }}
-                    placeholder="Votre nom"
+                    placeholder={t.namePlaceholder}
                 />
             </div>
 
             <div>
                 <label htmlFor="email" className="block text-sm font-bold mb-2 uppercase tracking-wider" style={{ fontFamily: "'JetBrains Mono', monospace", color: 'var(--green-light)' }}>
-                    Email
+                    {t.emailLabel}
                 </label>
                 <input
                     type="email"
@@ -157,13 +191,13 @@ export default function ContactForm() {
                     onChange={handleChange}
                     className="w-full px-4 py-3 bg-[var(--bg-deep)] text-[var(--text-primary)] border-2 border-[var(--bg-border)] focus:border-[var(--green-light)] focus:ring-0 outline-none transition-colors"
                     style={{ fontFamily: "'Inter', sans-serif" }}
-                    placeholder="votre@email.com"
+                    placeholder={t.emailPlaceholder}
                 />
             </div>
 
             <div>
                 <label htmlFor="message" className="block text-sm font-bold mb-2 uppercase tracking-wider" style={{ fontFamily: "'JetBrains Mono', monospace", color: 'var(--green-light)' }}>
-                    Message
+                    {t.messageLabel}
                 </label>
                 <textarea
                     id="message"
@@ -174,7 +208,7 @@ export default function ContactForm() {
                     onChange={handleChange}
                     className="w-full px-4 py-3 bg-[var(--bg-deep)] text-[var(--text-primary)] border-2 border-[var(--bg-border)] focus:border-[var(--green-light)] focus:ring-0 outline-none transition-colors"
                     style={{ fontFamily: "'Inter', sans-serif", resize: 'vertical' }}
-                    placeholder="Votre message..."
+                    placeholder={t.messagePlaceholder}
                 ></textarea>
             </div>
 
@@ -199,7 +233,7 @@ export default function ContactForm() {
                     cursor: status === 'loading' ? 'not-allowed' : 'pointer'
                 }}
             >
-                {status === 'loading' ? 'Envoi en cours...' : 'Envoyer le message'}
+                {status === 'loading' ? t.submitLoading : t.submitIdle}
             </button>
 
             {feedback && (
