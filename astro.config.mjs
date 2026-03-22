@@ -14,6 +14,15 @@ export default defineConfig({
   output: 'static',
   site: 'https://cloud.nivekaa.com',
 
+  // i18n: English is default (no prefix), French at /fr/
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'fr'],
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
+
   build: {
     format: 'directory'
   },

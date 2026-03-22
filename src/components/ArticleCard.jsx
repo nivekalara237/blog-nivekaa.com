@@ -25,6 +25,8 @@ export default function ArticleCard({ article }) {
 
     const showFallback = !article.cover || imageError;
 
+    // console.log(article);
+
     return (
         <a
             href={`/article/${article.slug}`}
@@ -188,7 +190,7 @@ export default function ArticleCard({ article }) {
                             NK
                         </div>
                         <span style={{ fontSize: '11px', color: 'var(--text-dim)', fontFamily: "'Inter', sans-serif" }}>
-                            Nivekaa
+                            {article.autorName || "Kevin Lactio Kemta"}
                         </span>
                     </div>
                     <span style={{ color: 'var(--text-dim)', fontSize: '14px', transition: 'color 0.1s' }}>→</span>

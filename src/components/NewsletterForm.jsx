@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 const API_BASE_URL = import.meta.env.PUBLIC_API_URL || 'https://cloudnive-api.nivekaa.com';
 
-export default function NewsletterForm() {
+export default function NewsletterForm({ lang = 'en' }) {
     const [email, setEmail] = useState('');
     const [honeypot, setHoneypot] = useState('');
     const [status, setStatus] = useState('idle'); // idle | loading | success | error
@@ -13,7 +13,7 @@ export default function NewsletterForm() {
         if (honeypot) return; // bot trap
         if (!email || !email.includes('@')) {
             setStatus('error');
-            setMessage('Veuillez entrer une adresse email valide.');
+            setMessage(lang === 'fr' ? 'Veuillez entrer une adresse email valide.' : 'Please enter a valid email address.');
             return;
         }
         setStatus('loading');
@@ -27,15 +27,15 @@ export default function NewsletterForm() {
             const data = await response.json();
             if (response.ok) {
                 setStatus('success');
-                setMessage(data.message || 'Inscription réussie ! Vérifiez votre email.');
+                setMessage(data.message || (lang === 'fr' ? 'Inscription réussie ! Vérifiez votre email.' : 'Subscription successful! Check your email.'));
                 setEmail('');
             } else {
                 setStatus('error');
-                setMessage(data.error || 'Une erreur est survenue.');
+                setMessage(data.error || (lang === 'fr' ? 'Une erreur est survenue.' : 'An error occurred.'));
             }
         } catch {
             setStatus('error');
-            setMessage('Erreur de connexion. Réessayez plus tard.');
+            setMessage(lang === 'fr' ? 'Erreur de connexion. Réessayez plus tard.' : 'Connection error. Try again later.');
         }
     };
 
@@ -55,7 +55,7 @@ export default function NewsletterForm() {
                 }}
             >
                 <span style={{ color: 'var(--green-light)' }}>📡</span>
-                NEW SIGNAL DETECTED — Rejoins la communauté
+                {lang === 'fr' ? 'NEW SIGNAL DETECTED — Rejoins la communauté' : 'NEW SIGNAL DETECTED — Join the community'}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
@@ -70,15 +70,16 @@ export default function NewsletterForm() {
                             color: 'var(--text-primary)',
                         }}
                     >
-                        Garde ton{' '}
-                        <span style={{ color: 'var(--yellow-dark)' }}>niveau MAX</span>
-                        <br />sur le Cloud & Dev
+                        {lang === 'fr' ? 'Garde ton ' : 'Keep your '}
+                        <span style={{ color: 'var(--yellow-dark)' }}>{lang === 'fr' ? 'niveau MAX' : 'MAX level'}</span>
+                        <br />{lang === 'fr' ? 'sur le Cloud & Dev' : 'on Cloud & Dev'}
                     </h2>
                     <p className="m-0 text-sm"
                         style={{ color: 'var(--text-secondary)', fontFamily: "'Inter', sans-serif", lineHeight: 1.7, fontSize: '14px' }}
                     >
-                        Reçois les nouveaux articles, tips Terraform, guides AWS et retours d'expérience directement dans ta boite mail.
-                        Pas de spam. Juste du contenu technique de qualité.
+                        {lang === 'fr' 
+                            ? "Reçois les nouveaux articles, tips Terraform, guides AWS et retours d'expérience directement dans ta boite mail. Pas de spam. Juste du contenu technique de qualité."
+                            : "Get new articles, Terraform tips, AWS guides and experience feedback right in your inbox. No spam. Just high quality technical content."}
                     </p>
                 </div>
 
@@ -100,7 +101,7 @@ export default function NewsletterForm() {
                         type="email"
                         id="newsletter-email"
                         name="email"
-                        placeholder="// ton@email.com"
+                        placeholder={lang === 'fr' ? "// ton@email.com" : "// your@email.com"}
                         value={email}
                         onChange={e => setEmail(e.target.value)}
                         disabled={status === 'loading'}
@@ -127,9 +128,9 @@ export default function NewsletterForm() {
                         style={{ fontSize: '13px', opacity: status === 'loading' ? 0.6 : 1 }}
                     >
                         {status === 'loading' ? (
-                            <span>⟳ Envoi...</span>
+                            <span>⟳ {lang === 'fr' ? 'Envoi...' : 'Sending...'}</span>
                         ) : (
-                            <span>▶ SUBSCRIBE — Rejoindre la guilde</span>
+                            <span>▶ SUBSCRIBE — {lang === 'fr' ? 'Rejoindre la guilde' : 'Join the guild'}</span>
                         )}
                     </button>
 
@@ -155,7 +156,7 @@ export default function NewsletterForm() {
                             className="text-center m-0"
                             style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: 'var(--text-dim)' }}
                         >
-                            // Désabonnement en 1 clic. Respect garanti.
+                            // {lang === 'fr' ? 'Désabonnement en 1 clic. Respect garanti.' : '1-click unsubscribe. Respect guaranteed.'}
                         </p>
                     )}
                 </form>

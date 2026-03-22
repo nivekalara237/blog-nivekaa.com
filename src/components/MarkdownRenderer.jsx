@@ -52,7 +52,7 @@ const Mermaid = ({ chart }) => {
         );
     }
 
-    console.log(svg);
+    // console.log(svg);
     return (
         <div className="mermaid my-8 flex justify-center overflow-x-auto" dangerouslySetInnerHTML={{ __html: svg }} />
     );
@@ -112,7 +112,7 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
     if (isInline) {
         return (
             <code
-                className="px-1.5 py-0.5 mx-1 text-sm font-bold tracking-wide"
+                className="px-1.5 inline-block py-0.5 mx-1 text-sm font-bold tracking-wide"
                 style={{
                     backgroundColor: 'rgba(255, 170, 0, 0.15)',
                     color: 'var(--yellow-dark)',
@@ -258,9 +258,9 @@ const CustomImage = ({ src, alt, ...props }) => {
 /**
  * MarkdownRenderer - Composant réutilisable pour rendre le markdown
  * 
- * @param {string} content - Contenu markdown à rendre
- * @param {string} className - Classes CSS additionnelles (optionnel)
- * @param {object} props - the addional props (optionnel)
+ * @param {Object} props
+ * @param {string} props.content - Contenu markdown à rendre
+ * @param {string} [props.className] - Classes CSS additionnelles (optionnel)
  */
 export default function MarkdownRenderer({ content, className = '', ...props }) {
     // Counter to track heading occurrences for unique IDs

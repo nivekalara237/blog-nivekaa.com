@@ -1,5 +1,10 @@
 ---
+import { getLangFromUrl, useTranslations, useTranslatedPath } from "../i18n/utils";
+
 const currentYear = new Date().getFullYear();
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
 ---
 
 <footer
@@ -19,8 +24,9 @@ const currentYear = new Date().getFullYear();
           class="text-sm mb-5"
           style="color: var(--text-secondary); font-family: 'Inter', sans-serif; line-height: 1.7;"
         >
-          Blog technique sur le Cloud, l'IaC et le développement logiciel.
-          Chaque article = un niveau débloqué. 🎮
+          {lang === 'fr' 
+            ? "Blog technique sur le Cloud, l'IaC et le développement logiciel. Chaque article = un niveau débloqué. 🎮"
+            : "Technical blog on Cloud, IaC, and software development. Every article is a new level unlocked. 🎮"}
         </p>
         <div class="flex flex-wrap gap-2">
           <span class="game-tag">☁ AWS</span>
@@ -40,14 +46,14 @@ const currentYear = new Date().getFullYear();
         <ul class="flex flex-col gap-2 list-none p-0 m-0">
           {
             [
-              { label: "Accueil", href: "/" },
-              { label: "Articles", href: "/articles" },
-              { label: "Catégories", href: "/categories" },
-              { label: "Contact", href: "/contact" },
+              { label: t('nav.home'), href: "/" },
+              { label: t('nav.articles'), href: "/articles" },
+              { label: t('nav.categories'), href: "/categories" },
+              { label: t('nav.contact'), href: "/contact" },
             ].map(({ label, href }) => (
               <li>
                 <a
-                  href={href}
+                  href={translatePath(href)}
                   class="text-sm no-underline footer-link flex items-center gap-2"
                   style="color: var(--text-secondary); font-family: 'Inter', sans-serif; font-weight: 600; transition: color 0.1s;"
                 >
@@ -68,20 +74,20 @@ const currentYear = new Date().getFullYear();
           class="text-xs font-bold uppercase tracking-widest mb-4"
           style="font-family: 'Inter', sans-serif; color: var(--text-dim);"
         >
-          <span style="color: var(--green-dark);">// </span>Sujets
+          <span style="color: var(--green-dark);">// </span>{lang === 'fr' ? 'Sujets' : 'Topics'}
         </div>
         <ul class="flex flex-col gap-2 list-none p-0 m-0">
           {
             [
-              { label: "Cloud AWS", href: "/category/cloud" },
-              { label: "Terraform", href: "/category/terraform" },
-              { label: "Kubernetes", href: "/category/kubernetes" },
-              { label: "CI/CD", href: "/category/cicd" },
-              { label: "Dev Backend", href: "/category/dev-backend" },
+              { label: "Cloud AWS", href: "/category/Cloud" },
+              { label: "Terraform", href: "/category/Terraform" },
+              { label: "Kubernetes", href: "/category/Kubernetes" },
+              { label: "Frontend", href: "/category/Frontend" },
+              { label: "Backend", href: "/category/Backend" },
             ].map(({ label, href }) => (
               <li>
                 <a
-                  href={href}
+                  href={translatePath(href)}
                   class="text-sm no-underline footer-link flex items-center gap-2"
                   style="color: var(--text-secondary); font-family: 'Inter', sans-serif; font-weight: 600; transition: color 0.1s;"
                 >
@@ -102,19 +108,19 @@ const currentYear = new Date().getFullYear();
           class="text-xs font-bold uppercase tracking-widest mb-4"
           style="font-family: 'Inter', sans-serif; color: var(--text-dim);"
         >
-          <span style="color: var(--green-dark);">// </span>Liens
+          <span style="color: var(--green-dark);">// </span>{lang === 'fr' ? 'Liens' : 'Links'}
         </div>
         <ul class="flex flex-col gap-2 list-none p-0 m-0">
           {
             [
-              { label: "Newsletter", href: "#newsletter" },
-              { label: "À propos", href: "/about" },
-              { label: "GitHub", href: "#" },
-              { label: "LinkedIn", href: "#" },
-            ].map(({ label, href }) => (
+              { label: t('nav.newsletter'), href: "#newsletter", translate: false },
+              { label: lang === 'fr' ? 'À propos' : 'About', href: "/about", translate: true },
+              { label: "GitHub", href: "https://github.com", translate: false },
+              { label: "LinkedIn", href: "https://linkedin.com", translate: false },
+            ].map(({ label, href, translate }) => (
               <li>
                 <a
-                  href={href}
+                  href={translate ? translatePath(href) : href}
                   class="text-sm no-underline footer-link flex items-center gap-2"
                   style="color: var(--text-secondary); font-family: 'Inter', sans-serif; font-weight: 600; transition: color 0.1s;"
                 >
@@ -139,7 +145,7 @@ const currentYear = new Date().getFullYear();
         class="text-xs"
         style="font-family: 'JetBrains Mono', monospace; color: var(--text-dim);"
       >
-        // © {currentYear} CloudNive — Mission: partager le savoir
+        // © {currentYear} CloudNive — {lang === 'fr' ? 'Mission: partager le savoir' : 'Mission: sharing knowledge'}
       </span>
 
       <!-- XP bar -->

@@ -1,0 +1,58 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ArticleCard from "../../../components/ArticleCard.jsx";
+import Pagination from "../../../components/Pagination.astro";
+import { api } from "../../../lib/api";
+
+export async function getStaticPaths({ paginate }: any) {
+    // Fetch articles for both languages
+    const responseEn = await api.getArticles({ limit: 1000, lang: 'en' });
+    const responseFr = await api.getArticles({ limit: 1000, lang: 'fr' });
+    
+    let articlesEn = responseEn.items || [];
+    let articlesFr = responseFr.items || [];
+
+    const sortFn = (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime();
+    articlesEn.sort(sortFn);
+    articlesFr.sort(sortFn);
+
+    const enPages = paginate(articlesEn, { params: { lang: undefined }, pageSize: 24 });
+    const frPages = paginate(articlesFr, { params: { lang: 'fr' }, pageSize: 24 });
+
+    return [...enPages, ...frPages];
+}
+
+export const prerender = true;
+
+const { page } = Astro.props as any;
+const { lang: paramLang } = Astro.params;
+const lang = paramLang === 'fr' ? 'fr' : 'en';
+
+const SITE_URL = 'https://cloud.nivekaa.com';
+const currentPath = Astro.url.pathname.replace(/^\/fr/, '') || `/page/${page.currentPage}`;
+---
+
+<Layout 
+    title={lang === 'fr' ? `Articles - Page ${page.currentPage}` : `Articles - Page ${page.currentPage}`}
+    lang={lang}
+    hreflangEn={`${SITE_URL}${currentPath}`}
+    hreflangFr={`${SITE_URL}/fr${currentPath}`}
+>
+    <section class="mb-12">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">
+            {lang === 'fr' 
+              ? `Tous les articles (Page ${page.currentPage})`
+              : `All articles (Page ${page.currentPage})`}
+        </h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {
+                page.data.map((article: any) => (
+                    <ArticleCard client:load article={article} />
+                ))
+            }
+        </div>
+
+        <Pagination page={page} lang={lang} />
+    </section>
+</Layout>

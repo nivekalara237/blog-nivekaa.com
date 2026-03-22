@@ -1,15 +1,27 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import ArticleCard from "../components/ArticleCard.jsx";
-import CategoryCards from "../components/CategoryCards.jsx";
-import NewsletterForm from "../components/NewsletterForm.jsx";
-import Pagination from "../components/Pagination.astro";
-import { api } from "../lib/api";
-import { getCategories } from "../utils/api.js";
+import Layout from "../../layouts/Layout.astro";
+import ArticleCard from "../../components/ArticleCard.jsx";
+import CategoryCards from "../../components/CategoryCards.jsx";
+import NewsletterForm from "../../components/NewsletterForm.jsx";
+import Pagination from "../../components/Pagination.astro";
+import { api } from "../../lib/api";
+import { getCategories } from "../../utils/api.js";
+import { useTranslations } from "../../i18n/utils";
+
+export const prerender = true;
+export function getStaticPaths() {
+  return [
+    { params: { lang: undefined } },
+    { params: { lang: 'fr' } }
+  ];
+}
+
+const { lang: paramLang } = Astro.params;
+const lang = paramLang === 'fr' ? 'fr' : 'en';
 
 const PAGE_SIZE = 24;
 
-const response = await api.getArticles({ limit: 100 });
+const response = await api.getArticles({ limit: 100, lang });
 const allArticles = response.items || [];
 const validCategories = await getCategories();
 
@@ -56,19 +68,25 @@ const jsonLd = {
 	"@type": "WebSite",
 	url: siteUrl,
 	name: "CloudNive Blog",
-	description:
-		"Expertise technique sur le Cloud, le DevOps et le Développement Logiciel.",
+	description: lang === 'fr' 
+		? "Expertise technique sur le Cloud, le DevOps et le Développement Logiciel."
+		: "Technical expertise on Cloud, DevOps and Software Engineering.",
 	potentialAction: {
 		"@type": "SearchAction",
-		target: `${siteUrl}/articles?q={search_term_string}`,
+		target: `${siteUrl}${lang === 'fr' ? '/fr' : ''}/articles?q={search_term_string}`,
 		"query-input": "required name=search_term_string",
 	},
 };
 ---
 
 <Layout
-	title="CloudNive - Blog Technique Cloud & DevOps"
-	description="Expertise technique sur le Cloud, le DevOps, et le Développement Web. Tutoriels, articles de fond et partage d'expérience."
+	title={lang === 'fr' ? "CloudNive - Blog Technique Cloud & DevOps" : "CloudNive - Cloud & DevOps Engineering Blog"}
+	description={lang === 'fr' 
+		? "Expertise technique sur le Cloud, le DevOps, et le Développement Web. Tutoriels, articles de fond et partage d'expérience."
+		: "Technical expertise on Cloud, DevOps, and Web Development. Tutorials, deep dives and experience sharing."}
+	lang={lang}
+	hreflangEn={`${siteUrl}`}
+	hreflangFr={`${siteUrl}/fr`}
 >
 	<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
@@ -92,7 +110,7 @@ const jsonLd = {
 						<span style="color:var(--green-light); font-size:9px;"
 							>▶</span
 						>
-						Niveau MAX en Cloud & DevOps
+						{lang === 'fr' ? 'Niveau MAX en Cloud & DevOps' : 'MAX Level in Cloud & DevOps'}
 					</div>
 
 					<!-- Title -->
@@ -110,19 +128,18 @@ const jsonLd = {
 						class="mb-8"
 						style="font-size:16px; color:var(--text-secondary); max-width:480px; line-height:1.7; font-family:'Inter',sans-serif;"
 					>
-						Tutoriels, guides et retours d'expérience sur le Cloud
-						AWS/Azure, Terraform, Kubernetes, CI/CD et le
-						développement logiciel moderne. Chaque article = un
-						niveau débloqué.
+						{lang === 'fr'
+							? "Tutoriels, guides et retours d'expérience sur le Cloud AWS/Azure, Terraform, Kubernetes, CI/CD et le développement logiciel moderne. Chaque article = un niveau débloqué."
+							: "Tutorials, guides, and experience sharing on AWS/Azure Cloud, Terraform, Kubernetes, CI/CD, and modern software engineering. Every article = a new level unlocked."}
 					</p>
 
 					<!-- CTAs -->
 					<div class="flex items-center gap-3 flex-wrap mb-8">
-						<a href="/articles" class="btn btn--gold"
-							>▶ Explorer les articles</a
+						<a href={lang === 'fr' ? "/fr/articles" : "/articles"} class="btn btn--gold"
+							>▶ {lang === 'fr' ? 'Explorer les articles' : 'Explore articles'}</a
 						>
-						<a href="/categories" class="btn btn--secondary"
-							>// Catégories</a
+						<a href={lang === 'fr' ? "/fr/categories" : "/categories"} class="btn btn--secondary"
+							>// {lang === 'fr' ? 'Catégories' : 'Categories'}</a
 						>
 					</div>
 
@@ -260,12 +277,12 @@ const jsonLd = {
 				[
 					{
 						value: String(totalItems || "48"),
-						label: "Articles publiés",
+						label: lang === 'fr' ? "Articles publiés" : "Published Articles",
 						icon: "📄",
 					},
-					{ value: "12+", label: "Sujets Cloud", icon: "☁" },
-					{ value: "9", label: "Outils couverts", icon: "🔧" },
-					{ value: "2K+", label: "Lecteurs / mois", icon: "🚀" },
+					{ value: "12+", label: lang === 'fr' ? "Sujets Cloud" : "Cloud Topics", icon: "☁" },
+					{ value: "9", label: lang === 'fr' ? "Outils couverts" : "Tools Covered", icon: "🔧" },
+					{ value: "2K+", label: lang === 'fr' ? "Lecteurs / mois" : "Monthly Readers", icon: "🚀" },
 				].map(({ value, label, icon }, i) => (
 					<div
 						class="relative text-center p-6"
@@ -298,13 +315,13 @@ const jsonLd = {
 			<span style="color:var(--yellow-dark); font-size:14px;">▶</span>
 			<span
 				style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--text-secondary); white-space:nowrap;"
-				>Articles récents</span
+				>{lang === 'fr' ? 'Articles récents' : 'Recent Articles'}</span
 			>
 			<div style="flex:1; height:2px; background:var(--bg-border);"></div>
 			<a
-				href="/articles"
+				href={lang === 'fr' ? "/fr/articles" : "/articles"}
 				class="btn btn--secondary"
-				style="font-size:11px; padding:4px 14px;">Voir tout →</a
+				style="font-size:11px; padding:4px 14px;">{lang === 'fr' ? 'Voir tout →' : 'View all →'}</a
 			>
 		</div>
 
@@ -340,7 +357,7 @@ const jsonLd = {
 				style="color:var(--yellow-light);">"FARGATE_SPOT"</span
 			>]<br />
 			&nbsp; <span style="color:var(--text-dim);"
-				># 🎮 +50 XP : Infrastructure scalable débloquée</span
+				># {lang === 'fr' ? '🎮 +50 XP : Infrastructure scalable débloquée' : '🎮 +50 XP: Scalable infrastructure unlocked'}</span
 			><br />
 			&#125;
 		</div>
@@ -356,13 +373,13 @@ const jsonLd = {
 				style="position:absolute;right:40px;top:50%;transform:translateY(-50%);font-size:120px;opacity:0.04;color:var(--green-light);pointer-events:none;user-select:none;"
 				>✉</span
 			>
-			<NewsletterForm client:load />
+			<NewsletterForm client:load lang={lang} />
 		</div>
 	</section>
 
 	<!-- ===== PAGINATION ===== -->
 	<div class="max-w-7xl mx-auto px-6 pb-16">
-		<Pagination page={page} />
+		<Pagination page={page} lang={lang} />
 	</div>
 </Layout>
 

@@ -1,8 +1,29 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import Layout from "../../layouts/Layout.astro";
+import { useTranslations } from "../../i18n/utils";
+
+export const prerender = true;
+export function getStaticPaths() {
+  return [
+    { params: { lang: undefined } },
+    { params: { lang: 'fr' } }
+  ];
+}
+
+const SITE_URL = 'https://cloud.nivekaa.com';
+const { lang: paramLang } = Astro.params;
+const lang = paramLang === 'fr' ? 'fr' : 'en';
+
+// Strip the lang prefix to properly match hreflang tags if we're currently on /fr/404
+const currentPath = Astro.url.pathname.replace(/^\/fr/, '') || '/404';
 ---
 
-<Layout title="404 - Page Introuvable">
+<Layout 
+    title={lang === 'fr' ? "404 - Page Introuvable" : "404 - Page Not Found"}
+    lang={lang}
+    hreflangEn={`${SITE_URL}${currentPath}`}
+    hreflangFr={`${SITE_URL}/fr${currentPath}`}
+>
     <div
         class="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 relative overflow-hidden"
     >
@@ -40,14 +61,16 @@ import Layout from "../layouts/Layout.astro";
                     </div>
 
                     <div style="color:var(--text-secondary); margin-bottom: 24px;">
-                        <span style="color:var(--yellow-dark);">Error:</span> Le fichier ou la ressource demandée n'existe pas ou a été déplacée.
+                        <span style="color:var(--yellow-dark);">Error:</span> {lang === 'fr' 
+                          ? 'Le fichier ou la ressource demandée n\'existe pas.'
+                          : 'The requested file or resource does not exist.'}
                     </div>
 
                     {/* Fun decorative logs */}
                     <div class="text-xs md:text-sm mb-8" style="color:var(--text-dim); opacity: 0.7;">
-                        [log] Attempting connection to destination... failed.<br/>
-                        [log] Searching index routes... no match found.<br/>
-                        [log] Redirecting to fallback protocol.
+                        [log] {lang === 'fr' ? 'Tentative de connexion de destination... échec.' : 'Attempting connection to destination... failed.'}<br/>
+                        [log] {lang === 'fr' ? 'Recherche de route... aucun résultat.' : 'Searching index routes... no match found.'}<br/>
+                        [log] {lang === 'fr' ? 'Redirection vers le mode fallback.' : 'Redirecting to fallback protocol.'}
                     </div>
 
                     <div class="flex flex-col sm:flex-row gap-4 mt-6">
