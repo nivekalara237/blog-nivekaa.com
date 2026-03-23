@@ -21,7 +21,7 @@ export async function getHighlighter() {
             'yaml', 'yml', 'xml', 'sql', 'graphql', 'dockerfile',
             'ini', 'mermaid', 'csharp', 'py', 'kotlin', 'kt', 'kts',
             'jinja', 'hcl', 'mermaid', 'asm', 'astro', 'json', 'json5', 'toml',
-            'terraform'
+            'terraform', 'conf', 'ini'
         ],
     }).then(highlighter => {
         highlighterInstance = highlighter;
