@@ -39,5 +39,6 @@ export default defineConfig({
       'X-Frame-Options': 'DENY',
       // 'Content-Security-Policy': "default-src 'self'; script-src 'self';"
     }
-  }
+  },
+  trailingSlash: "ignore"
 });

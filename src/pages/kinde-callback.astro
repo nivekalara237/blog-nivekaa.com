@@ -2,6 +2,15 @@
 import KindeAuthProvider from '../components/KindeAuthProvider.jsx';
 ---
 <html>
+<head>
+    <meta charset="UTF-8" />
+    <script is:inline>
+        if (window.location.search.includes("code=")) {
+            sessionStorage.setItem("kinde_is_login", "true");
+        }
+    </script>
+    <title>Authentication...</title>
+</head>
 <body>
 <KindeAuthProvider client:only="react"></KindeAuthProvider>
 </body>
