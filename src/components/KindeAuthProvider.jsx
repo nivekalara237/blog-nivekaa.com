@@ -1,6 +1,28 @@
-import React, {useEffect, useMemo} from 'react';
+import React, {useEffect, useMemo, useRef} from 'react';
 import {KindeProvider, useKindeAuth} from "@kinde-oss/kinde-auth-react";
 
+const CallbackHandler = () => {
+    const { isAuthenticated, isLoading } = useKindeAuth();
+
+    const isLoginCallback = useRef(
+        typeof window !== 'undefined' && new URLSearchParams(window.location.search).has("code")
+    );
+
+    useEffect(() => {
+        if (isLoading) return;
+
+        if (isLoginCallback.current) {
+            if (isAuthenticated) {
+                window.location.href = "/admin/dash";
+            }
+        } else {
+            window.location.href = "/";
+        }
+    }, [isAuthenticated, isLoading]);
+
+    return <p>Authentification...</p>;
+}
+/*
 const CallbackHandler = () => {
     const { isAuthenticated, isLoading } = useKindeAuth();
 
@@ -16,6 +38,13 @@ const CallbackHandler = () => {
     }, [isAuthenticated, isLoading]);
 
     return <p>Authenticating...</p>;
+}*/
+
+const LogoutHandler = () => {
+    useEffect(() => {
+        window.location.href = "/";
+    }, []);
+    return <p>Déconnexion...</p>;
 }
 
 export default function KindeAuthProvider({ children } = {}) {
@@ -26,8 +55,10 @@ export default function KindeAuthProvider({ children } = {}) {
 
   const isAdminRoutes = currentPath.includes("/admin");
   const isCallbackRoutes = currentPath.includes("/kinde-callback");
+    const isLogoutRoute = currentPath.includes("/kinde-logout");
 
-  if (!isAdminRoutes && !isCallbackRoutes) {
+
+    if (!isAdminRoutes && !isCallbackRoutes) {
     return <>
       {children}
     </>;
@@ -38,7 +69,7 @@ export default function KindeAuthProvider({ children } = {}) {
     <KindeProvider
       clientId={import.meta.env.PUBLIC_KINDE_CLIENT_ID}
       domain={import.meta.env.PUBLIC_KINDE_DOMAIN}
-      logoutUri={origin}
+      logoutUri={`${origin}/kinde-logout`}
       redirectUri={`${origin}/kinde-callback`}
       activityTimeout={config}
       callbacks={{
@@ -56,7 +87,10 @@ export default function KindeAuthProvider({ children } = {}) {
         }
       }}
     >
-      {isCallbackRoutes ? <CallbackHandler /> : children}
+      {/*isCallbackRoutes ? <CallbackHandler /> : children*/}
+        {isCallbackRoutes && <CallbackHandler />}
+        {isLogoutRoute && <LogoutHandler />}
+        {!isCallbackRoutes && !isLogoutRoute && children}
     </KindeProvider>
   );
 }
