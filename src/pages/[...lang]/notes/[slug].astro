@@ -1,0 +1,127 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { api } from "../../../lib/api";
+import MarkdownRenderer from "../../../components/MarkdownRenderer.jsx";
+
+export const prerender = true;
+
+const SITE_URL = import.meta.env.SITE || 'https://cloud.nivekaa.com';
+
+export async function getStaticPaths() {
+    const SITE_URL = import.meta.env.SITE || 'https://cloud.nivekaa.com';
+
+    // Helper: recursively collect all note slugs from the hierarchy tree
+    type NoteTreeNode = { type: string; id: string; children?: NoteTreeNode[] };
+    const extractNoteSlugs = (nodes: NoteTreeNode[]) => {
+        let slugs: string[] = [];
+        for (const node of nodes) {
+            if (node.type === 'note') slugs.push(node.id);
+            if (node.children?.length) slugs = slugs.concat(extractNoteSlugs(node.children));
+        }
+        return slugs;
+    };
+
+    const paths = [];
+
+    for (const lang of ['en', 'fr']) {
+        try {
+            const { tree = [] } = await api.getNotesTree(lang).catch(() => ({ tree: [] }));
+            const slugs = extractNoteSlugs(tree);
+
+            for (const slug of slugs) {
+                try {
+                    const noteData = await api.getNote(slug, lang);
+                    paths.push({
+                        params: { lang: lang === 'en' ? undefined : lang, slug },
+                        props: {
+                            noteData,
+                            lang,
+                            hreflangEn: `${SITE_URL}/notes/${slug}`,
+                            hreflangFr: `${SITE_URL}/fr/notes/${slug}`,
+                        }
+                    });
+                } catch { /* skip unpublished notes */ }
+            }
+        } catch { /* tree unavailable at build time, skip */ }
+    }
+
+    return paths;
+}
+
+const { noteData, lang, hreflangEn, hreflangFr } = Astro.props;
+
+const wordCount = noteData.content?.split(/\s+/).length || 0;
+const readingTime = Math.ceil(wordCount / 200);
+
+const canonicalUrl = new URL(Astro.url.pathname, SITE_URL);
+
+const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    headline: noteData.title,
+    datePublished: noteData.createdAt,
+    dateModified: noteData.lastUpdated || noteData.createdAt,
+    mainEntityOfPage: { "@type": "WebPage", "@id": canonicalUrl },
+    author: { "@type": "Organization", name: "CloudNive" },
+};
+---
+
+<Layout
+    title={`${noteData.title} — Notes`}
+    description={`${noteData.title} · ${readingTime} min read`}
+    type="article"
+    lang={lang}
+    hreflangEn={hreflangEn}
+    hreflangFr={hreflangFr}
+>
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+    <div class="max-w-4xl mx-auto px-6 py-12 mt-16 lg:mt-20">
+        <article>
+            <!-- Breadcrumb -->
+            <nav class="text-xs font-mono text-[var(--text-dim)] mb-8 flex items-center gap-2">
+                <a href={lang === 'fr' ? '/fr/notes' : '/notes'} class="hover:text-[var(--green-light)] transition-colors">
+                    {lang === 'fr' ? '← Notes' : '← Notes'}
+                </a>
+            </nav>
+
+            <!-- Header -->
+            <div class="border-b border-[var(--bg-border)] pb-8 mb-8">
+                <h1 class="text-4xl font-black mb-4 text-[var(--yellow-light)]" style="font-family:'Space Grotesk',sans-serif">
+                    {noteData.title}
+                </h1>
+
+                <div class="flex flex-wrap items-center gap-4 text-sm font-mono text-[var(--text-dim)]">
+                    {noteData.tags && noteData.tags.length > 0 && (
+                        <div class="flex gap-2 flex-wrap">
+                            {noteData.tags.map((tag: string) => (
+                                <span class="bg-[var(--bg-surface)] px-2 py-0.5 rounded text-xs text-[var(--text-secondary)] uppercase tracking-wider">
+                                    #{tag}
+                                </span>
+                            ))}
+                        </div>
+                    )}
+                    <span>⏱ {readingTime} {lang === 'fr' ? 'min de lecture' : 'min read'}</span>
+                    <time datetime={noteData.createdAt}>
+                        {new Date(noteData.lastUpdated || noteData.createdAt).toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    </time>
+                </div>
+            </div>
+
+            <!-- Content rendered with the same MarkdownRenderer used for articles -->
+            <div class="prose max-w-none">
+                <MarkdownRenderer client:load content={noteData.content} />
+            </div>
+
+            <!-- Footer nav -->
+            <div class="mt-12 pt-8 border-t border-[var(--bg-border)]">
+                <a
+                    href={lang === 'fr' ? '/fr/notes' : '/notes'}
+                    class="inline-flex items-center gap-2 text-[var(--green-light)] hover:text-[var(--green-dark)] font-mono text-sm transition-colors"
+                >
+                    ← {lang === 'fr' ? 'Retour aux Notes' : 'Back to Notes'}
+                </a>
+            </div>
+        </article>
+    </div>
+</Layout>

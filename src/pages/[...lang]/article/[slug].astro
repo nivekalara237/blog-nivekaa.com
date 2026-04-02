@@ -18,36 +18,47 @@ export async function getStaticPaths() {
     const SITE_URL = 'https://cloud.nivekaa.com';
     const dataEn = await api.getArticles({ limit: 1000, lang: 'en' });
     const dataFr = await api.getArticles({ limit: 1000, lang: 'fr' });
-    
+
     const articlesEn = Array.isArray(dataEn) ? dataEn : dataEn.items || [];
     const articlesFr = Array.isArray(dataFr) ? dataFr : dataFr.items || [];
 
     const paths: any[] = [];
 
-    articlesEn.forEach((article: any) => {
-        paths.push({
-            params: { lang: undefined, slug: article.slug },
-            props: {
-                article,
-                lang: 'en',
-                hreflangEn: `${SITE_URL}/article/${article.slug}`,
-                hreflangFr: article.translationAvailable ? `${SITE_URL}/fr/article/${article.slug}` : undefined,
-            }
-        });
-    });
+    // The list endpoint only returns metadata — fetch each full article
+    // individually so the `content` body is available on the page.
+    await Promise.all(
+        articlesEn.map(async (meta: any) => {
+            try {
+                const article = await api.getArticle(meta.slug);
+                paths.push({
+                    params: { lang: undefined, slug: article.slug },
+                    props: {
+                        article,
+                        lang: 'en',
+                        hreflangEn: `${SITE_URL}/article/${article.slug}`,
+                        hreflangFr: article.translationAvailable ? `${SITE_URL}/fr/article/${article.slug}` : undefined,
+                    }
+                });
+            } catch { /* skip articles that fail to load */ }
+        })
+    );
 
-    articlesFr.forEach((article: any) => {
-        // Assume article object from FR query is already translated
-        paths.push({
-            params: { lang: 'fr', slug: article.slug },
-            props: {
-                article,
-                lang: 'fr',
-                hreflangEn: article.translationAvailable ? `${SITE_URL}/article/${article.slug}` : undefined,
-                hreflangFr: `${SITE_URL}/fr/article/${article.slug}`,
-            }
-        });
-    });
+    await Promise.all(
+        articlesFr.map(async (meta: any) => {
+            try {
+                const article = await api.getArticle(meta.slug, 'fr');
+                paths.push({
+                    params: { lang: 'fr', slug: article.slug },
+                    props: {
+                        article,
+                        lang: 'fr',
+                        hreflangEn: article.translationAvailable ? `${SITE_URL}/article/${article.slug}` : undefined,
+                        hreflangFr: `${SITE_URL}/fr/article/${article.slug}`,
+                    }
+                });
+            } catch { /* skip articles that fail to load */ }
+        })
+    );
 
     return paths;
 }
