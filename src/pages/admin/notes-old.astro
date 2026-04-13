@@ -1,0 +1,8 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import AuthenticatedNotesApp from "../../components/admin/AuthenticatedNotesApp.jsx";
+---
+
+<AdminLayout title="Espace Notes (ancien) | CloudNive Admin">
+    <AuthenticatedNotesApp client:only="react" lang="fr" />
+</AdminLayout>

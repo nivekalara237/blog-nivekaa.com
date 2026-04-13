@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const navLinks = [
     { label: 'Accueil', href: '/' },
+    { label: 'Notes', href: '/notes' },
     { label: 'Articles', href: '/articles' },
     { label: 'Catégories', href: '/categories' },
     { label: 'Contact', href: '/contact' },

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 
-export default function TableOfContents({ content }) {
+export default function TableOfContents({ content = '' }) {
     const [headingsTree, setHeadingsTree] = useState([]);
     const [activeId, setActiveId] = useState('');
     const [expandedSections, setExpandedSections] = useState(new Set());
 
     useEffect(() => {
         // Extract headings from Markdown content
+        if (!content) return;
         const lines = content.split('\n');
         const extractedHeadings = [];
         let insideCodeBlock = false;

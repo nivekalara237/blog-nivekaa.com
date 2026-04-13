@@ -69,6 +69,7 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
     // Detect inline code: no className means inline code
     const isInline = !className || inline;
 
+
     // Handle Mermaid diagrams
     if (!isInline && lang === 'mermaid') {
         return <Mermaid chart={code} />;
@@ -81,17 +82,20 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
             try {
                 const highlighter = await getHighlighter();
 
+                // Dual-theme: Shiki writes --shiki-light / --shiki-dark CSS vars.
+                // The CSS rules in global.css activate them based on html.dark class.
                 const highlighted = highlighter.codeToHtml(code, {
                     lang: lang,
                     themes: {
                         light: 'github-light',
                         dark: 'github-dark',
-                    }
+                    },
+                    defaultColor: false,   // let CSS decide which var to use
                 });
                 setHtml(highlighted);
             } catch (e) {
                 console.error("Shiki error:", e);
-                setHtml(`<pre class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto"><code>${code}</code></pre>`);
+                setHtml(`<pre style="background:var(--bg-deep);padding:1.25rem;overflow-x:auto"><code style="color:var(--green-light);font-family:'JetBrains Mono',monospace;font-size:0.875em">${code}</code></pre>`);
             }
         };
 
@@ -108,16 +112,21 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
         }
     };
 
-    // Inline code
+    // Inline code — solid highlighter strip in background, positioned below text
     if (isInline) {
         return (
             <code
-                className="px-1.5 inline-block py-0.5 mx-1 text-sm font-bold tracking-wide"
+                className="inline font-mono text-[0.875em] font-semibold text-[var(--text-primary)] px-1 py-0.5"
                 style={{
-                    backgroundColor: 'rgba(255, 170, 0, 0.15)',
-                    color: 'var(--yellow-dark)',
-                    border: '1px solid rgba(255, 170, 0, 0.3)',
-                    fontFamily: "'JetBrains Mono', monospace"
+                    // Solid gold strip pinned to the bottom — highlighter effect
+                    backgroundImage: 'linear-gradient(rgba(255,170,0,0.45), rgba(255,170,0,0.45))',
+                    backgroundSize: '100% 30%',
+                    backgroundPosition: '0 100%',
+                    backgroundRepeat: 'no-repeat',
+                    // 3D depth below the strip
+                    boxShadow: '0 2px 0 rgba(255,170,0,0.7), 0 4px 0 rgba(150,80,0,0.2)',
+                    WebkitBoxDecorationBreak: 'clone',
+                    boxDecorationBreak: 'clone',
                 }}
                 {...props}
             >
@@ -125,6 +134,8 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
             </code>
         );
     }
+
+
 
     // Block code with highlighting
     if (html) {

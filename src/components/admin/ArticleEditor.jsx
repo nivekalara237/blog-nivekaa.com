@@ -1,14 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MarkdownRenderer from '../MarkdownRenderer.jsx';
 import AuthorCard from '../AuthorCard.jsx';
-import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 import { mapKindeUserToAuthor } from '../../utils/user-mapper';
 import { kindeApi } from '../../lib/kinde-api';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 
-export default function ArticleEditor({ categories, tags, onSaveSuccess = (result) => { } }) {
+export default function ArticleEditor({ 
+    categories = [],
+    tags = [],
+    onSaveSuccess = (result) => {},
+    // Auth props
+    user = null,
+    isLoading = false,
+    // Note-mode props — only used when mode='note'
+    mode = 'article', // 'article' | 'note'
+    noteSlug = null,  // slug of the note being edited (note mode)
+    noteParentId = 'root', // parent folder id for creation (note mode)
+    onNoteClose = null, // called after save in note mode
+}) {
     const [editSlug, setEditSlug] = useState(null);
-    const { user, isLoading } = useKindeAuth();
     const [author, setAuthor] = useState(null);
 
     useEffect(() => {
@@ -48,6 +58,7 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
     const [uploadedImages, setUploadedImages] = useState(new Map());
     const [status, setStatus] = useState('published');
     const [isLoadingArticle, setIsLoadingArticle] = useState(false);
+    const hasLoaded = useRef(false);
     const [existingCoverKey, setExistingCoverKey] = useState('');
     const textareaRef = useRef(null);
     const titleTextareaRef = useRef(null);
@@ -70,7 +81,9 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
     const API_URL = import.meta.env.PUBLIC_API_URL || 'https://cloudnive-api.nivekaa.com';
 
     // Form is valid if EN locale has title + content
-    const isFormValid = locales.en.title.trim() !== '' && locales.en.content.trim() !== '' && selectedCategory !== '';
+    const isFormValid = mode === 'note'
+        ? locales.en.title.trim() !== '' && locales.en.content.trim() !== ''
+        : locales.en.title.trim() !== '' && locales.en.content.trim() !== '' && selectedCategory !== '';
 
     // Filter tags based on input
     const filteredTags = tags.filter(tag =>
@@ -125,23 +138,27 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
     // Restore from API (Edition) or localStorage (Auto-save) on mount
     useEffect(() => {
         const loadArticle = async () => {
-            // Check for edit parameter in URL
+            // Check for edit parameter in URL or use noteSlug prop
             const urlParams = new URLSearchParams(window.location.search);
-            const slugFromUrl = urlParams.get('edit');
+            const slugFromUrl = mode === 'note' ? noteSlug : urlParams.get('edit');
 
             if (slugFromUrl) {
                 setEditSlug(slugFromUrl);
                 // EDITION MODE: Fetch from API with admin drafts access
                 try {
                     setIsLoadingArticle(true);
-                    const response = await fetch(`${API_URL}/articles/${slugFromUrl}?includeDrafts=true`);
+                    const endpoint = mode === 'note'
+                        ? `${API_URL}/notes/${slugFromUrl}?lang=all`
+                        : `${API_URL}/articles/${slugFromUrl}?includeDrafts=true`;
+                        
+                    const response = await fetch(endpoint);
                     if (response.ok) {
                         const article = await response.json();
 
                         // Build locale state from API response
                         const apiLocales = article.locales || {
                             en: {
-                                title: article.title || '',
+                                title: article.title || article.name || '',
                                 description: article.description || '',
                                 isDrafted: article.isDrafted || false,
                             }
@@ -151,7 +168,7 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
                             en: {
                                 title: apiLocales.en?.title || '',
                                 description: apiLocales.en?.description || '',
-                                content: article.contentMarkdown || '',
+                                content: article.enContent || article.contentMarkdown || article.content || '',
                                 isDrafted: apiLocales.en?.isDrafted || false,
                             },
                             fr: {
@@ -200,10 +217,12 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
             }
         };
 
-        if (!isLoading && user) {
+        if (!isLoading && user && !hasLoaded.current) {
+            hasLoaded.current = true;
             loadArticle();
         }
-    }, [isLoading, user, categories]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoading, user]);
 
     const handleAddTag = (tag) => {
         if (tag && !selectedTags.includes(tag)) {
@@ -457,6 +476,45 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
         setStatus(submitStatus);
 
         try {
+            // ── NOTE MODE ────────────────────────────────────────────────
+            if (mode === 'note') {
+                const localesToSend = {
+                    en: { title: locales.en.title, content: locales.en.content },
+                };
+                if (locales.fr.title.trim()) {
+                    localesToSend.fr = { title: locales.fr.title, content: locales.fr.content };
+                }
+
+                const notePayload = {
+                    tags: selectedTags,
+                    authorEmail: user?.email || '',
+                    authorName: author?.name || user?.given_name || '',
+                    parentId: noteParentId,
+                    locales: localesToSend,
+                };
+
+                const url = noteSlug
+                    ? `${API_URL}/notes/${noteSlug}`
+                    : `${API_URL}/notes`;
+                const method = noteSlug ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(notePayload)
+                });
+
+                if (!response.ok) throw new Error('Erreur lors de la sauvegarde de la note');
+
+                const result = await response.json();
+                alert(`✅ Note enregistrée !`);
+
+                if (onNoteClose) onNoteClose(result);
+                if (onSaveSuccess) onSaveSuccess(result);
+                return;
+            }
+
+            // ── ARTICLE MODE ─────────────────────────────────────────────
             await cleanupUnusedImages(locales.en.content);
 
             let finalCoverKey = existingCoverKey;
@@ -666,8 +724,8 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
                     </button>
                 </div>
 
-                {/* Cover Image Upload - NOW AT TOP */}
-                <div>
+                {/* Cover Image Upload - Article mode only */}
+                {mode === 'article' && <div>
                     <label htmlFor="cover" className="block text-xs font-medium text-gray-500 dark:text-gray-500 mb-3">
                         IMAGE DE COUVERTURE
                     </label>
@@ -730,7 +788,7 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
                             )}
                         </div>
                     )}
-                </div>
+                </div>}
 
                 {/* ── Language Tabs ── */}
                 <div className="flex items-center gap-3 pt-2">
@@ -741,11 +799,10 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
                                 key={lang}
                                 type="button"
                                 onClick={() => setActiveLang(lang)}
-                                className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5 ${
-                                    activeLang === lang
+                                className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5 ${activeLang === lang
                                         ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
                                         : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                                }`}
+                                    }`}
                             >
                                 {lang === 'en' ? '🇬🇧' : '🇫🇷'} {lang.toUpperCase()}
                                 {lang === 'en' && <span className="text-[9px] bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 px-1 rounded">DEFAULT</span>}
@@ -779,12 +836,15 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
                         required={activeLang === 'en'}
                         rows={1}
                         className="w-full text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 bg-transparent border-none focus:outline-none placeholder-gray-300 dark:placeholder-gray-700 resize-none overflow-hidden"
-                        placeholder={activeLang === 'en' ? "Article title..." : "Titre de l'article..."}
+                        placeholder={activeLang === 'en'
+                            ? (mode === 'note' ? 'Note title...' : 'Article title...')
+                            : (mode === 'note' ? 'Titre de la note...' : "Titre de l'article...")}
                         style={{ minHeight: '3rem' }}
                     />
                 </div>
 
-                {/* Category and Slug row */}
+                {/* Category, Slug, and Description  — Article mode only */}
+                {mode === 'article' && <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                     <div>
                         <label htmlFor="category" className="block text-xs font-medium text-gray-500 dark:text-gray-500 mb-2">CATÉGORIE</label>
@@ -813,7 +873,6 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
                     </div>
                 </div>
 
-                {/* Description */}
                 <div>
                     <input
                         type="text"
@@ -826,6 +885,7 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
                         placeholder={activeLang === 'en' ? 'Short, catchy description...' : 'Description courte et accrocheuse...'}
                     />
                 </div>
+                </>}
 
                 {/* Tags - Dynamic with autocomplete */}
                 <div>
@@ -892,11 +952,10 @@ export default function ArticleEditor({ categories, tags, onSaveSuccess = (resul
                 <div className="pt-8 border-t border-gray-200 dark:border-gray-700">
                     <div className="flex items-center gap-3 mb-3">
                         <label className="block text-xs font-medium text-gray-500 dark:text-gray-500 uppercase">CONTENU</label>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${
-                            activeLang === 'en'
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${activeLang === 'en'
                                 ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300'
                                 : 'bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300'
-                        }`}>
+                            }`}>
                             {activeLang === 'en' ? '🇬🇧 English' : '🇫🇷 Français'}
                         </span>
                         {activeLang === 'fr' && !locales.en.content && (
