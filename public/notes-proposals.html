@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propositions Design Notes - Minecraft Style</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Minecraft';
+            src: url('https://db.onlinewebfonts.com/t/6ab539c6fc2b21fd0a190bade068060c.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: white; padding: 2rem; }
+        .proposal-title { font-family: 'Space Grotesk', sans-serif; }
+        .mc-font { font-family: 'Minecraft', 'JetBrains Mono', monospace; }
+        
+        /* Layout skeleton */
+        .app-window { height: 600px; display: flex; border-radius: 8px; overflow: hidden; margin-bottom: 4rem; }
+        .sidebar { width: 300px; display: flex; flex-direction: column; }
+        .main-view { flex: 1; padding: 2rem; display: flex; flex-direction: column; }
+        
+        /* 1. CLASSIC SURVIVAL (Stone/Inventory UI) */
+        .p1-window { background: #1e1e1e; border: 4px solid #000; }
+        .p1-sidebar { background: #c6c6c6; border-right: 4px solid #000; box-shadow: inset -4px 0 0 rgba(0,0,0,0.25); color: #333; }
+        .p1-main { background: #8b8b8b; box-shadow: inset 4px 4px 0 rgba(255,255,255,0.2), inset -4px -4px 0 rgba(0,0,0,0.2); }
+        .p1-btn { background: #c6c6c6; border: 4px solid; border-color: #fff #555 #555 #fff; color: #000;}
+        .p1-btn:hover { background: #dcdcdc; }
+        .p1-item-active { background: #3c8527; color: white; border: 4px solid; border-color: #55ff33 #1d4013 #1d4013 #55ff33;}
+        .p1-item { border: 4px solid transparent; }
+        .p1-item:hover:not(.p1-item-active) { background: rgba(0,0,0,0.1); }
+        .p1-card { background: #c6c6c6; border: 4px solid; border-color: #fff #555 #555 #fff; color: #333;}
+        .p1-card:hover { border-color: #fff #111 #111 #fff; transform: translateY(-2px); }
+
+        /* 2. THE BEDROCK / NETHER (Dark, Purple/Gold, Obsidian) */
+        .p2-window { background: #0b0710; border: 4px solid #2d1b4e; }
+        .p2-sidebar { background: #130a21; border-right: 4px solid #3c1e6e; }
+        .p2-main { background: #0b0710; background-image: radial-gradient(circle at 50% 0%, #2d1b4e 0%, transparent 70%); }
+        .p2-item { color: #a482d8; border-left: 4px solid transparent; }
+        .p2-item:hover { background: rgba(164, 130, 216, 0.1); }
+        .p2-item-active { background: rgba(255, 170, 0, 0.15); color: #ffaa00; border-left: 4px solid #ffaa00; }
+        .p2-card { background: #1a0f2e; border: 2px solid #3c1e6e; color: white;}
+        .p2-card:hover { border-color: #ffaa00; box-shadow: 0 0 15px rgba(255,170,0,0.2); }
+        .p2-badge { background: #ffaa00; color: #000; font-weight: bold; }
+
+        /* 3. MODERN CRAFT (Clean Pixel, Flat, Light Wood style) */
+        .p3-window { background: #fdfaf6; border: 2px solid #d4c5b0; color: #2d3748; }
+        .p3-sidebar { background: #f4eee4; border-right: 2px solid #d4c5b0; }
+        .p3-main { background: #fdfaf6; }
+        .p3-item { color: #718096; border-radius: 8px; margin: 4px 8px; }
+        .p3-item:hover { background: #e2e8f0; }
+        .p3-item-active { background: #48bb78; color: white; box-shadow: 0 4px 0 #2f855a; }
+        .p3-card { background: white; border: 2px solid #e2e8f0; border-radius: 12px; transition: all 0.2s; }
+        .p3-card:hover { border-color: #48bb78; transform: translateY(-4px); box-shadow: 0 8px 0 rgba(72,187,120,0.2); }
+
+        /* 4. REDSTONE TERMINAL (Tech, Command blocks) */
+        .p4-window { background: #111; border: 4px solid #ff3300; }
+        .p4-sidebar { background: #0a0a0a; border-right: 4px solid #333; }
+        .p4-main { background: #111; 
+            background-image: linear-gradient(rgba(255,51,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,51,0,0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .p4-item { color: #666; font-family: 'JetBrains Mono'; }
+        .p4-item:hover { color: #ff3300; background: rgba(255,51,0,0.1); }
+        .p4-item-active { color: #ff3300; background: rgba(255,51,0,0.15); border-left: 4px solid #ff3300; text-shadow: 0 0 8px rgba(255,51,0,0.5); }
+        .p4-card { background: #0a0a0a; border: 2px solid #333; color: white; font-family: 'JetBrains Mono'; }
+        .p4-card:hover { border-color: #ff3300; background: rgba(255,51,0,0.05); }
+
+        /* 5. THE HYBRID (Modern Craft + Redstone Terminal structure) */
+        .p5-window { background: #fdfaf6; border: 2px solid #d4c5b0; color: #2d3748; }
+        .p5-sidebar { background: #f4eee4; border-right: 2px solid #d4c5b0; }
+        .p5-main { background: #fdfaf6; 
+            background-image: linear-gradient(rgba(72,187,120,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(72,187,120,0.08) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .p5-item { color: #718096; font-family: 'JetBrains Mono'; margin: 2px 8px; border-radius: 4px; border: 1px solid transparent; }
+        .p5-item:hover { color: #2f855a; background: rgba(72,187,120,0.1); border-color: rgba(72,187,120,0.2); }
+        .p5-item-active { color: #2f855a; background: white; border: 2px solid #48bb78; box-shadow: 2px 2px 0 rgba(72,187,120,0.3); }
+        .p5-card { background: white; border: 2px solid #e2e8f0; border-radius: 8px; transition: all 0.2s; font-family: 'JetBrains Mono'; }
+        .p5-card:hover { border-color: #48bb78; transform: translateY(-3px); box-shadow: 4px 4px 0 rgba(72,187,120,0.3); }
+        .p5-btn { background: #48bb78; color: white; border: 2px solid #2f855a; font-family: 'JetBrains Mono'; transition: all 0.1s; box-shadow: 2px 2px 0 #2f855a; }
+        .p5-btn:hover { background: #38a169; transform: translate(1px, 1px); box-shadow: 1px 1px 0 #2f855a; }
+        .p5-btn:active { transform: translate(2px, 2px); box-shadow: 0 0 0 transparent; }
+
+    </style>
+</head>
+<body>
+
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-4xl font-bold mb-4 proposal-title text-[#FFD700]">Propositions de Design : Espace Notes</h1>
+        <p class="mb-12 text-gray-400">4 visions de l'esthétique Minecraft adaptées pour une application web de prise de notes. Chaque design cherche un équilibre différent entre le retro-gaming natif et l'ergonomie d'utilisation moderne.</p>
+
+        <!-- PROPOSITION 1 -->
+        <h2 class="text-2xl font-bold mb-4 proposal-title">1. Classic Survival (L'Inventaire Pur)</h2>
+        <p class="mb-4 text-sm text-gray-400">Reprend à 100% l'interface classique des coffres/inventaires de Minecraft. Très brut, bordures 3D inversées grises, fond de fenêtre en pierre. Hyper immersif, mais esthétique lourde.</p>
+        <div class="app-window p1-window shadow-2xl">
+            <aside class="sidebar p1-sidebar">
+                <div class="p-4 border-b-4 border-gray-500 mb-2 bg-[#b0b0b0]">
+                    <h3 class="mc-font text-xl font-bold uppercase">NOTES</h3>
+                </div>
+                <div class="p-2 space-y-1 overflow-y-auto">
+                    <div class="p1-item px-3 py-2 cursor-pointer font-bold mc-font text-sm flex gap-2"><span class="text-gray-600">[+]</span> Spring Boot</div>
+                    <div class="p1-item-active px-3 py-2 cursor-pointer font-bold mc-font text-sm flex gap-2"><span class="text-white">[-]</span> DevOps Masterclass</div>
+                    <div class="px-8 py-1 cursor-pointer font-bold mc-font text-xs flex gap-2">Docker Concepts</div>
+                    <div class="px-8 py-1 cursor-pointer font-bold mc-font text-xs flex gap-2">CI/CD Github</div>
+                    <div class="p1-item px-3 py-2 cursor-pointer font-bold mc-font text-sm flex gap-2 mt-4 text-gray-700 italic">+ NOUVEAU GROUPE</div>
+                </div>
+            </aside>
+            <main class="main-view p1-main relative">
+                <div class="absolute top-4 right-4 flex gap-2">
+                    <button class="p1-btn px-4 py-2 mc-font font-bold text-sm">NOUVELLE NOTE</button>
+                </div>
+                <h1 class="text-3xl mc-font text-white mb-8" style="text-shadow: 2px 2px 0 #333;">DevOps Masterclass</h1>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p1-card p-4 cursor-pointer">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="mc-font font-bold text-lg">Docker Concepts</span>
+                            <span class="bg-[#3c8527] text-white px-2 py-0.5 text-xs border border-black">NOTE</span>
+                        </div>
+                        <p class="text-sm text-gray-700 mt-2 line-clamp-2">Comment structurer les images docker pour une production optimisée...</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- PROPOSITION 2 -->
+        <h2 class="text-2xl font-bold mb-4 proposal-title mt-16 text-[#a482d8]">2. The Obsidian Nether (Mode Nuit Premium)</h2>
+        <p class="mb-4 text-sm text-gray-400">Une version "gaming sombre" inspirée de l'obsi et des reflets de portail du Nether. Profond, élégant, contrastes or et violet. Très agréable à lire, ergonomique et résolument moderne.</p>
+        <div class="app-window p2-window shadow-2xl">
+            <aside class="sidebar p2-sidebar">
+                <div class="p-5 border-b-2 border-[#3c1e6e] flex justify-between items-center">
+                    <h3 class="mc-font text-xl font-bold uppercase text-[#ffaa00] tracking-widest shadow-yellow"># NOTES</h3>
+                </div>
+                <div class="flex-1 py-4 space-y-1">
+                    <div class="p2-item px-6 py-3 cursor-pointer font-bold mc-font text-sm flex items-center gap-3">
+                        <span class="text-[#3c1e6e]">▶</span> Spring Boot
+                    </div>
+                    <div class="p2-item-active px-6 py-3 cursor-pointer font-bold mc-font text-sm flex flex-col">
+                        <div class="flex items-center gap-3 mb-2"><span class="text-[#ffaa00]">▼</span> DevOps Masterclass</div>
+                        <div class="pl-6 space-y-2">
+                            <div class="text-xs text-gray-400 hover:text-white transition cursor-pointer flex gap-2">› Docker Concepts</div>
+                            <div class="text-xs text-gray-400 hover:text-white transition cursor-pointer flex gap-2">› CI/CD Github</div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            <main class="main-view p2-main">
+                <div class="flex justify-between items-end mb-8 border-b-2 border-[#3c1e6e] pb-6">
+                    <div>
+                        <h1 class="text-4xl mc-font text-white tracking-wider">DevOps Masterclass</h1>
+                        <p class="text-sm text-[#a482d8] mt-2 font-mono">2 éléments dans ce groupe</p>
+                    </div>
+                    <button class="bg-[#ffaa00] hover:bg-[#e69900] text-black px-6 py-2 mc-font font-bold text-sm tracking-wider shadow-[0_0_15px_rgba(255,170,0,0.4)] transition-all">+ NOTE</button>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <div class="p2-card p-4 flex justify-between items-center cursor-pointer group">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-[#3c1e6e] group-hover:bg-[#ffaa00] transition-colors rounded flex items-center justify-center text-xl font-black">📄</div>
+                            <div>
+                                <span class="mc-font font-bold text-lg text-gray-200 group-hover:text-white transition-colors">Docker Concepts</span>
+                            </div>
+                        </div>
+                        <span class="p2-badge px-3 py-1 text-xs tracking-widest">NOTE</span>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- PROPOSITION 3 -->
+        <h2 class="text-2xl font-bold mb-4 proposal-title mt-16 text-[#48bb78]">3. Modern Craft (Le Bâtisseur)</h2>
+        <p class="mb-4 text-sm text-gray-400">Inspiré de Minecraft Dungeons et des textures lisses (barebones). Lumineux, épuré, arêtes arrondies mais gardant l'esprit gros pixels grâce aux ombres pleines (Box shadows rigides).</p>
+        <div class="app-window p3-window shadow-xl">
+            <aside class="sidebar p3-sidebar">
+                <div class="p-6">
+                    <h3 class="font-black text-2xl tracking-widest text-[#2f855a]">NOTES</h3>
+                </div>
+                <div class="px-2 space-y-1">
+                    <div class="p3-item px-4 py-3 cursor-pointer font-bold text-sm flex gap-3 items-center">
+                        <span class="text-[#a0aec0] bg-white w-6 h-6 rounded border-2 border-[#cbd5e0] flex items-center justify-center">+</span> Spring Boot
+                    </div>
+                    <div class="p3-item-active px-4 py-3 cursor-pointer font-bold text-sm flex flex-col gap-3">
+                        <div class="flex items-center gap-3">
+                            <span class="text-[#2f855a] bg-[#c6f6d5] w-6 h-6 rounded border-2 border-[#9ae6b4] flex items-center justify-center">-</span> DevOps Masterclass
+                        </div>
+                        <div class="pl-8 space-y-3 pb-2">
+                            <div class="text-sm font-medium opacity-90 hover:opacity-100 flex gap-2 cursor-pointer">▪ Docker Concepts</div>
+                            <div class="text-sm font-medium opacity-90 hover:opacity-100 flex gap-2 cursor-pointer">▪ CI/CD Github</div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            <main class="main-view p3-main">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h1 class="text-4xl font-black text-[#2d3748]">DevOps Masterclass</h1>
+                        <p class="text-sm text-[#718096] mt-2 font-bold tracking-widest">📂 GROUPE (2)</p>
+                    </div>
+                    <button class="bg-[#48bb78] text-white px-6 py-3 font-bold rounded-xl shadow-[0_6px_0_#2f855a] hover:-translate-y-1 hover:shadow-[0_8px_0_#2f855a] active:translate-y-1 active:shadow-[0_2px_0_#2f855a] transition-all">
+                        AJOUTER NOTE
+                    </button>
+                </div>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="p3-card p-6 flex flex-col gap-4 cursor-pointer">
+                        <div class="flex justify-between items-start">
+                            <span class="bg-[#ebf8ff] text-[#3182ce] px-3 py-1 font-bold text-[10px] tracking-widest rounded-lg border-2 border-[#bee3f8]">DOCUMENT</span>
+                        </div>
+                        <span class="font-black text-xl text-[#2d3748]">Docker Concepts</span>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- PROPOSITION 4 -->
+        <h2 class="text-2xl font-bold mb-4 proposal-title mt-16 text-[#ff3300]">4. The Redstoner (Terminal / Circuit)</h2>
+        <p class="mb-4 text-sm text-gray-400">Le croisement entre un bloc de commande Minecraft et un terminal de hacker. Typo monospace partout, couleurs intenses, look industriel et grille de construction en fond.</p>
+        <div class="app-window p4-window shadow-2xl">
+            <aside class="sidebar p4-sidebar">
+                <div class="p-6 border-b-4 border-[#333]">
+                    <h3 class="mc-font text-2xl font-bold uppercase text-[#ff3300] tracking-widest">sys.NOTES</h3>
+                </div>
+                <div class="py-4">
+                    <div class="p4-item px-6 py-2 cursor-pointer text-sm flex gap-4"><span>[+]</span> DIR_SPRING</div>
+                    <div class="p4-item-active px-6 py-2 cursor-pointer font-bold text-sm flex flex-col">
+                        <div class="flex gap-4"><span>[-]</span> DIR_DEVOPS</div>
+                        <div class="pl-10 mt-2 space-y-1">
+                            <div class="text-xs text-[#888] hover:text-white cursor-pointer py-1">└─ note_docker.md</div>
+                            <div class="text-xs text-[#888] hover:text-white cursor-pointer py-1">└─ note_cicd.md</div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            <main class="main-view p4-main">
+                <div class="mb-8 border-b-2 border-dashed border-[#ff3300] pb-6 flex justify-between items-end">
+                    <div>
+                        <p class="text-[#ff3300] font-mono mb-2 text-sm">// TARGET: DIR_DEVOPS (2 files)</p>
+                        <h1 class="text-4xl text-white font-mono font-bold tracking-tight">&gt; DEVOPS MASTERCLASS_</h1>
+                    </div>
+                    <button class="border-2 border-[#ff3300] text-[#ff3300] bg-[rgba(255,51,0,0.1)] hover:bg-[#ff3300] hover:text-black px-4 py-2 font-mono font-bold transition-colors">
+                        EXEC +NOTE
+                    </button>
+                </div>
+                <div class="flex flex-col gap-4">
+                    <div class="p4-card p-4 flex justify-between items-center cursor-pointer group">
+                        <div class="flex items-center gap-4">
+                            <span class="text-[#ff3300] group-hover:animate-pulse">■</span>
+                            <span class="font-bold text-lg group-hover:text-[#ff3300] transition-colors">note_docker.md</span>
+                        </div>
+                        <span class="text-xs text-[#666] group-hover:text-[#ff3300]">TYPE: MARKDOWN</span>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- PROPOSITION 5 (MIX 3 & 4) -->
+        <h2 class="text-2xl font-bold mb-4 proposal-title mt-16 text-[#48bb78]">5. Le Technicien Lumineux (Mix 3 & 4)</h2>
+        <p class="mb-4 text-sm text-gray-400">Combine la structure "terminal" et l'ergonomie de code du style 4 (typographie monospace partout, nomenclature système, fond de grille) avec les couleurs claires, lisibles et modernes du style 3 (bois clair, vert émeraude, ombres nettes de type box-shadow). Très rafraîchissant pour un blog d'ingénierie.</p>
+        <div class="app-window p5-window shadow-xl mb-32">
+            <aside class="sidebar p5-sidebar">
+                <div class="p-6 border-b-2 border-[#d4c5b0] bg-[#eae2d3]">
+                    <h3 class="mc-font text-2xl font-bold uppercase text-[#2f855a] tracking-widest">sys.NOTES</h3>
+                </div>
+                <div class="py-4">
+                    <div class="p5-item px-4 py-2 cursor-pointer text-sm flex gap-4 font-bold items-center">
+                        <span class="text-[#48bb78] bg-white border border-[#48bb78] rounded-sm px-1 leading-none h-5 flex items-center">[+]</span> DIR_SPRING
+                    </div>
+                    <div class="p5-item-active px-4 py-2 mt-2 cursor-pointer font-bold text-sm flex flex-col">
+                        <div class="flex gap-4 items-center">
+                            <span class="text-[#2f855a] bg-[#c6f6d5] border border-[#2f855a] rounded-sm px-1 leading-none h-5 flex items-center">[-]</span> DIR_DEVOPS
+                        </div>
+                        <div class="pl-11 mt-3 space-y-1">
+                            <div class="text-xs text-[#718096] hover:text-[#2f855a] cursor-pointer py-1.5 flex gap-2">
+                                <span class="opacity-50">└─</span> note_docker.md
+                            </div>
+                            <div class="text-xs text-[#718096] hover:text-[#2f855a] cursor-pointer py-1.5 flex gap-2 font-bold text-[#2f855a]">
+                                <span class="opacity-50 text-gray-400">└─</span> note_cicd.md
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            <main class="main-view p5-main">
+                <div class="mb-8 border-b-2 border-dashed border-[#48bb78] pb-6 flex justify-between items-end">
+                    <div>
+                        <p class="text-[#2f855a] font-mono mb-2 text-sm font-bold bg-[#c6f6d5] inline-block px-2 py-0.5 rounded-sm">// TARGET: DIR_DEVOPS (2 files)</p>
+                        <h1 class="text-4xl text-[#2d3748] font-mono font-black tracking-tight mt-2">&gt; DEVOPS MASTERCLASS_</h1>
+                    </div>
+                    <button class="p5-btn px-6 py-2 rounded-sm font-bold tracking-widest text-sm uppercase">
+                        EXEC +NOTE
+                    </button>
+                </div>
+                <div class="flex flex-col gap-4">
+                    <div class="p5-card p-4 flex justify-between items-center cursor-pointer group">
+                        <div class="flex items-center gap-4">
+                            <span class="text-[#48bb78] font-bold group-hover:animate-bounce">■</span>
+                            <span class="font-bold text-lg text-[#2d3748] group-hover:text-[#2f855a] transition-colors">note_docker.md</span>
+                        </div>
+                        <span class="text-[10px] text-[#718096] group-hover:text-[#48bb78] font-bold tracking-widest uppercase border border-[#e2e8f0] px-2 py-1 rounded bg-[#f7fafc]">Type: Markdown</span>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+    </div>
+
+</body>
+</html>

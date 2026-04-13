@@ -12,6 +12,7 @@ export const ui = {
     'nav.articles': 'Articles',
     'nav.categories': 'Categories',
     'nav.notes': 'Notes',
+    'nav.notes-v2': 'Notes v2',
     'nav.contact': 'Contact',
     'nav.newsletter': 'Newsletter',
   },

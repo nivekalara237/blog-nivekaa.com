@@ -27,7 +27,7 @@ export function mapKindeUserToAuthor(kindeUser) {
         last_name: getVal("last_name"),
         name: `${getVal("first_name")} ${getVal("last_name")}`.trim() || kindeUser.preferred_email || kindeUser.email || "Anonyme",
         avatar: getVal("custom_picture_url") || kindeUser.picture,
-        role: getVal("kp_usr_job_title", "Writer"),
+        role: getVal("role", "writer"),
         bio: getVal("bio"),
         hideName: getVal("hidename") === 'true' || getVal("hidename") === true,
         jobPositions: (getVal("kp_usr_job_title", "")).split(',').map(s => s.trim()).filter(Boolean),

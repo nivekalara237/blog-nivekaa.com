@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MarkdownRenderer from '../MarkdownRenderer.jsx';
 import AuthorCard from '../AuthorCard.jsx';
-import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 import { mapKindeUserToAuthor } from '../../utils/user-mapper';
 import { kindeApi } from '../../lib/kinde-api';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
@@ -10,6 +9,9 @@ export default function ArticleEditor({
     categories = [],
     tags = [],
     onSaveSuccess = (result) => {},
+    // Auth props
+    user = null,
+    isLoading = false,
     // Note-mode props — only used when mode='note'
     mode = 'article', // 'article' | 'note'
     noteSlug = null,  // slug of the note being edited (note mode)
@@ -17,7 +19,6 @@ export default function ArticleEditor({
     onNoteClose = null, // called after save in note mode
 }) {
     const [editSlug, setEditSlug] = useState(null);
-    const { user, isLoading } = useKindeAuth();
     const [author, setAuthor] = useState(null);
 
     useEffect(() => {
@@ -57,6 +58,7 @@ export default function ArticleEditor({
     const [uploadedImages, setUploadedImages] = useState(new Map());
     const [status, setStatus] = useState('published');
     const [isLoadingArticle, setIsLoadingArticle] = useState(false);
+    const hasLoaded = useRef(false);
     const [existingCoverKey, setExistingCoverKey] = useState('');
     const textareaRef = useRef(null);
     const titleTextareaRef = useRef(null);
@@ -136,23 +138,27 @@ export default function ArticleEditor({
     // Restore from API (Edition) or localStorage (Auto-save) on mount
     useEffect(() => {
         const loadArticle = async () => {
-            // Check for edit parameter in URL
+            // Check for edit parameter in URL or use noteSlug prop
             const urlParams = new URLSearchParams(window.location.search);
-            const slugFromUrl = urlParams.get('edit');
+            const slugFromUrl = mode === 'note' ? noteSlug : urlParams.get('edit');
 
             if (slugFromUrl) {
                 setEditSlug(slugFromUrl);
                 // EDITION MODE: Fetch from API with admin drafts access
                 try {
                     setIsLoadingArticle(true);
-                    const response = await fetch(`${API_URL}/articles/${slugFromUrl}?includeDrafts=true`);
+                    const endpoint = mode === 'note'
+                        ? `${API_URL}/notes/${slugFromUrl}?lang=all`
+                        : `${API_URL}/articles/${slugFromUrl}?includeDrafts=true`;
+                        
+                    const response = await fetch(endpoint);
                     if (response.ok) {
                         const article = await response.json();
 
                         // Build locale state from API response
                         const apiLocales = article.locales || {
                             en: {
-                                title: article.title || '',
+                                title: article.title || article.name || '',
                                 description: article.description || '',
                                 isDrafted: article.isDrafted || false,
                             }
@@ -162,7 +168,7 @@ export default function ArticleEditor({
                             en: {
                                 title: apiLocales.en?.title || '',
                                 description: apiLocales.en?.description || '',
-                                content: article.contentMarkdown || '',
+                                content: article.enContent || article.contentMarkdown || article.content || '',
                                 isDrafted: apiLocales.en?.isDrafted || false,
                             },
                             fr: {
@@ -211,10 +217,12 @@ export default function ArticleEditor({
             }
         };
 
-        if (!isLoading && user) {
+        if (!isLoading && user && !hasLoaded.current) {
+            hasLoaded.current = true;
             loadArticle();
         }
-    }, [isLoading, user, categories]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoading, user]);
 
     const handleAddTag = (tag) => {
         if (tag && !selectedTags.includes(tag)) {

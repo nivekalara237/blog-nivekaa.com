@@ -2,6 +2,7 @@
 import Layout from "../../../layouts/Layout.astro";
 import { api } from "../../../lib/api";
 import MarkdownRenderer from "../../../components/MarkdownRenderer.jsx";
+import TableOfContents from "../../../components/TableOfContents.jsx";
 
 export const prerender = true;
 
@@ -10,7 +11,6 @@ const SITE_URL = import.meta.env.SITE || 'https://cloud.nivekaa.com';
 export async function getStaticPaths() {
     const SITE_URL = import.meta.env.SITE || 'https://cloud.nivekaa.com';
 
-    // Helper: recursively collect all note slugs from the hierarchy tree
     type NoteTreeNode = { type: string; id: string; children?: NoteTreeNode[] };
     const extractNoteSlugs = (nodes: NoteTreeNode[]) => {
         let slugs: string[] = [];
@@ -53,6 +53,15 @@ const { noteData, lang, hreflangEn, hreflangFr } = Astro.props;
 const wordCount = noteData.content?.split(/\s+/).length || 0;
 const readingTime = Math.ceil(wordCount / 200);
 
+const notesRoot = lang === 'fr' ? '/fr/notes' : '/notes';
+
+const formatDate = (dateStr: string) => {
+    if (!dateStr) return '';
+    return new Date(dateStr).toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', {
+        year: 'numeric', month: 'long', day: 'numeric'
+    });
+};
+
 const canonicalUrl = new URL(Astro.url.pathname, SITE_URL);
 
 const jsonLd = {
@@ -76,52 +85,322 @@ const jsonLd = {
 >
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
-    <div class="max-w-4xl mx-auto px-6 py-12 mt-16 lg:mt-20">
-        <article>
-            <!-- Breadcrumb -->
-            <nav class="text-xs font-mono text-[var(--text-dim)] mb-8 flex items-center gap-2">
-                <a href={lang === 'fr' ? '/fr/notes' : '/notes'} class="hover:text-[var(--green-light)] transition-colors">
-                    {lang === 'fr' ? '← Notes' : '← Notes'}
-                </a>
-            </nav>
+    <div class="note-page-wrapper">
 
-            <!-- Header -->
-            <div class="border-b border-[var(--bg-border)] pb-8 mb-8">
-                <h1 class="text-4xl font-black mb-4 text-[var(--yellow-light)]" style="font-family:'Space Grotesk',sans-serif">
-                    {noteData.title}
-                </h1>
+        <!-- ── Breadcrumb ── -->
+        <nav class="note-breadcrumb" aria-label="Breadcrumb">
+            <a href={notesRoot} class="note-breadcrumb__link">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+                {lang === 'fr' ? 'Notes' : 'Notes'}
+            </a>
+            <span class="note-breadcrumb__sep" aria-hidden="true">/</span>
+            <span class="note-breadcrumb__current">{noteData.title}</span>
+        </nav>
 
-                <div class="flex flex-wrap items-center gap-4 text-sm font-mono text-[var(--text-dim)]">
-                    {noteData.tags && noteData.tags.length > 0 && (
-                        <div class="flex gap-2 flex-wrap">
-                            {noteData.tags.map((tag: string) => (
-                                <span class="bg-[var(--bg-surface)] px-2 py-0.5 rounded text-xs text-[var(--text-secondary)] uppercase tracking-wider">
-                                    #{tag}
+        <!-- ── Two-column layout ── -->
+        <div class="note-layout">
+
+            <!-- ── Main content ── -->
+            <main class="note-main" id="note-content">
+
+                <!-- Header card -->
+                <header class="note-header pixel-box pixel-box--green">
+                    <!-- Category / type badge -->
+                    <div class="note-header__badge">
+                        <span class="note-badge">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                            {lang === 'fr' ? 'Note technique' : 'Technical note'}
+                        </span>
+                    </div>
+
+                    <!-- Title -->
+                    <h1 class="note-header__title">{noteData.title}</h1>
+
+                    <!-- Meta row -->
+                    <div class="note-header__meta">
+                        <!-- Tags -->
+                        {noteData.tags && noteData.tags.length > 0 && (
+                            <div class="note-tags">
+                                {noteData.tags.map((tag: string) => (
+                                    <span class="game-tag">#{tag}</span>
+                                ))}
+                            </div>
+                        )}
+
+                        <!-- Stats -->
+                        <div class="note-stats">
+                            <span class="note-stat">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                {readingTime} {lang === 'fr' ? 'min de lecture' : 'min read'}
+                            </span>
+                            {noteData.lastUpdated || noteData.createdAt ? (
+                                <span class="note-stat">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                    <time datetime={noteData.lastUpdated || noteData.createdAt}>
+                                        {formatDate(noteData.lastUpdated || noteData.createdAt)}
+                                    </time>
                                 </span>
-                            ))}
+                            ) : null}
                         </div>
-                    )}
-                    <span>⏱ {readingTime} {lang === 'fr' ? 'min de lecture' : 'min read'}</span>
-                    <time datetime={noteData.createdAt}>
-                        {new Date(noteData.lastUpdated || noteData.createdAt).toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                    </time>
+                    </div>
+                </header>
+
+                <!-- Pixel divider -->
+                <hr class="pixel-divider note-divider" aria-hidden="true" />
+
+                <!-- Content -->
+                <div class="note-content prose max-w-none">
+                    <MarkdownRenderer client:load content={noteData.content} />
                 </div>
-            </div>
 
-            <!-- Content rendered with the same MarkdownRenderer used for articles -->
-            <div class="prose max-w-none">
-                <MarkdownRenderer client:load content={noteData.content} />
-            </div>
+                <!-- Footer nav -->
+                <footer class="note-footer">
+                    <a href={notesRoot} class="btn btn--secondary note-footer__back">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="15 18 9 12 15 6"/>
+                        </svg>
+                        {lang === 'fr' ? 'Retour aux Notes' : 'Back to Notes'}
+                    </a>
+                    <button class="btn btn--secondary note-footer__top" id="back-to-top" aria-label="Back to top">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="18 15 12 9 6 15"/>
+                        </svg>
+                        {lang === 'fr' ? 'Haut de page' : 'Top'}
+                    </button>
+                </footer>
+            </main>
 
-            <!-- Footer nav -->
-            <div class="mt-12 pt-8 border-t border-[var(--bg-border)]">
-                <a
-                    href={lang === 'fr' ? '/fr/notes' : '/notes'}
-                    class="inline-flex items-center gap-2 text-[var(--green-light)] hover:text-[var(--green-dark)] font-mono text-sm transition-colors"
-                >
-                    ← {lang === 'fr' ? 'Retour aux Notes' : 'Back to Notes'}
-                </a>
-            </div>
-        </article>
+            <!-- ── Sidebar (TOC) ── -->
+            <aside class="note-sidebar" aria-label="Table of contents">
+                <TableOfContents client:load content={noteData.content} />
+            </aside>
+
+        </div>
     </div>
 </Layout>
+
+<script>
+    const btn = document.getElementById('back-to-top');
+    if (btn) {
+        btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    }
+</script>
+
+<style>
+/* ── Page wrapper ── */
+.note-page-wrapper {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 5rem 1.25rem 3rem;
+}
+
+@media (min-width: 768px) {
+    .note-page-wrapper {
+        padding: 5.5rem 2rem 4rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .note-page-wrapper {
+        padding: 6rem 2.5rem 4rem;
+    }
+}
+
+/* ── Breadcrumb ── */
+.note-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.note-breadcrumb__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--green-light);
+    text-decoration: none;
+    transition: color 0.15s;
+}
+.note-breadcrumb__link:hover {
+    color: var(--yellow-light);
+}
+
+.note-breadcrumb__sep {
+    opacity: 0.4;
+}
+
+.note-breadcrumb__current {
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 30ch;
+}
+
+/* ── Two-column layout ── */
+.note-layout {
+    display: block;
+}
+
+@media (min-width: 1024px) {
+    .note-layout {
+        display: flex;
+        gap: 2rem;
+        align-items: flex-start;
+    }
+}
+
+/* ── Main column ── */
+.note-main {
+    min-width: 0;
+    flex: 1;
+}
+
+/* ── Header card ── */
+.note-header {
+    padding: 1.5rem;
+    margin-bottom: 0;
+    position: relative;
+}
+
+@media (min-width: 768px) {
+    .note-header {
+        padding: 2rem 2.5rem;
+    }
+}
+
+/* Badge */
+.note-header__badge {
+    margin-bottom: 0.85rem;
+}
+
+.note-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    background: rgba(35, 114, 39, 0.15);
+    border: 1px solid var(--green-dark);
+    padding: 3px 10px;
+}
+
+/* Title */
+.note-header__title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    color: var(--yellow-light);
+    margin: 0 0 1.25rem;
+}
+
+/* Meta */
+.note-header__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+    .note-header__meta {
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+}
+
+.note-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.note-stats {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-left: auto;
+}
+
+.note-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+}
+
+/* ── Pixel divider ── */
+.note-divider {
+    margin: 0;
+}
+
+/* ── Content area ── */
+.note-content {
+    padding: 2rem 0;
+}
+
+@media (min-width: 768px) {
+    .note-content {
+        padding: 2.5rem 0;
+    }
+}
+
+/* ── Footer ── */
+.note-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--bg-border);
+    flex-wrap: wrap;
+}
+
+.note-footer__back,
+.note-footer__top {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 12px;
+}
+
+/* ── Sidebar ── */
+.note-sidebar {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .note-sidebar {
+        display: block;
+        width: 260px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 5rem;
+        max-height: calc(100vh - 6rem);
+        overflow-y: auto;
+    }
+}
+
+@media (min-width: 1280px) {
+    .note-sidebar {
+        width: 300px;
+    }
+}
+</style>

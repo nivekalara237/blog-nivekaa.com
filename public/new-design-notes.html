@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sys.NOTES v2</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+      *{box-sizing:border-box;margin:0;padding:0}
+      :root{
+          --bg:#fdfaf6;--bg2:#f4eee4;--border:#d4c5b0;--border2:#c5b49a;
+          --em:#48bb78;--em2:#2f855a;--em3:#c6f6d5;
+          --txt:#2d3748;--txt2:#4a5568;--txt3:#718096;
+          --card:#fff;--shadow:#48bb78;--shadow2:#2f855a;
+          --input-bg:#fdfaf6;
+      }
+      @media(prefers-color-scheme:dark){
+          :root{
+              --bg:#0d0d0d;--bg2:#111111;--border:#2a2a2a;--border2:#3a3a3a;
+              --em:#48bb78;--em2:#68d391;--em3:#1a2e1a;
+              --txt:#e2e8f0;--txt2:#a0aec0;--txt3:#718096;
+              --card:#161616;--shadow:#48bb78;--shadow2:#2f855a;
+              --input-bg:#0d0d0d;
+          }
+      }
+      body{
+          font-family:'JetBrains Mono',monospace;
+          background:var(--bg);
+          color:var(--txt);
+          height:100vh;
+          display:flex;
+          flex-direction:column;
+          overflow:hidden;
+          background-image:
+                  linear-gradient(rgba(72,187,120,0.05) 1px,transparent 1px),
+                  linear-gradient(90deg,rgba(72,187,120,0.05) 1px,transparent 1px);
+          background-size:20px 20px;
+      }
+      .topbar{
+          display:flex;align-items:center;gap:12px;padding:8px 12px;
+          background:var(--bg2);border-bottom:2px solid var(--border);
+          box-shadow:0 2px 0 var(--shadow2);flex-shrink:0;z-index:10;
+      }
+      .logo{
+          font-size:13px;font-weight:700;color:var(--em);letter-spacing:.05em;
+          border:2px solid var(--em);padding:2px 8px;box-shadow:2px 2px 0 var(--em2);
+      }
+      .topbar-title{font-size:11px;color:var(--txt3);flex:1}
+      .topbar-badges{display:flex;gap:6px}
+      .badge{font-size:10px;padding:2px 6px;border:1px solid var(--border);color:var(--txt3);background:var(--bg);}
+      .badge.active{border-color:var(--em);color:var(--em)}
+      .search-bar{
+          display:flex;align-items:center;gap:6px;background:var(--input-bg);
+          border:2px solid var(--border);padding:3px 8px;box-shadow:2px 2px 0 var(--border2);
+      }
+      .search-bar input{
+          background:none;border:none;outline:none;font-family:inherit;
+          font-size:11px;color:var(--txt);width:160px;
+      }
+      .search-bar input::placeholder{color:var(--txt3)}
+      .main{display:flex;flex:1;overflow:hidden}
+      .sidebar{
+          width:240px;flex-shrink:0;background:var(--bg2);
+          border-right:2px solid var(--border);box-shadow:2px 0 0 var(--border2);
+          display:flex;flex-direction:column;overflow:hidden;
+      }
+      .sidebar-header{
+          padding:8px 10px;border-bottom:1px solid var(--border);
+          display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+      }
+      .sidebar-label{font-size:10px;color:var(--txt3);letter-spacing:.1em}
+      .sidebar-actions{display:flex;gap:4px}
+      .btn-sm{
+          font-family:inherit;font-size:10px;padding:2px 6px;background:var(--bg);
+          border:2px solid var(--border);color:var(--txt2);cursor:pointer;
+          box-shadow:2px 2px 0 var(--border2);transition:all .05s;
+      }
+      .btn-sm:hover{border-color:var(--em);color:var(--em);box-shadow:2px 2px 0 var(--em2)}
+      .btn-sm:active{transform:translate(1px,1px);box-shadow:0 0 0}
+      .btn-em{background:var(--em3);border-color:var(--em);color:var(--em2);box-shadow:2px 2px 0 var(--em2)}
+      .btn-em:hover{background:var(--em);color:var(--bg)}
+      .sidebar-tree{flex:1;overflow-y:auto;padding:6px 0}
+      .sidebar-tree::-webkit-scrollbar{width:4px}
+      .sidebar-tree::-webkit-scrollbar-thumb{background:var(--border)}
+      .tree-node{cursor:pointer;user-select:none}
+      .tree-row{
+          display:flex;align-items:center;gap:6px;padding:4px 10px;
+          font-size:11px;color:var(--txt2);transition:background .1s;
+          border-left:2px solid transparent;
+      }
+      .tree-row:hover{background:var(--bg);color:var(--txt);border-left-color:var(--border2)}
+      .tree-row.active{background:var(--em3);color:var(--em2);border-left:2px solid var(--em);font-weight:600}
+      .tree-row.active .tree-bullet{color:var(--em);animation:bounce .6s infinite}
+      .tree-bullet{flex-shrink:0;font-size:9px;transition:all .15s}
+      .tree-row:hover .tree-bullet{animation:pulse 1s infinite}
+      .tree-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      .tree-tag{font-size:9px;color:var(--txt3);flex-shrink:0}
+      .tree-folder>.tree-row{font-weight:600}
+      .tree-folder>.tree-row .tree-bullet{color:var(--em2)}
+      .tree-children{display:none}
+      .tree-folder.open>.tree-children{display:block}
+      @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+      @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+      .content{flex:1;overflow:hidden;display:flex;flex-direction:column}
+      .content-header{
+          padding:10px 16px;border-bottom:2px solid var(--border);background:var(--bg);
+          display:flex;align-items:center;gap:10px;flex-shrink:0;
+      }
+      .content-path{font-size:10px;color:var(--txt3);flex:1;letter-spacing:.05em}
+      .content-path span{color:var(--txt2)}
+      .content-path .sep{color:var(--border2);margin:0 4px}
+      .content-actions{display:flex;gap:6px}
+      .content-body{flex:1;overflow-y:auto;padding:20px 24px}
+      .content-body::-webkit-scrollbar{width:4px}
+      .content-body::-webkit-scrollbar-thumb{background:var(--border)}
+      .note-card{
+          background:var(--card);border:2px solid var(--border);padding:16px;
+          margin-bottom:12px;box-shadow:4px 4px 0 var(--border2);
+          transition:transform .1s,box-shadow .1s;cursor:pointer;
+      }
+      .note-card:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--shadow)}
+      .note-card:active{transform:translate(2px,2px);box-shadow:0 0 0}
+      .note-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px}
+      .note-card-title{font-size:13px;font-weight:700;color:var(--txt)}
+      .note-card-meta{font-size:9px;color:var(--txt3);text-align:right;line-height:1.6}
+      .note-card-desc{font-size:11px;color:var(--txt2);line-height:1.6;margin-bottom:10px}
+      .tags{display:flex;flex-wrap:wrap;gap:4px}
+      .tag{
+          font-size:9px;padding:2px 6px;border:1px solid var(--em);
+          color:var(--em2);background:var(--em3);letter-spacing:.05em;text-transform:uppercase;
+      }
+      .folder-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+      .folder-card{
+          background:var(--card);border:2px solid var(--border);padding:12px;
+          box-shadow:3px 3px 0 var(--border2);transition:transform .1s,box-shadow .1s;cursor:pointer;
+      }
+      .folder-card:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--shadow)}
+      .folder-card:active{transform:translate(1px,1px);box-shadow:0 0 0}
+      .folder-card-icon{font-size:10px;color:var(--em);margin-bottom:6px;font-weight:700}
+      .folder-card-name{font-size:12px;font-weight:600;color:var(--txt);margin-bottom:4px}
+      .folder-card-count{font-size:10px;color:var(--txt3)}
+      .note-view{background:var(--card);border:2px solid var(--border);padding:20px;box-shadow:4px 4px 0 var(--border2)}
+      .note-view h1{font-size:16px;font-weight:700;color:var(--txt);margin-bottom:4px;line-height:1.4}
+      .note-view h2{font-size:13px;font-weight:600;color:var(--txt);margin:16px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+      .note-view p{font-size:11px;color:var(--txt2);line-height:1.8;margin-bottom:10px}
+      .note-view code{font-family:inherit;font-size:10px;background:var(--bg2);border:1px solid var(--border);padding:1px 4px;color:var(--em2)}
+      .note-view pre{background:var(--bg2);border:2px solid var(--border);padding:12px;margin-bottom:12px;overflow-x:auto;box-shadow:2px 2px 0 var(--border2)}
+      .note-view pre code{background:none;border:none;padding:0;font-size:10px;line-height:1.7;color:var(--txt2)}
+      .note-meta-bar{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid var(--border);flex-wrap:wrap}
+      .note-meta-item{font-size:9px;color:var(--txt3);letter-spacing:.05em}
+      .note-meta-item span{color:var(--em2)}
+      .btn-danger:hover{border-color:#fc8181;color:#e53e3e;box-shadow:2px 2px 0 #e53e3e}
+      .modal-overlay{
+          position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);
+          display:flex;align-items:center;justify-content:center;z-index:100;
+      }
+      .modal{
+          background:var(--bg);border:2px solid var(--em);
+          box-shadow:4px 4px 0 var(--em2),8px 8px 0 rgba(72,187,120,.15);
+          width:500px;max-width:90vw;padding:20px;
+      }
+      .modal-title{font-size:12px;font-weight:700;color:var(--em);margin-bottom:16px;letter-spacing:.1em}
+      .modal-field{margin-bottom:12px}
+      .modal-label{font-size:10px;color:var(--txt3);margin-bottom:4px;display:block;letter-spacing:.05em}
+      .modal-input{
+          width:100%;background:var(--input-bg);border:2px solid var(--border);
+          font-family:inherit;font-size:11px;color:var(--txt);padding:6px 10px;
+          outline:none;box-shadow:2px 2px 0 var(--border2);transition:border-color .1s,box-shadow .1s;
+      }
+      .modal-input:focus{border-color:var(--em);box-shadow:2px 2px 0 var(--em2)}
+      .modal-textarea{
+          width:100%;resize:vertical;min-height:160px;background:var(--input-bg);
+          border:2px solid var(--border);font-family:inherit;font-size:11px;color:var(--txt);
+          padding:8px 10px;outline:none;box-shadow:2px 2px 0 var(--border2);line-height:1.7;
+          transition:border-color .1s,box-shadow .1s;
+      }
+      .modal-textarea:focus{border-color:var(--em);box-shadow:2px 2px 0 var(--em2)}
+      .modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid var(--border)}
+      .btn-primary{
+          font-family:inherit;font-size:11px;font-weight:600;padding:6px 16px;
+          background:var(--em3);border:2px solid var(--em);color:var(--em2);cursor:pointer;
+          box-shadow:2px 2px 0 var(--em2);transition:all .05s;
+      }
+      .btn-primary:hover{background:var(--em);color:var(--bg)}
+      .btn-primary:active{transform:translate(1px,1px);box-shadow:0 0 0}
+      .btn-ghost{
+          font-family:inherit;font-size:11px;padding:6px 16px;background:none;
+          border:2px solid var(--border);color:var(--txt3);cursor:pointer;
+          box-shadow:2px 2px 0 var(--border2);transition:all .05s;
+      }
+      .btn-ghost:hover{border-color:var(--border2);color:var(--txt2)}
+      .btn-ghost:active{transform:translate(1px,1px);box-shadow:0 0 0}
+      .status-bar{
+          padding:4px 12px;background:var(--bg2);border-top:1px solid var(--border);
+          display:flex;gap:16px;align-items:center;flex-shrink:0;
+      }
+      .status-item{font-size:9px;color:var(--txt3);letter-spacing:.05em}
+      .status-item.ok{color:var(--em)}
+      .cursor{animation:blink 1s step-end infinite}
+      @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+      .empty-state{
+          display:flex;flex-direction:column;align-items:center;justify-content:center;
+          height:200px;color:var(--txt3);font-size:11px;gap:8px;
+          border:2px dashed var(--border);margin-top:16px;
+      }
+      .empty-state .big{font-size:20px;color:var(--border)}
+      .confirm-delete{
+          background:var(--bg);border:2px solid #fc8181;
+          box-shadow:4px 4px 0 #e53e3e;padding:20px;width:380px;max-width:90vw;
+      }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">sys.NOTES</div>
+  <div class="topbar-title">// TARGET: TECH-KNOWLEDGE-BASE <span class="cursor">_</span></div>
+  <div class="topbar-badges">
+    <span class="badge active" id="mode-badge">[ ADMIN ]</span>
+    <span class="badge" id="toggle-mode" onclick="toggleMode()" style="cursor:pointer;user-select:none" title="Basculer mode">MODE</span>
+  </div>
+  <div class="search-bar">
+    <span style="color:var(--txt3);font-size:11px">//</span>
+    <input type="text" placeholder='grep -r "query" .' id="search-input" oninput="onSearch(this.value)">
+  </div>
+</div>
+
+<div class="main">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-label">// FILE TREE</span>
+      <div class="sidebar-actions" id="admin-actions">
+        <button class="btn-sm btn-em" onclick="openCreateModal('folder','root')" title="Nouveau dossier">+G</button>
+        <button class="btn-sm btn-em" onclick="openCreateModal('note','root')" title="Nouvelle note">+N</button>
+      </div>
+    </div>
+    <div class="sidebar-tree" id="tree-container"></div>
+  </div>
+
+  <div class="content">
+    <div class="content-header">
+      <div class="content-path" id="breadcrumb"><span>~</span><span class="sep">/</span><span>notes</span></div>
+      <div class="content-actions" id="content-action-btns"></div>
+    </div>
+    <div class="content-body" id="content-body"></div>
+  </div>
+</div>
+
+<div class="status-bar">
+  <span class="status-item ok">● CONNECTED</span>
+  <span class="status-item" id="status-notes">0 notes</span>
+  <span class="status-item" id="status-folders">0 dossiers</span>
+  <span class="status-item" id="status-current">// SELECT A NODE</span>
+</div>
+
+<div id="modal-container"></div>
+
+<script>
+  const DATA = {
+    tree: [
+      {id:'f1',type:'folder',name:'DevOps',children:[
+          {id:'n1',type:'note',name:'Docker Compose Guide',tags:['docker','infra','containers'],updated:'2026-04-01',content:`## Docker Compose — Référence Rapide\n\nOrchestre tes containers comme un pro.\n\n### Structure de base\n\n\`\`\`yaml\nversion: '3.8'\nservices:\n  app:\n    image: node:18\n    ports:\n      - "3000:3000"\n    volumes:\n      - .:/app\n    environment:\n      - NODE_ENV=production\n  db:\n    image: postgres:15\n    volumes:\n      - pgdata:/var/lib/postgresql/data\nvolumes:\n  pgdata:\n\`\`\`\n\n### Commandes essentielles\n\n\`docker compose up -d\` — lance en détaché\n\n\`docker compose logs -f\` — suit les logs\n\n\`docker compose exec app bash\` — shell dans le container`},
+          {id:'n2',type:'note',name:'CI/CD Pipeline Setup',tags:['github-actions','ci','deploy'],updated:'2026-03-28',content:`## CI/CD avec GitHub Actions\n\n### Workflow type\n\n\`\`\`yaml\nname: Deploy\non:\n  push:\n    branches: [main]\njobs:\n  build-deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - name: Build\n        run: npm ci && npm run build\n      - name: Deploy\n        run: ./deploy.sh\n\`\`\`\n\n### Secrets\n\nStocke les credentials dans **Settings > Secrets**. Accès via \`\${{ secrets.MY_KEY }}\`.`},
+        ]},
+      {id:'f2',type:'folder',name:'Frontend',children:[
+          {id:'f3',type:'folder',name:'React',children:[
+              {id:'n3',type:'note',name:'Hooks Patterns',tags:['react','hooks','patterns'],updated:'2026-04-02',content:`## React Hooks — Patterns Avancés\n\n### useReducer pour état complexe\n\n\`\`\`jsx\nconst reducer = (state, action) => {\n  switch(action.type) {\n    case 'INCREMENT': return {...state, count: state.count + 1}\n    case 'RESET': return initialState\n    default: return state\n  }\n}\n\nconst [state, dispatch] = useReducer(reducer, initialState)\n\`\`\`\n\n### useCallback & useMemo\n\nOptimise les re-renders en mémoïsant fonctions et valeurs calculées.`},
+              {id:'n4',type:'note',name:'Performance Tips',tags:['react','perf','memo'],updated:'2026-03-20',content:`## React Performance\n\n### React.memo\n\nWrap les composants purs qui reçoivent les mêmes props.\n\n### Code Splitting\n\n\`\`\`jsx\nconst HeavyComponent = React.lazy(() => import('./Heavy'))\n\`\`\`\n\n### Virtualisation\n\nPour des listes > 100 items, utilise \`react-window\` ou \`react-virtual\`.`},
+            ]},
+          {id:'n5',type:'note',name:'CSS Architecture',tags:['css','tailwind','design-system'],updated:'2026-03-15',content:`## Architecture CSS Moderne\n\n### Tailwind + Variables CSS\n\nCombine l'utilité de Tailwind avec des tokens de design via CSS custom properties.\n\n### BEM pour composants isolés\n\n\`\`\`css\n.card { ... }\n.card__header { ... }\n.card--featured { ... }\n\`\`\`\n\n### Container Queries\n\nLe nouveau media query basé sur le parent, pas la viewport.`},
+        ]},
+      {id:'f4',type:'folder',name:'Architecture',children:[
+          {id:'n6',type:'note',name:'Microservices Patterns',tags:['architecture','microservices','ddd'],updated:'2026-04-03',content:`## Patterns Microservices\n\n### Saga Pattern\n\nGère les transactions distribuées via une séquence d'événements locaux.\n\n### API Gateway\n\nPoint d'entrée unique, centralise auth, rate-limiting, routing.\n\n### Event Sourcing\n\nStocke les événements plutôt que l'état final. Audit log natif, replay possible.\n\n\`\`\`\nCreateOrder → PaymentProcessed → OrderShipped → OrderDelivered\n\`\`\``},
+        ]},
+      {id:'n7',type:'note',name:'README',tags:['meta','docs'],updated:'2026-04-04',content:`## sys.NOTES — Base de Connaissance Technique\n\nBienvenue dans le système centralisé de documentation technique.\n\n### Organisation\n\n- **DevOps/** — Infrastructure, CI/CD, containers\n- **Frontend/** — UI, frameworks, performance\n- **Architecture/** — Patterns, systèmes distribués\n\n### Conventions\n\n- Titres en PascalCase pour les dossiers\n- Tags en kebab-case\n- Markdown pour tout le contenu\n- Mise à jour de la date à chaque modification`},
+    ]
+  };
+
+  let isAdmin = true;
+  let activeId = 'root';
+  let openFolders = new Set(['f1','f2','f3','f4']);
+  let searchQuery = '';
+
+  function toggleMode(){
+    isAdmin = !isAdmin;
+    document.getElementById('mode-badge').textContent = isAdmin ? '[ ADMIN ]' : '[ PUBLIC ]';
+    document.getElementById('admin-actions').style.display = isAdmin ? 'flex' : 'none';
+    renderTree(); renderContent();
+  }
+
+  function getAllNotes(nodes){
+    let out=[];
+    for(const n of nodes){
+      if(n.type==='note') out.push(n);
+      if(n.children) out=out.concat(getAllNotes(n.children));
+    }
+    return out;
+  }
+
+  function findNode(id,nodes){
+    for(const n of nodes){
+      if(n.id===id) return n;
+      if(n.children){const f=findNode(id,n.children);if(f)return f;}
+    }
+    return null;
+  }
+
+  function deleteNode(id,nodes){
+    for(let i=0;i<nodes.length;i++){
+      if(nodes[i].id===id){nodes.splice(i,1);return true;}
+      if(nodes[i].children&&deleteNode(id,nodes[i].children)) return true;
+    }
+    return false;
+  }
+
+  function countStats(){
+    const all=getAllNotes(DATA.tree);
+    let folders=0;
+    const countF=(nodes)=>{for(const n of nodes){if(n.type==='folder'){folders++;if(n.children)countF(n.children);}}};
+    countF(DATA.tree);
+    document.getElementById('status-notes').textContent=all.length+' notes';
+    document.getElementById('status-folders').textContent=folders+' dossiers';
+  }
+
+  function getBreadcrumb(id,nodes,path=[]){
+    for(const n of nodes){
+      if(n.id===id) return [...path,n];
+      if(n.children){const r=getBreadcrumb(id,n.children,[...path,n]);if(r)return r;}
+    }
+    return null;
+  }
+
+  function renderBreadcrumb(id){
+    const el=document.getElementById('breadcrumb');
+    if(id==='root'){el.innerHTML='<span>~</span><span class="sep">/</span><span>notes</span>';return;}
+    const path=getBreadcrumb(id,DATA.tree,[]);
+    if(!path){el.innerHTML='<span>~</span><span class="sep">/</span><span>notes</span>';return;}
+    let html='<span>~</span>';
+    path.forEach(p=>{html+='<span class="sep">/</span><span>'+esc(p.name)+'</span>';});
+    el.innerHTML=html;
+  }
+
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+  function renderTreeNodes(nodes,depth){
+    return nodes.map(n=>{
+      const pad='&nbsp;&nbsp;'.repeat(depth);
+      const isActive=activeId===n.id;
+      if(n.type==='folder'){
+        const isOpen=openFolders.has(n.id);
+        return `<div class="tree-node tree-folder${isOpen?' open':''}" id="tnode-${n.id}">
+        <div class="tree-row${isActive?' active':''}" onclick="clickNode('${n.id}','folder')">
+          <span style="font-size:9px;color:var(--border2);min-width:${depth*14}px;display:inline-block"></span>
+          <span class="tree-bullet">${isOpen?'[-]':'[+]'}</span>
+          <span class="tree-name">${esc(n.name)}</span>
+          <span class="tree-tag">${n.children?n.children.length:0}</span>
+        </div>
+        <div class="tree-children">${n.children?renderTreeNodes(n.children,depth+1):''}</div>
+      </div>`;
+      } else {
+        const hidden=searchQuery&&!n.name.toLowerCase().includes(searchQuery.toLowerCase())&&!(n.tags&&n.tags.some(t=>t.includes(searchQuery.toLowerCase())))?' style="display:none"':'';
+        return `<div class="tree-node"${hidden}>
+        <div class="tree-row${isActive?' active':''}" onclick="clickNode('${n.id}','note')">
+          <span style="min-width:${depth*14}px;display:inline-block"></span>
+          <span class="tree-bullet">■</span>
+          <span class="tree-name">${esc(n.name)}</span>
+        </div>
+      </div>`;
+      }
+    }).join('');
+  }
+
+  function renderTree(){
+    document.getElementById('tree-container').innerHTML=renderTreeNodes(DATA.tree,0);
+    countStats();
+  }
+
+  function clickNode(id,type){
+    if(type==='folder'){
+      if(openFolders.has(id)) openFolders.delete(id); else openFolders.add(id);
+    }
+    activeId=id;
+    renderTree();
+    renderContent();
+  }
+
+  function renderContent(){
+    const body=document.getElementById('content-body');
+    const actions=document.getElementById('content-action-btns');
+    document.getElementById('status-current').textContent='';
+    if(activeId==='root'||!activeId){
+      renderBreadcrumb('root');
+      actions.innerHTML='';
+      body.innerHTML=renderFolderView(DATA.tree,'Notes',true);
+      return;
+    }
+    const node=findNode(activeId,DATA.tree);
+    if(!node){renderBreadcrumb('root');body.innerHTML='';return;}
+    renderBreadcrumb(activeId);
+    document.getElementById('status-current').textContent='// '+node.name.toUpperCase();
+    if(node.type==='folder'){
+      actions.innerHTML=isAdmin?`<button class="btn-sm btn-em" onclick="openCreateModal('note','${node.id}')">+N</button><button class="btn-sm btn-em" onclick="openCreateModal('folder','${node.id}')">+G</button>`:'';
+      body.innerHTML=renderFolderView(node.children||[],node.name);
+    } else {
+      actions.innerHTML=isAdmin?`<button class="btn-sm" onclick="openEditModal('${node.id}')">[ EDITER ]</button><button class="btn-sm btn-danger" onclick="confirmDelete('${node.id}')">[ SUPPR ]</button>`:'';
+      body.innerHTML=renderNoteView(node);
+    }
+  }
+
+  function renderFolderView(nodes,name,isRoot=false){
+    const folders=nodes.filter(n=>n.type==='folder');
+    const notes=nodes.filter(n=>n.type==='note');
+    let html='';
+    if(searchQuery){
+      const allNotes=getAllNotes(nodes);
+      const filtered=allNotes.filter(n=>
+        n.name.toLowerCase().includes(searchQuery.toLowerCase())||
+        (n.tags&&n.tags.some(t=>t.toLowerCase().includes(searchQuery.toLowerCase())))||
+        (n.content&&n.content.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+      if(filtered.length===0) return '<div class="empty-state"><span class="big">//</span><span>grep: no match found</span></div>';
+      return filtered.map(n=>renderNoteCard(n)).join('');
+    }
+    if(folders.length===0&&notes.length===0){
+      return '<div class="empty-state"><span class="big">[+]</span><span>Dossier vide — créer une note</span></div>';
+    }
+    if(folders.length>0){
+      html+=`<div style="font-size:10px;color:var(--txt3);letter-spacing:.1em;margin-bottom:8px;">// DOSSIERS (${folders.length})</div>`;
+      html+=`<div class="folder-grid">`;
+      html+=folders.map(f=>`
+      <div class="folder-card" onclick="clickNode('${f.id}','folder')">
+        <div class="folder-card-icon">[+] FOLDER</div>
+        <div class="folder-card-name">${esc(f.name)}</div>
+        <div class="folder-card-count">${f.children?f.children.length:0} éléments</div>
+      </div>`).join('');
+      html+=`</div>`;
+    }
+    if(notes.length>0){
+      html+=`<div style="font-size:10px;color:var(--txt3);letter-spacing:.1em;margin-bottom:8px;${folders.length>0?'margin-top:16px':''}">// NOTES (${notes.length})</div>`;
+      html+=notes.map(n=>renderNoteCard(n)).join('');
+    }
+    return html;
+  }
+
+  function renderNoteCard(n){
+    const preview=n.content?n.content.replace(/[#*`\n]/g,' ').replace(/\s+/g,' ').substring(0,120)+'...':'...';
+    return `<div class="note-card" onclick="clickNode('${n.id}','note')">
+    <div class="note-card-header">
+      <div class="note-card-title">■ ${esc(n.name)}</div>
+      <div class="note-card-meta">// ${n.updated||'—'}<br>└─ ${(n.tags||[]).length} tags</div>
+    </div>
+    <div class="note-card-desc">${esc(preview)}</div>
+    <div class="tags">${(n.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+  </div>`;
+  }
+
+  function renderNoteView(n){
+    return `<div class="note-view">
+    <div class="note-meta-bar">
+      <span class="note-meta-item">// ID: <span>${n.id}</span></span>
+      <span class="note-meta-item">UPDATED: <span>${n.updated||'—'}</span></span>
+      <span class="note-meta-item">TAGS: <span>${(n.tags||[]).join(', ')||'—'}</span></span>
+    </div>
+    <h1>${esc(n.name)}</h1>
+    <div style="margin:10px 0 16px"><div class="tags">${(n.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div></div>
+    <div>${renderMarkdown(n.content||'')}</div>
+  </div>`;
+  }
+
+  function renderMarkdown(md){
+    let html=md;
+    html=html.replace(/```(\w*)\n([\s\S]*?)```/g,'<pre><code>$2</code></pre>');
+    html=html.replace(/^### (.+)$/gm,'<h2>$1</h2>');
+    html=html.replace(/^## (.+)$/gm,'<h2>$1</h2>');
+    html=html.replace(/^# (.+)$/gm,'<h1>$1</h1>');
+    html=html.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+    html=html.replace(/`([^`\n]+)`/g,'<code>$1</code>');
+    html=html.replace(/^- (.+)$/gm,'<div style="font-size:11px;color:var(--txt2);line-height:1.8;padding-left:12px">└─ $1</div>');
+    html=html.replace(/\n\n/g,'</p><p>');
+    html=html.replace(/^(?!<[a-z])(.+)$/gm,'<p>$1</p>');
+    html=html.replace(/<p><\/p>/g,'');
+    return html;
+  }
+
+  function onSearch(v){
+    searchQuery=v.trim();
+    renderTree();
+    renderContent();
+  }
+
+  function openCreateModal(type,parentId){
+    const isFolder=type==='folder';
+    document.getElementById('modal-container').innerHTML=`
+  <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <div class="modal-title">// FORGE → NOUVEAU ${isFolder?'DOSSIER':'NOTE'}</div>
+      <div class="modal-field">
+        <label class="modal-label">// NOM</label>
+        <input class="modal-input" id="f-name" placeholder="${isFolder?'MonDossier':'Ma Note Technique'}">
+      </div>
+      ${!isFolder?`
+      <div class="modal-field">
+        <label class="modal-label">// TAGS (séparés par virgule)</label>
+        <input class="modal-input" id="f-tags" placeholder="react, hooks, performance">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">// CONTENU (Markdown)</label>
+        <textarea class="modal-textarea" id="f-content" placeholder="## Titre\n\nContenu en markdown..."></textarea>
+      </div>`:''}
+      <div class="modal-footer">
+        <button class="btn-ghost" onclick="closeModal()">[ ANNULER ]</button>
+        <button class="btn-primary" onclick="createNode('${type}','${parentId}')">[ FORGE → CRÉER ]</button>
+      </div>
+    </div>
+  </div>`;
+    setTimeout(()=>{const el=document.getElementById('f-name');if(el)el.focus();},50);
+  }
+
+  function openEditModal(id){
+    const n=findNode(id,DATA.tree);
+    if(!n)return;
+    document.getElementById('modal-container').innerHTML=`
+  <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <div class="modal-title">// FORGE → MODIFIER NOTE</div>
+      <div class="modal-field">
+        <label class="modal-label">// NOM</label>
+        <input class="modal-input" id="e-name" value="${esc(n.name)}">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">// TAGS</label>
+        <input class="modal-input" id="e-tags" value="${(n.tags||[]).join(', ')}">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">// CONTENU</label>
+        <textarea class="modal-textarea" id="e-content" style="min-height:220px">${n.content||''}</textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" onclick="closeModal()">[ ANNULER ]</button>
+        <button class="btn-primary" onclick="saveEdit('${id}')">[ FORGE → SAUVER ]</button>
+      </div>
+    </div>
+  </div>`;
+  }
+
+  function confirmDelete(id){
+    const n=findNode(id,DATA.tree);
+    if(!n)return;
+    document.getElementById('modal-container').innerHTML=`
+  <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="confirm-delete">
+      <div class="modal-title" style="color:#e53e3e">// ALERT → SUPPRIMER</div>
+      <p style="font-size:11px;color:var(--txt2);margin:12px 0">Supprimer <strong style="color:var(--txt)">"${esc(n.name)}"</strong> ?<br>Cette action est irréversible.</p>
+      <div class="modal-footer" style="border-color:#fc8181">
+        <button class="btn-ghost" onclick="closeModal()">[ ANNULER ]</button>
+        <button class="btn-primary" style="border-color:#e53e3e;color:#e53e3e;background:rgba(252,129,129,.1)" onclick="doDelete('${id}')">[ CONFIRMER ]</button>
+      </div>
+    </div>
+  </div>`;
+  }
+
+  function closeModal(){document.getElementById('modal-container').innerHTML='';}
+
+  function createNode(type,parentId){
+    const nameEl=document.getElementById('f-name');
+    if(!nameEl||!nameEl.value.trim())return;
+    const id='n'+Date.now();
+    const today=new Date().toISOString().split('T')[0];
+    const node=type==='folder'
+      ?{id,type:'folder',name:nameEl.value.trim(),children:[]}
+      :{id,type:'note',name:nameEl.value.trim(),
+        tags:((document.getElementById('f-tags')||{}).value||'').split(',').map(t=>t.trim()).filter(Boolean),
+        content:(document.getElementById('f-content')||{}).value||'',updated:today};
+    if(parentId==='root'){DATA.tree.push(node);}
+    else{
+      const p=findNode(parentId,DATA.tree);
+      if(p&&p.children) p.children.push(node); else DATA.tree.push(node);
+      openFolders.add(parentId);
+    }
+    activeId=id;
+    closeModal();renderTree();renderContent();
+  }
+
+  function saveEdit(id){
+    const n=findNode(id,DATA.tree);
+    if(!n)return;
+    const nameEl=document.getElementById('e-name');
+    if(nameEl) n.name=nameEl.value||n.name;
+    const tagsEl=document.getElementById('e-tags');
+    if(tagsEl) n.tags=tagsEl.value.split(',').map(t=>t.trim()).filter(Boolean);
+    const contentEl=document.getElementById('e-content');
+    if(contentEl) n.content=contentEl.value;
+    n.updated=new Date().toISOString().split('T')[0];
+    closeModal();renderTree();renderContent();
+  }
+
+  function doDelete(id){
+    deleteNode(id,DATA.tree);
+    activeId='root';
+    closeModal();renderTree();renderContent();
+  }
+
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+  renderTree();
+  renderContent();
+</script>
+</body>
+</html>

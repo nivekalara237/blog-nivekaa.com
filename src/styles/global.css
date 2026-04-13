@@ -364,7 +364,29 @@ pre {
     font-size: 0.875rem !important;
     line-height: 1.7 !important;
     border-radius: 0 !important;
+    /* Use site's own dark background instead of github-dark's */
+    background-color: var(--bg-deep) !important;
 }
+
+/* ── Shiki dual-theme activation ──
+   When codeToHtml uses `themes: { light, dark }` with `defaultColor: false`,
+   Shiki writes --shiki-light and --shiki-dark CSS custom properties on each span.
+   These rules activate the correct variable based on the site's dark/light class. */
+
+/* Dark mode (default — html.dark or no class) */
+.shiki span {
+    color: var(--shiki-dark) !important;
+}
+
+/* Light mode override */
+html:not(.dark) .shiki span {
+    color: var(--shiki-light) !important;
+}
+
+html:not(.dark) .shiki {
+    background-color: var(--bg-surface) !important;
+}
+
 
 .shiki code {
     background: transparent !important;
@@ -373,13 +395,4 @@ pre {
 
 .shiki .line {
     line-height: 1.7 !important;
-}
-
-.prose code:not(pre code) {
-    background-color: rgba(35, 114, 39, 0.15) !important;
-    color: var(--green-light) !important;
-    padding: 0.15rem 0.4rem !important;
-    border: 1px solid var(--green-dark) !important;
-    font-size: 0.85em !important;
-    border-radius: 0 !important;
 }
