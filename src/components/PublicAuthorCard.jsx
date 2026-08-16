@@ -58,17 +58,17 @@ export default function PublicAuthorCard({ author }) {
         <div className="mt-16 pixel-box p-8 md:p-10 mb-8" style={{ background: 'var(--bg-panel)' }}>
             <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-8">
                 {/* Avatar with pixel border */}
-                <div style={{ padding: '6px', background: 'var(--bg-surface)', border: '2px solid var(--bg-border)', boxShadow: '4px 4px 0 rgba(0,0,0,0.3)' }} className="flex-shrink-0">
+                <div style={{ padding: '4px', background: 'var(--bg-surface)', border: '1px solid var(--bg-border)', borderRadius: '999px' }} className="flex-shrink-0">
                     <img
                         src={author.avatar}
                         alt={hideName ? "Auteur" : author.name}
-                        className="w-24 h-24 object-cover"
+                        className="w-24 h-24 object-cover rounded-full"
                     />
                 </div>
 
                 <div className="flex-1">
-                    <h3 className="text-xl font-bold mb-2 tracking-tight uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif", color: 'var(--text-primary)' }}>
-                        <span style={{ color: 'var(--yellow-dark)' }}>//</span> À propos de l'auteur : {!hideName ? author.name : ''}
+                    <h3 className="text-xl font-semibold mb-2 tracking-tight" style={{ fontFamily: "'Inter', sans-serif", color: 'var(--text-primary)' }}>
+                        À propos de l'auteur : {!hideName ? author.name : ''}
                     </h3>
 
                     {author.jobPositions && author.jobPositions.length > 0 ? (
@@ -78,11 +78,12 @@ export default function PublicAuthorCard({ author }) {
                                     key={idx}
                                     style={{
                                         fontFamily: "'JetBrains Mono', monospace",
-                                        color: 'var(--green-light)',
-                                        background: 'rgba(35,114,39,0.15)',
-                                        border: '1px solid var(--green-dark)'
+                                        color: 'var(--text-secondary)',
+                                        background: 'var(--bg-panel)',
+                                        border: '1px solid var(--bg-border)',
+                                        borderRadius: '999px',
                                     }}
-                                    className="px-3 py-1 text-[11px] font-bold tracking-widest uppercase"
+                                    className="px-3 py-1 text-[11px] font-medium uppercase tracking-wide"
                                 >
                                     {job}
                                 </span>
@@ -108,24 +109,20 @@ export default function PublicAuthorCard({ author }) {
                                         href={media.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="w-10 h-10 transition-all font-bold flex items-center justify-center pixel-box-sm border-0"
+                                        className="w-10 h-10 transition-all font-medium flex items-center justify-center rounded-full border-0"
                                         style={{
                                             color: config.color,
                                             backgroundColor: config.bg,
-                                            border: '2px solid var(--bg-border)'
+                                            border: '1px solid var(--bg-border)'
                                         }}
                                         onMouseEnter={(e) => {
                                             e.currentTarget.style.backgroundColor = config.bgHover;
-                                            e.currentTarget.style.color = 'var(--yellow-dark)';
-                                            e.currentTarget.style.transform = 'translate(-2px, -2px)';
-                                            e.currentTarget.style.boxShadow = '2px 2px 0 rgba(35,114,39,0.3)';
+                                            e.currentTarget.style.color = 'var(--bg-deep)';
                                             e.currentTarget.style.borderColor = 'var(--green-light)';
                                         }}
                                         onMouseLeave={(e) => {
                                             e.currentTarget.style.backgroundColor = config.bg;
                                             e.currentTarget.style.color = config.color;
-                                            e.currentTarget.style.transform = 'translate(0, 0)';
-                                            e.currentTarget.style.boxShadow = 'none';
                                             e.currentTarget.style.borderColor = 'var(--bg-border)';
                                         }}
                                         title={media.type}

@@ -1,68 +1,111 @@
-import React, { useEffect } from 'react';
-import ArticleEditor from '../admin/ArticleEditor.jsx';
+import React, { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
 
-// ── Create / Edit Note via ArticleEditor ─────────────────────────
-// ArticleEditor already supports mode='note' with noteSlug and noteParentId props.
-// We wrap it in the sys.NOTES v2 modal shell.
-function CreateEditModal({ mode, parentId, initialData, lang, user, onClose, onSuccess }) {
-    const noteSlug = mode === 'edit' ? (initialData?.slug || initialData?.id) : null;
+const CloseIcon = () => <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" width="16" height="16"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>;
 
-    // Close on Escape
+function useEscapeKey(onClose) {
     useEffect(() => {
         const handler = (e) => { if (e.key === 'Escape') onClose(); };
         window.addEventListener('keydown', handler);
         return () => window.removeEventListener('keydown', handler);
     }, []);
+}
 
-    const handleSaveSuccess = (result) => {
-        onSuccess(result);
+// ── Create Note — name + category chips only.
+// Content is added afterward, directly on the note view page.
+function CreateNoteModal({ parentId, lang, user, onClose, onSuccess }) {
+    const [name, setName] = useState('');
+    const [chips, setChips] = useState([]);
+    const [chipInput, setChipInput] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    useEscapeKey(onClose);
+
+    const addChip = () => {
+        const val = chipInput.trim().replace(/,$/, '');
+        if (val && !chips.includes(val)) setChips([...chips, val]);
+        setChipInput('');
+    };
+
+    const handleChipKeyDown = (e) => {
+        if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addChip(); }
+        else if (e.key === 'Backspace' && !chipInput && chips.length) {
+            setChips(chips.slice(0, -1));
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!name.trim()) return;
+        setLoading(true);
+        setError(null);
+        try {
+            const created = await api.createNote({
+                tags: chips,
+                authorEmail: user?.email || '',
+                authorName: user?.given_name || '',
+                parentId: parentId || 'root',
+                locales: { [lang]: { title: name.trim(), content: '' } },
+            });
+            onSuccess(created);
+        } catch (err) {
+            setError(err.message || 'Une erreur est survenue');
+            setLoading(false);
+        }
     };
 
     return (
-        <div
-            className="modal-overlay"
-            onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
-        >
-            <div
-                style={{
-                    background: 'var(--bg)',
-                    border: '2px solid var(--em)',
-                    boxShadow: '4px 4px 0 var(--em2), 8px 8px 0 rgba(72,187,120,.15)',
-                    width: '90vw',
-                    maxWidth: '860px',
-                    maxHeight: '90vh',
-                    overflowY: 'auto',
-                    padding: '0',
-                    position: 'relative',
-                }}
-                onClick={e => e.stopPropagation()}
-            >
-                {/* Modal header */}
-                <div style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    padding: '12px 20px', borderBottom: '2px solid var(--border)',
-                    background: 'var(--bg2)', position: 'sticky', top: 0, zIndex: 10,
-                }}>
-                    <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--em)', letterSpacing: '.1em' }}>
-                        // FORGE → {mode === 'edit' ? 'MODIFIER' : 'CRÉER'} NOTE
-                    </span>
-                    <button className="btn-sm btn-danger" onClick={onClose} style={{ padding: '2px 8px' }}>
-                        ✕ FERMER
-                    </button>
+        <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+            <div className="modal" onClick={e => e.stopPropagation()}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                    <div className="modal-title" style={{ margin: 0 }}>Nouvelle note</div>
+                    <button className="btn-icon" onClick={onClose} style={{ color: 'var(--txt3)' }}><CloseIcon /></button>
                 </div>
-
-                {/* ArticleEditor in note mode */}
-                <div style={{ padding: '20px' }}>
-                    <ArticleEditor
-                        mode="note"
-                        noteSlug={noteSlug}
-                        noteParentId={parentId || 'root'}
-                        user={user}
-                        onSaveSuccess={handleSaveSuccess}
-                        onNoteClose={onClose}
-                    />
-                </div>
+                <form onSubmit={handleSubmit}>
+                    {error && (
+                        <div style={{ marginBottom: '12px', padding: '8px 10px', borderRadius: '6px', background: 'rgba(239,68,68,.08)', border: '1px solid rgba(239,68,68,.35)', fontSize: '12px', color: '#EF4444' }}>
+                            {error}
+                        </div>
+                    )}
+                    <div className="modal-field">
+                        <label className="modal-label">Nom</label>
+                        <input
+                            className="modal-input"
+                            value={name}
+                            onChange={e => setName(e.target.value)}
+                            placeholder="Nom de la note"
+                            autoFocus
+                            required
+                        />
+                    </div>
+                    <div className="modal-field">
+                        <label className="modal-label">Catégorie</label>
+                        <div className="chip-wrap" onClick={() => document.getElementById('note-chip-input')?.focus()}>
+                            {chips.map((c, i) => (
+                                <span key={c} className="chip">
+                                    {c}
+                                    <button type="button" onClick={() => setChips(chips.filter((_, idx) => idx !== i))}><CloseIcon /></button>
+                                </span>
+                            ))}
+                            <input
+                                id="note-chip-input"
+                                className="chip-input"
+                                value={chipInput}
+                                onChange={e => setChipInput(e.target.value)}
+                                onKeyDown={handleChipKeyDown}
+                                placeholder="Ajouter une catégorie…"
+                            />
+                        </div>
+                        <p className="chip-hint">Entrée ou virgule pour ajouter une catégorie</p>
+                    </div>
+                    <div className="modal-footer">
+                        <button type="button" className="btn-ghost" onClick={onClose}>Annuler</button>
+                        <button type="submit" className="btn-primary" disabled={loading}>
+                            {loading ? 'Création...' : 'Créer'}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     );
@@ -70,14 +113,10 @@ function CreateEditModal({ mode, parentId, initialData, lang, user, onClose, onS
 
 // ── Delete Confirm Modal ─────────────────────────────────────────
 function DeleteModal({ node, lang, onClose, onSuccess }) {
-    const [loading, setLoading] = React.useState(false);
-    const [error, setError] = React.useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const handler = (e) => { if (e.key === 'Escape') onClose(); };
-        window.addEventListener('keydown', handler);
-        return () => window.removeEventListener('keydown', handler);
-    }, []);
+    useEscapeKey(onClose);
 
     const handleDelete = async () => {
         setLoading(true);
@@ -98,25 +137,23 @@ function DeleteModal({ node, lang, onClose, onSuccess }) {
     return (
         <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
             <div className="confirm-delete" onClick={e => e.stopPropagation()}>
-                <div className="modal-title" style={{ color: '#e53e3e' }}>// ALERT → SUPPRIMER</div>
+                <div className="modal-title" style={{ color: '#EF4444' }}>Supprimer cette note ?</div>
                 {error && (
-                    <div style={{ marginBottom: '12px', padding: '8px', background: 'rgba(252,129,129,.1)', border: '1px solid #fc8181', fontSize: '10px', color: '#e53e3e' }}>
+                    <div style={{ marginBottom: '12px', padding: '8px 10px', borderRadius: '6px', background: 'rgba(239,68,68,.08)', border: '1px solid rgba(239,68,68,.35)', fontSize: '12px', color: '#EF4444' }}>
                         {error}
                     </div>
                 )}
-                <p style={{ fontSize: '11px', color: 'var(--txt2)', margin: '12px 0' }}>
-                    Supprimer <strong style={{ color: 'var(--txt)' }}>"{name}"</strong> ?<br />
-                    Cette action est irréversible.
+                <p style={{ fontSize: '13px', color: 'var(--txt2)', lineHeight: 1.6, margin: '8px 0 16px' }}>
+                    Supprimer <strong style={{ color: 'var(--txt)' }}>« {name} »</strong> ? Cette action est irréversible.
                 </p>
-                <div className="modal-footer" style={{ borderColor: '#fc8181' }}>
-                    <button className="btn-ghost" onClick={onClose}>[ ANNULER ]</button>
+                <div className="modal-footer">
+                    <button className="btn-ghost" onClick={onClose}>Annuler</button>
                     <button
-                        className="btn-primary"
-                        style={{ borderColor: '#e53e3e', color: '#e53e3e', background: 'rgba(252,129,129,.1)' }}
+                        className="btn-primary btn-danger"
                         onClick={handleDelete}
                         disabled={loading}
                     >
-                        {loading ? '[ ... ]' : '[ CONFIRMER ]'}
+                        {loading ? 'Suppression...' : 'Supprimer'}
                     </button>
                 </div>
             </div>
@@ -124,18 +161,13 @@ function DeleteModal({ node, lang, onClose, onSuccess }) {
     );
 }
 
-// ── Folder Create Modal ───────────────────────────────────────────
-// Simple modal kept for folder creation (ArticleEditor is note-only)
+// ── Folder Create / Rename Modal ──────────────────────────────────
 function FolderModal({ mode, parentId, initialData, lang, onClose, onSuccess }) {
-    const [name, setName] = React.useState(mode === 'edit' ? (initialData?.name || initialData?.title || '') : '');
-    const [loading, setLoading] = React.useState(false);
-    const [error, setError] = React.useState(null);
+    const [name, setName] = useState(mode === 'edit' ? (initialData?.name || initialData?.title || '') : '');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const handler = (e) => { if (e.key === 'Escape') onClose(); };
-        window.addEventListener('keydown', handler);
-        return () => window.removeEventListener('keydown', handler);
-    }, []);
+    useEscapeKey(onClose);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -191,29 +223,29 @@ function FolderModal({ mode, parentId, initialData, lang, onClose, onSuccess }) 
         <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
             <div className="modal" onClick={e => e.stopPropagation()}>
                 <div className="modal-title">
-                    // FORGE → {mode === 'edit' ? 'MODIFIER' : 'NOUVEAU'} DOSSIER
+                    {mode === 'edit' ? 'Renommer le dossier' : 'Nouveau dossier'}
                 </div>
                 <form onSubmit={handleSubmit}>
                     {error && (
-                        <div style={{ marginBottom: '12px', padding: '8px', background: 'rgba(252,129,129,.1)', border: '1px solid #fc8181', fontSize: '10px', color: '#e53e3e' }}>
+                        <div style={{ marginBottom: '12px', padding: '8px 10px', borderRadius: '6px', background: 'rgba(239,68,68,.08)', border: '1px solid rgba(239,68,68,.35)', fontSize: '12px', color: '#EF4444' }}>
                             {error}
                         </div>
                     )}
                     <div className="modal-field">
-                        <label className="modal-label">// NOM DU DOSSIER</label>
+                        <label className="modal-label">Nom</label>
                         <input
                             className="modal-input"
                             value={name}
                             onChange={e => setName(e.target.value)}
-                            placeholder="MonDossier"
+                            placeholder="Nom du dossier"
                             autoFocus
                             required
                         />
                     </div>
                     <div className="modal-footer">
-                        <button type="button" className="btn-ghost" onClick={onClose}>[ ANNULER ]</button>
+                        <button type="button" className="btn-ghost" onClick={onClose}>Annuler</button>
                         <button type="submit" className="btn-primary" disabled={loading}>
-                            {loading ? '[ FORGE... ]' : `[ FORGE → ${mode === 'edit' ? 'SAUVER' : 'CRÉER'} ]`}
+                            {loading ? 'Enregistrement...' : (mode === 'edit' ? 'Enregistrer' : 'Créer')}
                         </button>
                     </div>
                 </form>
@@ -222,4 +254,4 @@ function FolderModal({ mode, parentId, initialData, lang, onClose, onSuccess }) 
     );
 }
 
-export { CreateEditModal, DeleteModal, FolderModal };
+export { CreateNoteModal, DeleteModal, FolderModal };

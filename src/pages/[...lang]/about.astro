@@ -26,21 +26,20 @@ const currentPath = Astro.url.pathname.replace(/^\/fr/, '') || '/about';
   <section class="max-w-4xl mx-auto px-6 py-12">
     
     <div class="mb-8 flex items-center gap-4">
-      <span style="color:var(--yellow-dark); font-size:14px;">▶</span>
-      <h1 class="m-0" style="font-family:'Space Grotesk',sans-serif; font-weight:900; font-size:clamp(28px,4vw,42px); color:var(--text-primary); text-transform:uppercase; letter-spacing:-1px;">
-        {lang === 'fr' ? 'À propos de Cloud' : 'About Cloud'}<span style="color:var(--green-light)">Nive</span>
+      <h1 class="m-0" style="font-family:'Inter',sans-serif; font-weight:700; font-size:clamp(28px,4vw,42px); color:var(--text-primary); letter-spacing:-0.02em;">
+        {lang === 'fr' ? 'À propos de Cloud' : 'About Cloud'}<span style="color:var(--green-dark)">Nive</span>
       </h1>
     </div>
 
     {/* Main Terminal Window */}
     <div
-        style="background:var(--bg-surface); border:3px solid var(--bg-border); box-shadow: inset 2px 2px 0 rgba(255,255,255,0.03), 8px 8px 0 rgba(0,0,0,0.4);"
-        class="overflow-hidden mb-12"
+        style="background:var(--bg-surface); border:1px solid var(--bg-border); box-shadow: 0 4px 16px rgba(0,0,0,0.05);"
+        class="overflow-hidden rounded-xl mb-12"
     >
         {/* Terminal Title Bar */}
         <div
             class="flex items-center gap-2 px-4 py-3"
-            style="background:var(--bg-panel); border-bottom:2px solid var(--bg-border);"
+            style="background:var(--bg-panel); border-bottom:1px solid var(--bg-border);"
         >
             <span style="width:10px;height:10px;background:#FF5F56;border:2px solid #FF5F56;display:inline-block;"></span>
             <span style="width:10px;height:10px;background:#FFBB2C;border:2px solid #FFBB2C;display:inline-block;"></span>
@@ -66,13 +65,13 @@ const currentPath = Astro.url.pathname.replace(/^\/fr/, '') || '/about';
 
             <div class="my-8" style="height:1px; background:var(--bg-border);"></div>
 
-            <h2 class="mb-4" style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:24px; color:var(--text-primary);">
-                <span style="color:var(--yellow-dark);">#</span> {lang === 'fr' ? "L'équipe" : "The Team"}
+            <h2 class="mb-4" style="font-family:'Inter',sans-serif; font-weight:700; font-size:24px; color:var(--text-primary);">
+                {lang === 'fr' ? "L'équipe" : "The Team"}
             </h2>
             <p>
-                {lang === 'fr' 
-                  ? "Nous sommes une équipe de passionnés de technologie, toujours à l'affût des dernières nouveautés dans l'écosystème Cloud et DevOps. Chaque article publié ici est conçu comme un \"niveau\" supplémentaire pour vous aider à monter en compétence."
-                  : "We are a team of tech enthusiasts, always on the lookout for the latest in the Cloud and DevOps ecosystem. Each article published here is designed as an extra \"level\" to help you upgrade your skills."}
+                {lang === 'fr'
+                  ? "Nous sommes une équipe de passionnés de technologie, toujours à l'affût des dernières nouveautés dans l'écosystème Cloud et DevOps."
+                  : "We are a team of tech enthusiasts, always on the lookout for the latest in the Cloud and DevOps ecosystem."}
             </p>
 
             <div class="mt-8 flex items-center gap-2" style="font-family:'JetBrains Mono',monospace;">

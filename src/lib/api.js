@@ -1,4 +1,5 @@
 // API Configuration
+
 export const API_CONFIG = {
     baseUrl: import.meta.env.PUBLIC_API_URL || 'https://cloudnive-api.nivekaa.com',
     imageUrl: import.meta.env.PUBLIC_IMAGE_URL,

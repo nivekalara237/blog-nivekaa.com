@@ -11,8 +11,8 @@ const rawPath = pathname.replace(/^\/(fr)\//, '/').replace(/^\/(fr)$/, '/');
 ---
 
 <div class="relative group inline-block">
-  <button 
-    class="flex items-center gap-1.5 px-2 py-1.5 text-xs font-bold uppercase tracking-widest no-underline transition-all duration-100"
+  <button
+    class="flex items-center gap-1.5 px-2 py-1.5 rounded-md text-xs font-medium no-underline transition-all duration-100"
     style="font-family: 'Inter', sans-serif; color: var(--text-secondary);"
     aria-label="Select language"
   >
@@ -22,17 +22,17 @@ const rawPath = pathname.replace(/^\/(fr)\//, '/').replace(/^\/(fr)$/, '/');
     </svg>
   </button>
 
-  <div 
-    class="absolute right-0 mt-1 w-32 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right scale-95 group-hover:scale-100"
-    style="background: var(--bg-deep); border: 2px solid var(--green-dark); box-shadow: 4px 4px 0 rgba(35,114,39,0.25); z-index: 100;"
+  <div
+    class="absolute right-0 mt-1 w-32 rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right scale-95 group-hover:scale-100"
+    style="background: var(--bg-surface); border: 1px solid var(--bg-border); box-shadow: 0 4px 16px rgba(0,0,0,0.08); z-index: 100;"
   >
     <ul class="list-none m-0 p-1">
       {Object.entries(languages).map(([supportedLang, label]) => (
         <li>
-          <a 
+          <a
             href={translatePath(rawPath, supportedLang)}
-            class={`block px-3 py-2 text-xs font-bold tracking-wider transition-colors no-underline ${lang === supportedLang ? 'bg-green-dark/20 text-yellow-light' : 'text-text-secondary hover:text-yellow-light hover:bg-green-dark/10'}`}
-            style="font-family: 'Inter', sans-serif;"
+            class="block px-3 py-2 text-xs font-medium rounded-md transition-colors no-underline"
+            style={`font-family: 'Inter', sans-serif; color: ${lang === supportedLang ? 'var(--text-primary)' : 'var(--text-secondary)'}; background: ${lang === supportedLang ? 'var(--bg-panel)' : 'transparent'};`}
           >
             {supportedLang === 'en' ? '🇬🇧 ' : '🇫🇷 '}
             {label}

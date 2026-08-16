@@ -8,25 +8,25 @@ const translatePath = useTranslatedPath(lang);
 ---
 
 <footer
-  style="background: var(--bg-surface); border-top: 3px solid var(--bg-border);"
+  style="background: var(--bg-surface); border-top: 1px solid var(--bg-border);"
 >
-  <div class="max-w-7xl mx-auto px-6 py-10">
+  <div class="max-w-5xl mx-auto px-6 py-10">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
       <!-- Brand -->
       <div class="lg:col-span-1">
         <div
-          class="text-base font-black uppercase tracking-widest mb-3"
-          style="font-family: 'Space Grotesk', sans-serif; color: var(--text-primary);"
+          class="text-base font-semibold tracking-tight mb-3"
+          style="color: var(--text-primary);"
         >
-          Cloud<span style="color: var(--yellow-dark);">Nive</span>
+          Cloud<span style="color: var(--green-dark);">Nive</span>
         </div>
         <p
           class="text-sm mb-5"
           style="color: var(--text-secondary); font-family: 'Inter', sans-serif; line-height: 1.7;"
         >
-          {lang === 'fr' 
-            ? "Blog technique sur le Cloud, l'IaC et le développement logiciel. Chaque article = un niveau débloqué. 🎮"
-            : "Technical blog on Cloud, IaC, and software development. Every article is a new level unlocked. 🎮"}
+          {lang === 'fr'
+            ? "Blog technique sur le Cloud, l'IaC et le développement logiciel."
+            : "Technical blog on Cloud, IaC, and software development."}
         </p>
         <div class="flex flex-wrap gap-2">
           <span class="game-tag">☁ AWS</span>
@@ -139,26 +139,14 @@ const translatePath = useTranslatedPath(lang);
     <!-- Bottom bar -->
     <div
       class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4"
-      style="border-top: 2px solid var(--bg-border);"
+      style="border-top: 1px solid var(--bg-border);"
     >
       <span
         class="text-xs"
         style="font-family: 'JetBrains Mono', monospace; color: var(--text-dim);"
       >
-        // © {currentYear} CloudNive — {lang === 'fr' ? 'Mission: partager le savoir' : 'Mission: sharing knowledge'}
+        © {currentYear} CloudNive — {lang === 'fr' ? 'Mission: partager le savoir' : 'Mission: sharing knowledge'}
       </span>
-
-      <!-- XP bar -->
-      <div
-        class="flex items-center gap-2"
-        style="font-family: 'JetBrains Mono', monospace; font-size: 11px;"
-      >
-        <span style="color: var(--text-dim);">SITE XP:</span>
-        <div class="xp-bar-track" style="width: 80px;">
-          <div class="xp-bar-fill" style="width: 88%;"></div>
-        </div>
-        <span style="color: var(--yellow-dark);">LVL 42</span>
-      </div>
     </div>
   </div>
 </footer>

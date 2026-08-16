@@ -33,22 +33,21 @@ export default function ArticleCard({ article }) {
             className="article-card group block no-underline"
             style={{
                 background: 'var(--bg-surface)',
-                border: '3px solid var(--bg-border)',
-                boxShadow: '4px 4px 0 rgba(0,0,0,0.4)',
+                border: '1px solid var(--bg-border)',
+                borderRadius: '12px',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
                 display: 'flex',
                 flexDirection: 'column',
-                transition: 'transform 0.1s, box-shadow 0.1s, border-color 0.1s',
+                transition: 'box-shadow 0.15s, border-color 0.15s',
                 position: 'relative',
                 overflow: 'hidden',
             }}
             onMouseEnter={e => {
-                e.currentTarget.style.transform = 'translate(-3px,-3px)';
-                e.currentTarget.style.boxShadow = '7px 7px 0 rgba(0,0,0,0.4), 0 0 20px rgba(35,114,39,0.2)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
                 e.currentTarget.style.borderColor = 'var(--green-dark)';
             }}
             onMouseLeave={e => {
-                e.currentTarget.style.transform = 'translate(0,0)';
-                e.currentTarget.style.boxShadow = '4px 4px 0 rgba(0,0,0,0.4)';
+                e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.04)';
                 e.currentTarget.style.borderColor = 'var(--bg-border)';
             }}
         >
@@ -76,15 +75,16 @@ export default function ArticleCard({ article }) {
                     <div
                         style={{
                             position: 'absolute', top: '10px', left: '10px',
-                            background: 'var(--green-dark)',
-                            color: 'var(--yellow-light)',
+                            background: 'var(--bg-deep)',
+                            color: 'var(--text-primary)',
                             fontFamily: "'Inter', sans-serif",
-                            fontWeight: 700,
+                            fontWeight: 600,
                             fontSize: '10px',
-                            letterSpacing: '1.5px',
+                            letterSpacing: '0.06em',
                             textTransform: 'uppercase',
                             padding: '3px 10px',
-                            border: '2px solid var(--green-light)',
+                            borderRadius: '999px',
+                            border: '1px solid var(--bg-border)',
                             zIndex: 2,
                         }}
                     >
@@ -113,9 +113,9 @@ export default function ArticleCard({ article }) {
 
                 {/* Title */}
                 <h3
-                    className="text-sm font-bold leading-snug line-clamp-2 m-0"
+                    className="text-sm font-semibold leading-snug line-clamp-2 m-0"
                     style={{
-                        fontFamily: "'Space Grotesk', sans-serif",
+                        fontFamily: "'Inter', sans-serif",
                         color: 'var(--text-primary)',
                         fontSize: '13px',
                         lineHeight: 1.4,
@@ -158,10 +158,11 @@ export default function ArticleCard({ article }) {
                                 style={{
                                     fontFamily: "'JetBrains Mono', monospace",
                                     fontSize: '10px',
-                                    padding: '1px 6px',
-                                    background: 'rgba(35,114,39,0.12)',
-                                    border: '1px solid var(--green-dark)',
-                                    color: 'var(--green-light)',
+                                    padding: '1px 8px',
+                                    borderRadius: '999px',
+                                    background: 'var(--bg-panel)',
+                                    border: '1px solid var(--bg-border)',
+                                    color: 'var(--text-secondary)',
                                 }}
                             >
                                 #{tag}
@@ -177,12 +178,11 @@ export default function ArticleCard({ article }) {
                 >
                     <div className="flex items-center gap-2">
                         <div
-                            className="flex items-center justify-center text-xs font-bold"
+                            className="flex items-center justify-center text-xs font-semibold rounded-full"
                             style={{
                                 width: '24px', height: '24px',
                                 background: 'var(--green-dark)',
-                                border: '2px solid var(--green-light)',
-                                color: 'var(--yellow-light)',
+                                color: 'var(--bg-deep)',
                                 fontFamily: "'JetBrains Mono', monospace",
                                 fontSize: '9px',
                             }}

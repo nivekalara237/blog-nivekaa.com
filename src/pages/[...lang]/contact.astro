@@ -29,19 +29,16 @@ const getTransl = (key: Parameters<typeof t>[0], fallback: string) => t(key) || 
   <main class="max-w-4xl mx-auto px-6 py-16">
     <div class="text-center mb-12">
       <div
-        class="inline-block px-3 py-1 mb-4 text-[10px] font-bold uppercase tracking-[0.2em]"
-        style="background: rgba(var(--yellow-dark-rgb), 0.1); border: 1px solid var(--yellow-dark); color: var(--yellow-light);"
+        class="inline-block px-3 py-1 mb-4 rounded-full text-[11px] font-medium uppercase tracking-[0.08em]"
+        style="background: var(--bg-panel); border: 1px solid var(--bg-border); color: var(--text-secondary);"
       >
-        {lang === 'fr' ? 'Canal de Communication' : 'Communication Channel'}
+        {lang === 'fr' ? 'Contact' : 'Contact'}
       </div>
       <h1
-        class="text-4xl md:text-5xl font-black mb-4 uppercase italic"
-        style="font-family: 'Space Grotesk', sans-serif; letter-spacing: -1px; background: linear-gradient(to right, var(--text-primary), var(--text-dim)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"
+        class="text-4xl md:text-5xl font-semibold mb-4"
+        style="font-family: 'Inter', sans-serif; letter-spacing: -0.02em; color: var(--text-primary);"
       >
-        Contact <span
-          style="color: var(--yellow-dark); -webkit-text-fill-color: var(--yellow-dark);"
-          >_</span
-        >
+        {lang === 'fr' ? 'Contactez-nous' : 'Get in touch'}
       </h1>
       <p
         class="text-[var(--text-secondary)] max-w-xl mx-auto leading-relaxed"

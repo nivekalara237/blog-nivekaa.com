@@ -2,6 +2,15 @@ import React, { useState } from 'react';
 import { api } from '../../lib/api';
 import MarkdownRenderer from '../MarkdownRenderer.jsx';
 
+// ── Icons (Flowbite/Heroicons-style outline SVG) ──────────────────
+const FolderIcon = () => <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5a1.5 1.5 0 011.5-1.5h4.19a1.5 1.5 0 011.06.44l1.12 1.12a1.5 1.5 0 001.06.44H19.5A1.5 1.5 0 0121 9.5v8a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 17.5v-10z"/></svg>;
+const NoteIcon = () => <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3.75h5.379a1.5 1.5 0 011.06.44l3.622 3.62a1.5 1.5 0 01.439 1.061V19.5a1.5 1.5 0 01-1.5 1.5H8.25a1.5 1.5 0 01-1.5-1.5V5.25a1.5 1.5 0 011.5-1.5z"/></svg>;
+const NotePlusIcon = () => <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3.75h5.379a1.5 1.5 0 011.06.44l3.622 3.62a1.5 1.5 0 01.439 1.061V19.5a1.5 1.5 0 01-1.5 1.5H8.25a1.5 1.5 0 01-1.5-1.5V5.25a1.5 1.5 0 011.5-1.5z"/><path strokeLinecap="round" strokeLinejoin="round" d="M12 10.5v5.25M9.375 13.125h5.25"/></svg>;
+const FolderPlusIcon = () => <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5a1.5 1.5 0 011.5-1.5h4.19a1.5 1.5 0 011.06.44l1.12 1.12a1.5 1.5 0 001.06.44H19.5A1.5 1.5 0 0121 9.5v8a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 17.5v-10z"/><path strokeLinecap="round" strokeLinejoin="round" d="M12 11.5v4M10 13.5h4"/></svg>;
+const PencilIcon = () => <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>;
+const TrashIcon = () => <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>;
+const SearchIcon = () => <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M18 11a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>;
+
 // ── Helpers ──────────────────────────────────────────────────────
 function getAllNotes(nodes) {
     let out = [];
@@ -12,100 +21,32 @@ function getAllNotes(nodes) {
     return out;
 }
 
-function notePreview(content) {
-    if (!content) return '...';
-    return content.replace(/[#*`\n]/g, ' ').replace(/\s+/g, ' ').substring(0, 120) + '...';
-}
-
-// ── Tree Row (Option C — 1 level + count) ────────────────────────
-function TreeRow({ item, isLast, onNavigate }) {
+// ── Folder / note row (folder view listing) ──────────────────────
+function Row({ item, onNavigate }) {
     const isFolder = item.type === 'folder';
     const name = item.name || item.title || 'Sans titre';
     const tags = item.tags || [];
-    const connector = isLast ? '└──' : '├──';
-
-    // Count all nested children recursively to show [+X autres]
-    let nestedCount = 0;
-    if (isFolder && item.children) {
-        const walk = (arr) => {
-            nestedCount += arr.length;
-            for (const n of arr) {
-                if (n.type === 'folder' && n.children) walk(n.children);
-            }
-        };
-        walk(item.children);
-    }
+    const count = isFolder ? (item.children ? item.children.length : 0) : null;
 
     return (
-        <div
-            onClick={() => onNavigate(item)}
-            style={{
-                display: 'flex',
-                alignItems: 'baseline',
-                padding: '3px 0',
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                fontSize: '11px',
-                lineHeight: '1.6',
-                userSelect: 'none',
-            }}
-        >
-            {/* Connector */}
-            <span style={{ color: 'var(--border2)', flexShrink: 0, marginRight: '6px' }}>
-                {connector}
-            </span>
-            {/* Bullet */}
-            <span style={{
-                flexShrink: 0,
-                marginRight: '5px',
-                color: isFolder ? 'var(--em2)' : 'var(--txt3)',
-                fontWeight: isFolder ? 700 : 400,
-            }}>
-                {isFolder ? '[+]' : '■'}
-            </span>
-            {/* Name */}
-            <span style={{
-                color: isFolder ? 'var(--em2)' : 'var(--txt)',
-                fontWeight: isFolder ? 700 : 400,
-                flex: 1,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-            }}>
-                {name}{isFolder ? '/' : ''}
-            </span>
-            {/* Tags inline (notes only) */}
-            {!isFolder && tags.length > 0 && (
-                <span style={{ display: 'flex', gap: '4px', flexShrink: 0, marginLeft: '12px', flexWrap: 'nowrap' }}>
-                    {tags.map(t => (
-                        <span key={t} style={{
-                            fontSize: '9px', padding: '1px 5px',
-                            border: '1px solid var(--em)', color: 'var(--em2)',
-                            background: 'var(--em3)', letterSpacing: '.04em',
-                            textTransform: 'uppercase', whiteSpace: 'nowrap',
-                        }}>
-                            ({t})
-                        </span>
-                    ))}
-                </span>
+        <button className="folder-row" onClick={() => onNavigate(item)}>
+            <span className={`icon${isFolder ? '' : ' note'}`}>{isFolder ? <FolderIcon /> : <NoteIcon />}</span>
+            <span className="name">{name}</span>
+            {isFolder ? (
+                <span className="meta">{count} élément{count === 1 ? '' : 's'}</span>
+            ) : (
+                tags.length > 0 && (
+                    <span className="tags" style={{ marginLeft: 'auto' }}>
+                        {tags.slice(0, 3).map(t => <span key={t} className="tag">{t}</span>)}
+                    </span>
+                )
             )}
-            {/* Nested block count (folders only) */}
-            {isFolder && nestedCount > 0 && (
-                <span style={{ fontSize: '9px', color: 'var(--txt3)', flexShrink: 0, marginLeft: '12px' }}>
-                    [+{nestedCount} autres]
-                </span>
-            )}
-            {isFolder && nestedCount === 0 && (
-                <span style={{ fontSize: '9px', color: 'var(--txt3)', flexShrink: 0, marginLeft: '12px' }}>
-                    [vide]
-                </span>
-            )}
-        </div>
+        </button>
     );
 }
 
-// ── Folder View (Option B — full recursive tree) ─────────────────
-function FolderView({ node, children, searchQuery, isAdmin, onNavigate, onAddNode }) {
+// ── Folder View ───────────────────────────────────────────────────
+function FolderView({ node, children, searchQuery, isAdmin, onNavigate }) {
     if (searchQuery) {
         const allNotes = getAllNotes(children);
         const q = searchQuery.toLowerCase();
@@ -117,19 +58,17 @@ function FolderView({ node, children, searchQuery, isAdmin, onNavigate, onAddNod
         if (filtered.length === 0) {
             return (
                 <div className="empty-state">
-                    <span className="big">//</span>
-                    <span>grep: no match found</span>
+                    <SearchIcon />
+                    <span>Aucun résultat</span>
                 </div>
             );
         }
         return (
-            <div style={{ fontFamily: 'inherit' }}>
-                <div style={{ fontSize: '10px', color: 'var(--txt3)', letterSpacing: '.1em', marginBottom: '10px' }}>
-                    // grep: {filtered.length} résultat(s)
+            <div>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'var(--txt3)', marginBottom: '12px' }}>
+                    {filtered.length} résultat{filtered.length === 1 ? '' : 's'}
                 </div>
-                {filtered.map((item, i) => (
-                    <TreeRow key={item.id} item={item} isLast={i === filtered.length - 1} prefix="" onNavigate={onNavigate} />
-                ))}
+                {filtered.map(item => <Row key={item.id} item={item} onNavigate={onNavigate} />)}
             </div>
         );
     }
@@ -137,15 +76,12 @@ function FolderView({ node, children, searchQuery, isAdmin, onNavigate, onAddNod
     if (children.length === 0) {
         return (
             <div className="empty-state">
-                <span className="big">[+]</span>
-                <span>Dossier vide — {isAdmin ? 'créer une note ou un sous-dossier' : 'aucun contenu'}</span>
+                <FolderIcon />
+                <span>{isAdmin ? 'Dossier vide — créez une note ou un sous-dossier' : 'Ce dossier est vide'}</span>
             </div>
         );
     }
 
-    const parentName = node ? (node.name || node.title || 'notes') : 'notes';
-
-    // Count total notes recursively
     const totalNotes = getAllNotes(children).length;
     const totalFolders = (() => {
         let f = 0;
@@ -155,61 +91,81 @@ function FolderView({ node, children, searchQuery, isAdmin, onNavigate, onAddNod
     })();
 
     return (
-        <div style={{ fontFamily: 'inherit' }}>
-            {/* Root label */}
-            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--em)', marginBottom: '4px', letterSpacing: '.05em' }}>
-                {parentName}/
-            </div>
-            {children.map((item, i) => (
-                <TreeRow
-                    key={item.id}
-                    item={item}
-                    isLast={i === children.length - 1}
-                    depth={0}
-                    prefix=""
-                    onNavigate={onNavigate}
-                />
-            ))}
-            {/* Summary */}
-            <div style={{ marginTop: '12px', fontSize: '10px', color: 'var(--txt3)', borderTop: '1px dashed var(--border)', paddingTop: '8px' }}>
-                {totalFolders} dossier(s), {totalNotes} note(s)
-            </div>
+        <div>
+            {children.map(item => <Row key={item.id} item={item} onNavigate={onNavigate} />)}
+            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'var(--txt3)', marginTop: '16px' }}>
+                {totalFolders} dossier{totalFolders === 1 ? '' : 's'}, {totalNotes} note{totalNotes === 1 ? '' : 's'}
+            </p>
         </div>
     );
 }
 
+// ── Note View — content edited directly on this page ─────────────
+function NoteView({ noteData, isAdmin, onDelete, onSaved }) {
+    const [editing, setEditing] = useState(false);
+    const [draft, setDraft] = useState(noteData.content || '');
+    const [saving, setSaving] = useState(false);
 
-// ── Note View (with shared MarkdownRenderer) ─────────────────────
-function NoteView({ noteData, lang, isAdmin, onEdit, onDelete }) {
     const updated = noteData.updated || (noteData.updatedAt || noteData.createdAt || '').split('T')[0] || '—';
     const name = noteData.name || noteData.title || 'Sans titre';
+
+    const startEdit = () => { setDraft(noteData.content || ''); setEditing(true); };
+    const cancelEdit = () => setEditing(false);
+
+    const save = async () => {
+        setSaving(true);
+        try {
+            const slug = noteData.id || noteData.slug;
+            await api.updateNote(slug, {
+                locales: { en: { title: noteData.title || name, content: draft } },
+            });
+            onSaved({ ...noteData, content: draft });
+            setEditing(false);
+        } catch (err) {
+            console.error('Failed to save note', err);
+            alert("Erreur lors de l'enregistrement de la note");
+        } finally {
+            setSaving(false);
+        }
+    };
 
     return (
         <div className="note-view">
             <div className="note-meta-bar">
-                <span className="note-meta-item">// ID: <span>{noteData.id || noteData.slug}</span></span>
-                <span className="note-meta-item">UPDATED: <span>{updated}</span></span>
-                <span className="note-meta-item">TAGS: <span>{(noteData.tags || []).join(', ') || '—'}</span></span>
-                {isAdmin && (
-                    <>
-                        <button className="btn-sm" onClick={() => onEdit(noteData)} style={{ marginLeft: 'auto' }}>
-                            [ EDITER ]
-                        </button>
-                        <button className="btn-sm btn-danger" onClick={() => onDelete(noteData)}>
-                            [ SUPPR ]
-                        </button>
-                    </>
+                <span className="note-meta-item">Mis à jour {updated}</span>
+                {(noteData.tags || []).length > 0 && (
+                    <div className="tags">
+                        {(noteData.tags || []).map(t => <span key={t} className="tag">{t}</span>)}
+                    </div>
+                )}
+                {isAdmin && !editing && (
+                    <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
+                        <button className="btn-sm" onClick={startEdit}><PencilIcon />Modifier</button>
+                        <button className="btn-sm btn-danger" onClick={() => onDelete(noteData)}><TrashIcon />Supprimer</button>
+                    </div>
                 )}
             </div>
             <h1>{name}</h1>
-            <div style={{ margin: '10px 0 16px' }}>
-                <div className="tags">
-                    {(noteData.tags || []).map(t => <span key={t} className="tag">{t}</span>)}
-                </div>
-            </div>
-            <div className="markdown-content">
+
+            {editing ? (
+                <>
+                    <textarea
+                        className="note-edit-area"
+                        value={draft}
+                        onChange={e => setDraft(e.target.value)}
+                        placeholder="## Introduction&#10;&#10;Écrivez le contenu de la note en markdown..."
+                        autoFocus
+                    />
+                    <div className="note-edit-actions">
+                        <button className="btn-primary" onClick={save} disabled={saving}>
+                            {saving ? 'Enregistrement...' : 'Enregistrer'}
+                        </button>
+                        <button className="btn-ghost" onClick={cancelEdit} disabled={saving}>Annuler</button>
+                    </div>
+                </>
+            ) : (
                 <MarkdownRenderer content={noteData.content || ''} />
-            </div>
+            )}
         </div>
     );
 }
@@ -225,7 +181,7 @@ function getBreadcrumb(id, nodes, path = []) {
     return null;
 }
 
-export default function NoteViewer({ activeNode, tree, searchQuery, isAdmin, lang, onNavigate, onEdit, onDelete, onAddNode }) {
+export default function NoteViewer({ activeNode, tree, searchQuery, isAdmin, lang, onNavigate, onDelete, onAddNode }) {
     const [noteData, setNoteData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [loadedId, setLoadedId] = useState(null);
@@ -261,22 +217,15 @@ export default function NoteViewer({ activeNode, tree, searchQuery, isAdmin, lan
         children = findChildren(tree, activeNode.id) || [];
     }
 
-    // Breadcrumb
     const breadcrumb = activeNode && activeNode.id !== 'root'
         ? getBreadcrumb(activeNode.id, tree)
         : null;
-
-    const statusLabel = activeNode && activeNode.id !== 'root'
-        ? `// ${(activeNode.name || activeNode.title || '').toUpperCase()}`
-        : '';
 
     return (
         <div className="content">
             {/* Content header with breadcrumb and action buttons */}
             <div className="content-header">
-                <div className="content-path" id="breadcrumb">
-                    <span>~</span>
-                    <span className="sep">/</span>
+                <div className="content-path">
                     <span>notes</span>
                     {breadcrumb && breadcrumb.map(p => (
                         <React.Fragment key={p.id}>
@@ -285,18 +234,18 @@ export default function NoteViewer({ activeNode, tree, searchQuery, isAdmin, lan
                         </React.Fragment>
                     ))}
                 </div>
-                <div className="content-actions" id="content-action-btns">
+                <div className="content-actions">
                     {isAdmin && isFolder && activeNode && (
                         <>
-                            <button className="btn-sm btn-em" onClick={() => onAddNode('note', activeNode.id)}>+N</button>
-                            <button className="btn-sm btn-em" onClick={() => onAddNode('folder', activeNode.id)}>+G</button>
+                            <button className="btn-icon" onClick={() => onAddNode('note', activeNode.id)} title="Nouvelle note"><NotePlusIcon /></button>
+                            <button className="btn-icon" onClick={() => onAddNode('folder', activeNode.id)} title="Nouveau dossier"><FolderPlusIcon /></button>
                         </>
                     )}
                 </div>
             </div>
 
             {/* Content body */}
-            <div className="content-body" id="content-body">
+            <div className="content-body">
                 {isFolder ? (
                     <FolderView
                         node={activeNode}
@@ -304,27 +253,25 @@ export default function NoteViewer({ activeNode, tree, searchQuery, isAdmin, lan
                         searchQuery={searchQuery}
                         isAdmin={isAdmin}
                         onNavigate={onNavigate}
-                        onAddNode={onAddNode}
                     />
                 ) : (
                     <>
                         {loading && (
-                            <div style={{ padding: '20px', fontSize: '11px', color: 'var(--txt3)' }}>
-                                // Chargement...<span className="cursor">_</span>
+                            <div style={{ padding: '20px', fontSize: '13px', color: 'var(--txt3)' }}>
+                                Chargement...
                             </div>
                         )}
                         {!loading && noteData && (
                             <NoteView
                                 noteData={noteData}
-                                lang={lang}
                                 isAdmin={isAdmin}
-                                onEdit={onEdit}
                                 onDelete={onDelete}
+                                onSaved={setNoteData}
                             />
                         )}
                         {!loading && !noteData && (
                             <div className="empty-state">
-                                <span className="big">!</span>
+                                <NoteIcon />
                                 <span>Note introuvable</span>
                             </div>
                         )}

@@ -2,8 +2,35 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../lib/api';
 import NotesSidebar from './NotesSidebar.jsx';
 import NoteViewer from './NoteViewer.jsx';
-import { CreateEditModal, DeleteModal, FolderModal } from './NoteEditorModal.jsx';
+import { CreateNoteModal, DeleteModal, FolderModal } from './NoteEditorModal.jsx';
 import '../../styles/notes-v2-theme.css';
+
+// ── Theme toggle — the main site navbar (and its own toggle) is hidden on
+// this page, so notes-v2 needs its own dark/light control.
+function ThemeToggle() {
+    const [isDark, setIsDark] = useState(true);
+
+    useEffect(() => {
+        setIsDark(document.documentElement.classList.contains('dark'));
+    }, []);
+
+    const toggle = () => {
+        const next = !isDark;
+        setIsDark(next);
+        document.documentElement.classList.toggle('dark', next);
+        localStorage.theme = next ? 'dark' : 'light';
+    };
+
+    return (
+        <button className="btn-icon" onClick={toggle} title="Basculer le thème" aria-label="Basculer le thème">
+            {isDark ? (
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+            ) : (
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1.5m0 15V21m9-9h-1.5M4.5 12H3m15.364-6.364l-1.06 1.06M6.697 17.303l-1.06 1.06m12.727 0l-1.06-1.06M6.697 6.697l-1.06-1.06M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg>
+            )}
+        </button>
+    );
+}
 
 export default function NotesApp({ lang = 'fr', isAdmin = false, user = null }) {
     // ── State
@@ -105,15 +132,6 @@ export default function NotesApp({ lang = 'fr', isAdmin = false, user = null }) 
         }
     };
 
-    const handleEdit = (nodeData) => {
-        if (!isAdmin) return;
-        if (nodeData.type === 'folder') {
-            setModal({ kind: 'editFolder', nodeType: 'folder', initialData: nodeData });
-        } else {
-            setModal({ kind: 'edit', nodeType: 'note', initialData: nodeData });
-        }
-    };
-
     const handleDelete = (nodeData) => {
         if (!isAdmin) return;
         setModal({ kind: 'delete', initialData: nodeData });
@@ -123,11 +141,6 @@ export default function NotesApp({ lang = 'fr', isAdmin = false, user = null }) 
         setModal(null);
         await loadTree();
         if (created && created.id) setActiveNode(created);
-    };
-
-    const handleEditSuccess = async () => {
-        setModal(null);
-        await loadTree();
     };
 
     const handleDeleteSuccess = async (deleted) => {
@@ -144,37 +157,47 @@ export default function NotesApp({ lang = 'fr', isAdmin = false, user = null }) 
     // ── Render
     const currentLabel = activeNode
         ? `// ${(activeNode.name || activeNode.title || '').toUpperCase()}`
-        : '// SELECT A NODE';
+        : '';
+
+    const homeHref = lang === 'fr' ? '/fr' : '/';
 
     return (
         <div className="sys-notes-v2">
             {/* Topbar */}
             <div className="topbar">
-                <div className="logo">sys.NOTES</div>
+                <a href={homeHref} className="logo" style={{ textDecoration: 'none' }}>
+                    <span className="logo-badge">N</span>
+                    Notes
+                </a>
                 <div className="topbar-title">
-                    // TARGET: TECH-KNOWLEDGE-BASE <span className="cursor">_</span>
+                    base de connaissances technique
                 </div>
-                <div className="topbar-badges">
-                    <span className={`badge${isAdmin ? ' active' : ''}`}>
-                        {isAdmin ? '[ ADMIN ]' : '[ PUBLIC ]'}
-                    </span>
-                </div>
+                {isAdmin && (
+                    <div className="topbar-badges">
+                        <span className="badge active">Admin</span>
+                    </div>
+                )}
+                <a href={homeHref} className="blog-link">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" width="14" height="14"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
+                    Blog
+                </a>
                 <div className="search-bar">
-                    <span style={{ color: 'var(--txt3)', fontSize: '11px' }}>//</span>
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M18 11a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     <input
                         type="text"
-                        placeholder='grep -r "query" .'
+                        placeholder="Rechercher une note, un tag..."
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value.trim())}
                     />
                 </div>
+                <ThemeToggle />
             </div>
 
             {/* Main layout */}
             <div className="main">
                 {loading ? (
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, fontSize: '11px', color: 'var(--txt3)' }}>
-                        // Chargement...<span className="cursor">_</span>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, fontSize: '13px', color: 'var(--txt3)' }}>
+                        Chargement...
                     </div>
                 ) : (
                     <>
@@ -196,7 +219,6 @@ export default function NotesApp({ lang = 'fr', isAdmin = false, user = null }) 
                             isAdmin={isAdmin}
                             lang={lang}
                             onNavigate={handleSelect}
-                            onEdit={handleEdit}
                             onDelete={handleDelete}
                             onAddNode={handleAddNode}
                         />
@@ -206,34 +228,20 @@ export default function NotesApp({ lang = 'fr', isAdmin = false, user = null }) 
 
             {/* Status bar */}
             <div className="status-bar">
-                <span className="status-item ok">● CONNECTED</span>
                 <span className="status-item">{stats.notes} notes</span>
                 <span className="status-item">{stats.folders} dossiers</span>
-                <span className="status-item">{currentLabel}</span>
+                <span className="status-item" style={{ marginLeft: 'auto' }}>{currentLabel}</span>
             </div>
 
             {/* Modals */}
             {(modal?.kind === 'create') && (
                 <div className="sys-notes-v2" style={{ position: 'fixed', inset: 0, zIndex: 200 }}>
-                    <CreateEditModal
-                        mode="create"
+                    <CreateNoteModal
                         parentId={modal.parentId}
                         lang={lang}
                         user={user}
                         onClose={closeModal}
                         onSuccess={handleCreateSuccess}
-                    />
-                </div>
-            )}
-            {modal?.kind === 'edit' && (
-                <div className="sys-notes-v2" style={{ position: 'fixed', inset: 0, zIndex: 200 }}>
-                    <CreateEditModal
-                        mode="edit"
-                        initialData={modal.initialData}
-                        lang={lang}
-                        user={user}
-                        onClose={closeModal}
-                        onSuccess={handleEditSuccess}
                     />
                 </div>
             )}

@@ -37,15 +37,13 @@ const categories = categoriesList.map((name) => {
   hreflangEn={`${SITE_URL}${currentPath}`}
   hreflangFr={`${SITE_URL}/fr${currentPath}`}
 >
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="mb-12 border-b-2 pb-6" style="border-color: var(--bg-border);">
+  <section class="max-w-5xl mx-auto px-6 py-12">
+    <div class="mb-12 border-b pb-6" style="border-color: var(--bg-border);">
       <h1
         class="m-0 mb-3"
-        style="font-family:'Space Grotesk',sans-serif; font-weight:900; font-size:clamp(28px,4vw,40px); line-height:1.1; letter-spacing:-1px; color:var(--text-primary);"
+        style="font-family:'Inter',sans-serif; font-weight:700; font-size:clamp(28px,4vw,40px); line-height:1.1; letter-spacing:-0.02em; color:var(--text-primary);"
       >
-        {lang === 'fr' ? 'Base de données' : 'Database'} <span style="color:var(--yellow-dark);"
-          >//Catégories</span
-        >
+        {lang === 'fr' ? 'Catégories' : 'Categories'}
       </h1>
       <p
         style="font-family:'Inter',sans-serif; font-size:16px; color:var(--text-secondary); max-width:600px; margin:0;"
@@ -69,26 +67,26 @@ const categories = categoriesList.map((name) => {
               class="group block h-full no-underline"
             >
               <div
-                class="pixel-box p-8 flex flex-col items-center text-center h-full min-h-[180px] justify-center transition-all duration-100"
+                class="pixel-box p-8 flex flex-col items-center text-center h-full min-h-[180px] justify-center transition-all duration-150"
                 style="background: var(--bg-surface);"
-                onmouseover="this.style.borderColor='var(--green-dark)'; this.style.transform='translate(-3px,-3px)'; this.style.boxShadow='4px 4px 0 rgba(35,114,39,0.3)';"
-                onmouseout="this.style.borderColor='var(--bg-border)'; this.style.transform='translate(0,0)'; this.style.boxShadow='4px 4px 0 rgba(0,0,0,0.5)';"
+                onmouseover="this.style.borderColor='var(--green-dark)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)';"
+                onmouseout="this.style.borderColor='var(--bg-border)'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.04)';"
               >
                 <div
                   class="mb-5"
-                  style="color:var(--yellow-dark); transition:color 0.1s;"
+                  style="color:var(--green-dark); transition:color 0.1s;"
                 >
                   <IconComponent className="h-10 w-10 text-current transition-colors" />
                 </div>
                 <h3
-                  class="m-0 mb-3 uppercase tracking-widest"
-                  style="font-family:'Inter',sans-serif; font-weight:700; font-size:14px; color:var(--text-primary);"
+                  class="m-0 mb-3 uppercase tracking-wide"
+                  style="font-family:'Inter',sans-serif; font-weight:600; font-size:14px; color:var(--text-primary);"
                 >
                   {category.name}
                 </h3>
-                <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--green-light); padding:2px 8px; background:rgba(35,114,39,0.15); border:1px solid var(--green-dark);">
-                  Lv. {category.count}{" "}
-                  <span style="color:var(--text-dim);">(articles)</span>
+                <div class="rounded-full" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-secondary); padding:2px 10px; background:var(--bg-panel); border:1px solid var(--bg-border);">
+                  {category.count}{" "}
+                  <span style="color:var(--text-dim);">{lang === 'fr' ? 'articles' : 'articles'}</span>
                 </div>
               </div>
             </a>

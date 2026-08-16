@@ -25,6 +25,8 @@ const currentPath = Astro.url.pathname.replace(/^\/fr/, '') || '/notes-v2';
   lang={lang}
   hreflangEn={`${SITE_URL}${currentPath}`}
   hreflangFr={`${SITE_URL}/fr${currentPath}`}
+  hideHeader
+  hideFooter
 >
   <NotesApp client:only="react" lang={lang} isAdmin={false} />
 </Layout>

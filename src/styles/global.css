@@ -3,43 +3,72 @@
 /* Dark mode uses class-based strategy */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Pastel override of Tailwind's built-in gray/indigo scales.
+   A handful of components (MarkdownRenderer, article author block,
+   legacy page/[page].astro) use plain gray and indigo utility classes
+   instead of the CSS-variable system above. Overriding the scale here
+   re-colors them automatically without touching those files. */
+@theme {
+    --color-gray-50: #F7F8FC;
+    --color-gray-100: #EEF0F8;
+    --color-gray-200: #DFE2F0;
+    --color-gray-300: #C7CBE0;
+    --color-gray-400: #A6ABC7;
+    --color-gray-500: #8890AC;
+    --color-gray-600: #6D7390;
+    --color-gray-700: #565B73;
+    --color-gray-800: #414458;
+    --color-gray-900: #2E303F;
+    --color-gray-950: #1C1D28;
+
+    --color-indigo-400: #A8BCEF;
+    --color-indigo-500: #7C93D8;
+    --color-indigo-600: #7C93D8;
+    --color-indigo-700: #6879C4;
+}
+
 /* ========================================
-   GAMING DESIGN SYSTEM — CloudNive
-   Palette: #237227 / #519A66 / #FFAA00 / #FFD786
+   PASTEL DESIGN SYSTEM — CloudNive
+   Palette: pastel zinc/lavender-blue, matches site/final-site.html
    ======================================== */
 
 @layer base {
     :root {
-        /* Color palette */
-        --green-dark: #237227;
-        --green-light: #519A66;
-        --yellow-dark: #FFAA00;
-        --yellow-light: #FFD786;
+        /* Accent palette (constant role, theme-aware value) — DARK (default) */
+        --green-dark: #A6ABC7;
+        --green-light: #7C93D8;
+        --yellow-dark: #EEF0F8;
+        --yellow-light: #DFE2F0;
 
         /* Surface system — DARK (default) */
-        --bg-deep: #0A0F0A;
-        --bg-surface: #0E1A0E;
-        --bg-panel: #142014;
-        --bg-border: #1E321E;
+        --bg-deep: #1C1D28;
+        --bg-surface: #262838;
+        --bg-panel: #2E303F;
+        --bg-border: #414458;
 
         /* Text — DARK */
-        --text-primary: #E8F5E8;
-        --text-secondary: #8DB09A;
-        --text-dim: #4A6B52;
-        --text-accent: #FFD786;
+        --text-primary: #EEF0F8;
+        --text-secondary: #A6ABC7;
+        --text-dim: #6D7390;
+        --text-accent: #A8BCEF;
     }
 
     /* ── Light mode overrides ── */
     html:not(.dark) {
-        --bg-deep: #F4F9F4;
-        --bg-surface: #FFFFFF;
-        --bg-panel: #EBF5EB;
-        --bg-border: #C8DEC8;
+        --green-dark: #2E303F;
+        --green-light: #7C93D8;
+        --yellow-dark: #6D7390;
+        --yellow-light: #8890AC;
 
-        --text-primary: #0F1A0F;
-        --text-secondary: #3A5A40;
-        --text-dim: #7A9A7A;
-        --text-accent: #FFAA00;
+        --bg-deep: #F7F8FC;
+        --bg-surface: #FFFFFF;
+        --bg-panel: #EEF0F8;
+        --bg-border: #DFE2F0;
+
+        --text-primary: #2E303F;
+        --text-secondary: #6D7390;
+        --text-dim: #8890AC;
+        --text-accent: #7C93D8;
     }
 
     /* ── Body base ── */
@@ -71,10 +100,10 @@
     h4,
     h5,
     h6 {
-        font-family: 'Space Grotesk', 'Space Grotesk', sans-serif;
+        font-family: 'Inter', sans-serif;
         font-weight: 700;
         line-height: 1.15;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.01em;
         color: var(--text-primary);
         margin-top: 2rem;
         margin-bottom: 0.75rem;
@@ -87,32 +116,21 @@
 }
 
 /* ========================================
-   PIXEL BOX — Minecraft-style border util
+   CARD BOX — clean bordered surface
    ======================================== */
 .pixel-box {
     background: var(--bg-surface);
-    border: 3px solid var(--bg-border);
-    box-shadow:
-        inset 2px 2px 0 rgba(255, 255, 255, 0.04),
-        inset -2px -2px 0 rgba(0, 0, 0, 0.3),
-        4px 4px 0 rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--bg-border);
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .pixel-box--green {
     border-color: var(--green-dark);
-    box-shadow:
-        inset 2px 2px 0 rgba(255, 255, 255, 0.04),
-        inset -2px -2px 0 rgba(0, 0, 0, 0.3),
-        4px 4px 0 rgba(35, 114, 39, 0.35),
-        0 0 20px rgba(35, 114, 39, 0.15);
 }
 
 .pixel-box--gold {
     border-color: var(--yellow-dark);
-    box-shadow:
-        inset 2px 2px 0 rgba(255, 255, 255, 0.04),
-        inset -2px -2px 0 rgba(0, 0, 0, 0.3),
-        4px 4px 0 rgba(255, 170, 0, 0.25);
 }
 
 /* ========================================
@@ -120,116 +138,103 @@
    ======================================== */
 .btn {
     font-family: 'Inter', sans-serif;
-    font-weight: 700;
+    font-weight: 500;
     font-size: 13px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
+    letter-spacing: 0;
+    text-transform: none;
     text-decoration: none;
-    padding: 8px 20px;
+    padding: 8px 18px;
+    border-radius: 8px;
     display: inline-flex;
     align-items: center;
     gap: 8px;
     cursor: pointer;
     border: none;
-    transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
+    transition: background 0.15s, border-color 0.15s, opacity 0.15s;
     position: relative;
 }
 
 .btn--primary {
     background: var(--green-dark);
-    color: var(--yellow-light);
-    border: 3px solid var(--green-light);
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5), 0 0 12px rgba(35, 114, 39, 0.25);
+    color: var(--bg-deep);
+    border: 1px solid var(--green-dark);
 }
 
 .btn--primary:hover {
-    background: var(--green-light);
-    color: #0A0F0A;
-    transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5), 0 0 20px rgba(81, 154, 102, 0.35);
+    opacity: 0.85;
 }
 
 .btn--secondary {
     background: transparent;
     color: var(--text-secondary);
-    border: 2px solid var(--bg-border);
-    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--bg-border);
 }
 
 .btn--secondary:hover {
-    color: var(--yellow-light);
-    border-color: var(--yellow-dark);
-    box-shadow: 3px 3px 0 rgba(255, 170, 0, 0.2);
+    color: var(--text-primary);
+    border-color: var(--green-light);
 }
 
 .btn--gold {
-    background: var(--yellow-dark);
-    color: #0A0F0A;
-    border: 3px solid var(--yellow-light);
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5), 0 0 12px rgba(255, 170, 0, 0.25);
+    background: var(--green-dark);
+    color: var(--bg-deep);
+    border: 1px solid var(--green-dark);
 }
 
 .btn--gold:hover {
-    background: var(--yellow-light);
-    transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 215, 134, 0.4);
+    opacity: 0.85;
 }
 
 /* ========================================
-   PIXEL DIVIDER
+   DIVIDER
    ======================================== */
 .pixel-divider {
     width: 100%;
-    height: 3px;
+    height: 1px;
     border: none;
-    background: repeating-linear-gradient(90deg,
-            var(--green-dark) 0, var(--green-dark) 8px,
-            transparent 8px, transparent 16px);
+    background: var(--bg-border);
 }
 
 /* ========================================
-   XP BAR
+   PROGRESS BAR (thin, minimal)
    ======================================== */
 .xp-bar-track {
-    height: 8px;
+    height: 4px;
     background: var(--bg-panel);
-    border: 2px solid var(--bg-border);
+    border: none;
+    border-radius: 999px;
     overflow: hidden;
 }
 
 .xp-bar-fill {
     height: 100%;
-    background: var(--green-dark);
+    background: var(--green-light);
+    border-radius: 999px;
 }
 
 .xp-bar-fill::after {
-    content: '';
-    display: block;
-    width: 100%;
-    height: 100%;
-    background: repeating-linear-gradient(90deg,
-            rgba(255, 255, 255, 0.15) 0, rgba(255, 255, 255, 0.15) 4px,
-            transparent 4px, transparent 8px);
+    content: none;
 }
 
 /* ========================================
-   GAMING TAG UTILITY
+   TAG UTILITY — pastel pill
    ======================================== */
 .game-tag {
     display: inline-flex;
     align-items: center;
-    background: rgba(35, 114, 39, 0.15);
-    border: 1px solid var(--green-dark);
-    color: var(--green-light);
+    background: var(--bg-panel);
+    border: 1px solid var(--bg-border);
+    border-radius: 999px;
+    color: var(--text-secondary);
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
-    padding: 2px 8px;
+    padding: 3px 10px;
 }
 
 .game-tag--gold {
-    background: rgba(255, 170, 0, 0.12);
-    border-color: var(--yellow-dark);
-    color: var(--yellow-light);
+    background: var(--bg-panel);
+    border-color: var(--green-dark);
+    color: var(--green-dark);
 }
 
 /* ========================================
@@ -254,7 +259,7 @@
 
 .prose strong {
     font-weight: 700;
-    color: var(--yellow-dark);
+    color: var(--text-primary);
 }
 
 .prose h1,
@@ -263,7 +268,7 @@
 .prose h4,
 .prose h5,
 .prose h6 {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Inter', sans-serif;
     color: var(--text-primary);
     margin-top: 2.5rem;
     margin-bottom: 1rem;
@@ -316,12 +321,12 @@
 .prose blockquote {
     font-weight: 500;
     font-style: normal;
-    border-left: 5px solid var(--green-dark);
-    padding: 1rem 2rem;
+    border-left: 3px solid var(--green-light);
+    padding: 1rem 1.5rem;
     margin: 2rem 0;
     color: var(--text-secondary);
-    background: rgba(35, 114, 39, 0.08);
-    border-radius: 0 2px 2px 0;
+    background: var(--bg-panel);
+    border-radius: 0 8px 8px 0;
 }
 
 .prose a {
@@ -333,8 +338,8 @@
 }
 
 .prose a:hover {
-    color: var(--yellow-light);
-    border-bottom-color: var(--yellow-dark);
+    color: var(--text-primary);
+    border-bottom-color: var(--green-light);
 }
 
 /* Code blocks */
@@ -356,6 +361,9 @@ pre {
     min-width: 100%;
 }
 
+/* Code blocks always render dark (editor look), regardless of the site's
+   light/dark mode — Shiki is called with a single 'github-dark' theme,
+   which writes plain inline colors, so no CSS var switching is needed here. */
 .shiki {
     overflow-x: auto !important;
     max-width: 100% !important;
@@ -364,29 +372,8 @@ pre {
     font-size: 0.875rem !important;
     line-height: 1.7 !important;
     border-radius: 0 !important;
-    /* Use site's own dark background instead of github-dark's */
-    background-color: var(--bg-deep) !important;
+    background-color: #0d1117 !important;
 }
-
-/* ── Shiki dual-theme activation ──
-   When codeToHtml uses `themes: { light, dark }` with `defaultColor: false`,
-   Shiki writes --shiki-light and --shiki-dark CSS custom properties on each span.
-   These rules activate the correct variable based on the site's dark/light class. */
-
-/* Dark mode (default — html.dark or no class) */
-.shiki span {
-    color: var(--shiki-dark) !important;
-}
-
-/* Light mode override */
-html:not(.dark) .shiki span {
-    color: var(--shiki-light) !important;
-}
-
-html:not(.dark) .shiki {
-    background-color: var(--bg-surface) !important;
-}
-
 
 .shiki code {
     background: transparent !important;

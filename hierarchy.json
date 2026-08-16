@@ -1,0 +1,95 @@
+{
+  "tree": [
+    {
+      "id": "linux-commands-notebook-1ocv9h",
+      "type": "folder",
+      "titleEn": "Linux Commands NoteBook",
+      "titleFr": "",
+      "children": [
+        {
+          "id": "rocky-linux-i3l1by",
+          "type": "folder",
+          "titleEn": "Rocky Linux",
+          "titleFr": "",
+          "children": [
+            {
+              "id": "centos-stream-vs-rhel-vs-rocky-linux-rj8r5f",
+              "type": "note",
+              "title": "CentOS Stream vs RHEL vs Rocky Linux",
+              "isDrafted": false,
+              "tags": [
+                "linux",
+                "rhel",
+                "centos",
+                "rocky-linux",
+                "os",
+                "infra"
+              ]
+            },
+            {
+              "id": "configuration-de-postfix-sur-rocky-linux-8ie3n7",
+              "type": "note",
+              "title": "Configuration de Postfix sur Rocky Linux",
+              "isDrafted": false,
+              "tags": [
+                "postfix",
+                "mail",
+                "smtp",
+                "rocky-linux",
+                "linux",
+                "devops"
+              ]
+            },
+            {
+              "id": "pourquoi-et-comment-utiliser-dovecot-avec-postfix-3bbvij",
+              "type": "note",
+              "title": "Pourquoi et comment utiliser Dovecot avec Postfix",
+              "isDrafted": false,
+              "tags": [
+                "dovecot",
+                "postfix",
+                "imap",
+                "mail",
+                "linux",
+                "infra"
+              ]
+            }
+          ],
+          "title": "Rocky Linux"
+        },
+        {
+          "id": "ubuntu-yj0plf",
+          "type": "folder",
+          "titleEn": "Ubuntu",
+          "titleFr": "",
+          "children": [],
+          "title": "Ubuntu"
+        }
+      ],
+      "title": "Linux Commands NoteBook"
+    },
+    {
+      "id": "containerization-in05e",
+      "type": "folder",
+      "name": "Containerization",
+      "titleEn": "Containerization",
+      "titleFr": "Containerization",
+      "children": [
+        {
+          "id": "docker-6gmzo",
+          "type": "folder",
+          "name": "Docker",
+          "titleEn": "Docker",
+          "titleFr": "Docker",
+          "children": [
+            {
+              "id": "installing-docker-ce-on-linux-jj78zu",
+              "type": "note"
+            }
+          ]
+        }
+      ],
+      "title": "Containerization"
+    }
+  ]
+}

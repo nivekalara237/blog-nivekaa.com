@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
 const navLinks = [
-    { label: 'Accueil', href: '/' },
+    // { label: 'Accueil', href: '/' },
     { label: 'Notes', href: '/notes' },
     { label: 'Articles', href: '/articles' },
-    { label: 'Catégories', href: '/categories' },
+    // { label: 'Catégories', href: '/categories' },
     { label: 'Contact', href: '/contact' },
 ];
 
@@ -38,25 +38,25 @@ export default function MobileMenu() {
                 className={`fixed top-0 right-0 h-full w-72 z-50 transform transition-transform duration-200 md:hidden ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
                 style={{
                     background: 'var(--bg-surface)',
-                    borderLeft: '3px solid var(--green-dark)',
-                    boxShadow: '-6px 0 0 rgba(35,114,39,0.2)',
+                    borderLeft: '1px solid var(--bg-border)',
+                    boxShadow: '-4px 0 16px rgba(0,0,0,0.08)',
                 }}
             >
                 <div className="p-6">
                     {/* Header */}
                     <div className="flex items-center justify-between mb-8">
                         <span
-                            className="text-sm font-black uppercase tracking-widest"
-                            style={{ fontFamily: "'Space Grotesk', sans-serif", color: 'var(--yellow-dark)' }}
+                            className="text-sm font-semibold tracking-tight"
+                            style={{ fontFamily: "'Inter', sans-serif", color: 'var(--text-primary)' }}
                         >
-                            MENU
+                            Menu
                         </span>
                         <button
                             onClick={closeMenu}
-                            className="p-1.5"
+                            className="p-1.5 rounded-md"
                             type='button'
                             style={{
-                                border: '2px solid var(--bg-border)',
+                                border: '1px solid var(--bg-border)',
                                 color: 'var(--text-secondary)',
                                 background: 'transparent',
                             }}
@@ -69,7 +69,7 @@ export default function MobileMenu() {
                     </div>
 
                     {/* Divider */}
-                    <div style={{ height: '2px', background: 'var(--bg-border)', marginBottom: '24px' }} />
+                    <div style={{ height: '1px', background: 'var(--bg-border)', marginBottom: '24px' }} />
 
                     {/* Links */}
                     <nav className="flex flex-col gap-2">
@@ -78,17 +78,16 @@ export default function MobileMenu() {
                                 key={href}
                                 href={href}
                                 onClick={closeMenu}
-                                className="px-4 py-3 font-bold uppercase tracking-widest text-sm no-underline transition-all duration-100"
+                                className="px-4 py-3 font-medium text-sm no-underline transition-all duration-150 rounded-md"
                                 style={{
                                     fontFamily: "'Inter', sans-serif",
                                     color: 'var(--text-secondary)',
-                                    border: '2px solid var(--bg-border)',
-                                    letterSpacing: '1.5px',
+                                    border: '1px solid var(--bg-border)',
                                 }}
                                 onMouseEnter={e => {
-                                    e.currentTarget.style.color = 'var(--yellow-light)';
+                                    e.currentTarget.style.color = 'var(--text-primary)';
                                     e.currentTarget.style.borderColor = 'var(--green-dark)';
-                                    e.currentTarget.style.background = 'rgba(35,114,39,0.15)';
+                                    e.currentTarget.style.background = 'var(--bg-panel)';
                                 }}
                                 onMouseLeave={e => {
                                     e.currentTarget.style.color = 'var(--text-secondary)';
@@ -96,14 +95,14 @@ export default function MobileMenu() {
                                     e.currentTarget.style.background = 'transparent';
                                 }}
                             >
-                                ▸ {label}
+                                {label}
                             </a>
                         ))}
                     </nav>
 
                     {/* Footer tag */}
                     <div className="mt-8" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'var(--text-dim)' }}>
-                        // Cloud & Infrastructure
+                        Cloud & Infrastructure
                     </div>
                 </div>
             </div>
