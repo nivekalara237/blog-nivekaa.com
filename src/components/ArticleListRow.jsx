@@ -14,8 +14,11 @@ function formatDate(dateString, lang) {
 /**
  * ArticleListRow - horizontal row used on list pages (articles / category / page).
  * Same article data contract as ArticleCard, only the layout differs.
+ *
+ * `badge` is optional and overrides the category pill text (used by the
+ * series detail page to show "Partie N" instead of the category).
  */
-export default function ArticleListRow({ article, lang = 'en' }) {
+export default function ArticleListRow({ article, lang = 'en', badge = '' }) {
     const [imageError, setImageError] = useState(false);
     const imgRef = useRef(null);
 
@@ -48,12 +51,14 @@ export default function ArticleListRow({ article, lang = 'en' }) {
             </div>
             <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                    {article.category && (
+                    {(badge || article.category) && (
                         <span
                             className="text-[11px] font-medium px-2 py-0.5 rounded"
-                            style={{ background: 'var(--bg-panel)', color: 'var(--text-secondary)' }}
+                            style={badge
+                                ? { background: 'rgba(75,86,148,0.1)', color: '#4B5694' }
+                                : { background: 'var(--bg-panel)', color: 'var(--text-secondary)' }}
                         >
-                            {article.category}
+                            {badge || article.category}
                         </span>
                     )}
                     <span className="text-[12px]" style={{ color: 'var(--text-dim)' }}>

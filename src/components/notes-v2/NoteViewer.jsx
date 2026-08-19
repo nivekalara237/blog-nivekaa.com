@@ -101,7 +101,7 @@ function FolderView({ node, children, searchQuery, isAdmin, onNavigate }) {
 }
 
 // ── Note View — content edited directly on this page ─────────────
-function NoteView({ noteData, isAdmin, onDelete, onSaved }) {
+function NoteView({ noteData, isAdmin, lang, onDelete, onSaved }) {
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState(noteData.content || '');
     const [saving, setSaving] = useState(false);
@@ -116,9 +116,13 @@ function NoteView({ noteData, isAdmin, onDelete, onSaved }) {
         setSaving(true);
         try {
             const slug = noteData.id || noteData.slug;
-            await api.updateNote(slug, {
-                locales: { en: { title: noteData.title || name, content: draft } },
-            });
+            // Write to whichever locale is currently being viewed/edited —
+            // `en` is the body content, `fr` is a frontmatter field, both
+            // handled by the backend's per-locale merge.
+            const payload = lang === 'fr'
+                ? { locales: { fr: { content: draft } } }
+                : { locales: { en: { title: noteData.title || name, content: draft } } };
+            await api.updateNote(slug, payload);
             onSaved({ ...noteData, content: draft });
             setEditing(false);
         } catch (err) {
@@ -189,17 +193,17 @@ export default function NoteViewer({ activeNode, tree, searchQuery, isAdmin, lan
     const isFolder = !activeNode || activeNode.type === 'folder';
     const isRoot = !activeNode || activeNode.id === 'root';
 
-    // Load note content from API when a note is selected
+    // Load note content from API when a note is selected, or when the
+    // language toggle changes while a note is already open.
     React.useEffect(() => {
-        if (!isFolder && activeNode && activeNode.id !== loadedId) {
-            setLoading(true);
-            setNoteData(null);
-            api.getNote(activeNode.id, lang)
-                .then(data => { setNoteData(data); setLoadedId(activeNode.id); })
-                .catch(err => { console.error('Note load error:', err); setLoading(false); })
-                .finally(() => setLoading(false));
-        }
-    }, [activeNode?.id]);
+        if (isFolder || !activeNode) return;
+        setLoading(true);
+        setNoteData(null);
+        api.getNote(activeNode.id, lang)
+            .then(data => { setNoteData(data); setLoadedId(activeNode.id); })
+            .catch(err => { console.error('Note load error:', err); setLoading(false); })
+            .finally(() => setLoading(false));
+    }, [activeNode?.id, lang]);
 
     // Determine children to display in folder view
     let children = tree;
@@ -265,6 +269,7 @@ export default function NoteViewer({ activeNode, tree, searchQuery, isAdmin, lan
                             <NoteView
                                 noteData={noteData}
                                 isAdmin={isAdmin}
+                                lang={lang}
                                 onDelete={onDelete}
                                 onSaved={setNoteData}
                             />

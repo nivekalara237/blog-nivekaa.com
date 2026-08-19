@@ -32,8 +32,42 @@ function ThemeToggle() {
     );
 }
 
-export default function NotesApp({ lang = 'fr', isAdmin = false, user = null }) {
+// ── Language toggle — admin only. The public /notes-v2 and /fr/notes-v2
+// routes already fix the language via the URL; the admin page has no such
+// route split, so this is the only way to browse/edit the FR side.
+function LangToggle({ activeLang, onChange }) {
+    return (
+        <div style={{ display: 'flex', gap: '2px', background: 'var(--panel)', border: '1px solid var(--border)', padding: '2px', borderRadius: '6px' }}>
+            {['en', 'fr'].map(l => (
+                <button
+                    key={l}
+                    type="button"
+                    onClick={() => onChange(l)}
+                    title={l === 'en' ? 'English' : 'Français'}
+                    style={{
+                        fontFamily: "'JetBrains Mono', monospace",
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        padding: '4px 9px',
+                        borderRadius: '4px',
+                        border: 'none',
+                        cursor: 'pointer',
+                        background: activeLang === l ? 'var(--em)' : 'transparent',
+                        color: activeLang === l ? '#fff' : 'var(--txt3)',
+                    }}
+                >
+                    {l.toUpperCase()}
+                </button>
+            ))}
+        </div>
+    );
+}
+
+export default function NotesApp({ lang = 'en', isAdmin = false, user = null }) {
     // ── State
+    // Viewing/editing language. Fixed by the URL on the public site; freely
+    // togglable in the admin UI since there's no /fr/admin/notes-v2 route.
+    const [activeLang, setActiveLang] = useState(lang);
     const [tree, setTree] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeNode, setActiveNode] = useState(null); // null = root
@@ -50,7 +84,7 @@ export default function NotesApp({ lang = 'fr', isAdmin = false, user = null }) 
     // ── Load tree on mount / lang change
     useEffect(() => {
         loadTree();
-    }, [lang]);
+    }, [activeLang]);
 
     // ── Handle URL ?n=slug on first load after tree is ready
     useEffect(() => {
@@ -67,15 +101,17 @@ export default function NotesApp({ lang = 'fr', isAdmin = false, user = null }) 
     const loadTree = async () => {
         setLoading(true);
         try {
-            const res = await api.getNotesTree(lang);
+            const res = await api.getNotesTree(activeLang);
             const t = res.tree || [];
             setTree(t);
             computeStats(t);
             // Auto-open first-level folders
             const firstLevel = new Set(t.filter(n => n.type === 'folder').map(n => n.id));
             setOpenFolders(firstLevel);
+            return t;
         } catch (err) {
             console.error('Failed to load tree', err);
+            return [];
         } finally {
             setLoading(false);
         }
@@ -139,8 +175,16 @@ export default function NotesApp({ lang = 'fr', isAdmin = false, user = null }) 
 
     const handleCreateSuccess = async (created) => {
         setModal(null);
-        await loadTree();
-        if (created && created.id) setActiveNode(created);
+        const freshTree = await loadTree();
+        // Folders already come back in the tree's own shape ({id, type, ...}).
+        // Notes only get a bare `{ slug }` from the backend, so resolve the
+        // full node from the just-reloaded tree to select it.
+        if (created?.id) {
+            setActiveNode(created);
+        } else if (created?.slug) {
+            const found = findNode(created.slug, freshTree);
+            if (found) setActiveNode(found);
+        }
     };
 
     const handleDeleteSuccess = async (deleted) => {
@@ -159,7 +203,7 @@ export default function NotesApp({ lang = 'fr', isAdmin = false, user = null }) 
         ? `// ${(activeNode.name || activeNode.title || '').toUpperCase()}`
         : '';
 
-    const homeHref = lang === 'fr' ? '/fr' : '/';
+    const homeHref = activeLang === 'fr' ? '/fr' : '/';
 
     return (
         <div className="sys-notes-v2">
@@ -190,6 +234,7 @@ export default function NotesApp({ lang = 'fr', isAdmin = false, user = null }) 
                         onChange={e => setSearchQuery(e.target.value.trim())}
                     />
                 </div>
+                {isAdmin && <LangToggle activeLang={activeLang} onChange={setActiveLang} />}
                 <ThemeToggle />
             </div>
 
@@ -210,6 +255,7 @@ export default function NotesApp({ lang = 'fr', isAdmin = false, user = null }) 
                             onSelect={handleSelect}
                             onToggleFolder={handleToggleFolder}
                             onAddNode={handleAddNode}
+                            onDelete={handleDelete}
                         />
 
                         <NoteViewer
@@ -217,7 +263,7 @@ export default function NotesApp({ lang = 'fr', isAdmin = false, user = null }) 
                             tree={tree}
                             searchQuery={searchQuery}
                             isAdmin={isAdmin}
-                            lang={lang}
+                            lang={activeLang}
                             onNavigate={handleSelect}
                             onDelete={handleDelete}
                             onAddNode={handleAddNode}
@@ -238,7 +284,6 @@ export default function NotesApp({ lang = 'fr', isAdmin = false, user = null }) 
                 <div className="sys-notes-v2" style={{ position: 'fixed', inset: 0, zIndex: 200 }}>
                     <CreateNoteModal
                         parentId={modal.parentId}
-                        lang={lang}
                         user={user}
                         onClose={closeModal}
                         onSuccess={handleCreateSuccess}
@@ -251,7 +296,7 @@ export default function NotesApp({ lang = 'fr', isAdmin = false, user = null }) 
                         mode={modal.kind === 'createFolder' ? 'create' : 'edit'}
                         parentId={modal.parentId}
                         initialData={modal.initialData}
-                        lang={lang}
+                        lang={activeLang}
                         onClose={closeModal}
                         onSuccess={handleCreateSuccess}
                     />
@@ -261,7 +306,7 @@ export default function NotesApp({ lang = 'fr', isAdmin = false, user = null }) 
                 <div className="sys-notes-v2" style={{ position: 'fixed', inset: 0, zIndex: 200 }}>
                     <DeleteModal
                         node={modal.initialData}
-                        lang={lang}
+                        lang={activeLang}
                         onClose={closeModal}
                         onSuccess={handleDeleteSuccess}
                     />

@@ -13,7 +13,11 @@ function useEscapeKey(onClose) {
 
 // ── Create Note — name + category chips only.
 // Content is added afterward, directly on the note view page.
-function CreateNoteModal({ parentId, lang, user, onClose, onSuccess }) {
+// Always created against the `en` locale (the backend's mandatory base,
+// same convention as articles) — the current viewing language toggle
+// doesn't affect creation. An FR translation can be added afterward by
+// switching the toggle and editing the note.
+function CreateNoteModal({ parentId, user, onClose, onSuccess }) {
     const [name, setName] = useState('');
     const [chips, setChips] = useState([]);
     const [chipInput, setChipInput] = useState('');
@@ -46,7 +50,7 @@ function CreateNoteModal({ parentId, lang, user, onClose, onSuccess }) {
                 authorEmail: user?.email || '',
                 authorName: user?.given_name || '',
                 parentId: parentId || 'root',
-                locales: { [lang]: { title: name.trim(), content: '' } },
+                locales: { en: { title: name.trim(), content: '' } },
             });
             onSuccess(created);
         } catch (err) {
@@ -133,11 +137,31 @@ function DeleteModal({ node, lang, onClose, onSuccess }) {
     };
 
     const name = node.name || node.title || node.id;
+    const isFolder = node.type === 'folder';
+
+    // Deleting a folder only removes it from the tree — nested notes are not
+    // deleted from storage, just unlisted, so warn about how many are inside.
+    const countDescendants = (n) => {
+        let notes = 0, folders = 0;
+        (n.children || []).forEach(child => {
+            if (child.type === 'note') notes++;
+            else if (child.type === 'folder') {
+                folders++;
+                const sub = countDescendants(child);
+                notes += sub.notes;
+                folders += sub.folders;
+            }
+        });
+        return { notes, folders };
+    };
+    const { notes: nestedNotes, folders: nestedFolders } = isFolder ? countDescendants(node) : { notes: 0, folders: 0 };
 
     return (
         <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
             <div className="confirm-delete" onClick={e => e.stopPropagation()}>
-                <div className="modal-title" style={{ color: '#EF4444' }}>Supprimer cette note ?</div>
+                <div className="modal-title" style={{ color: '#EF4444' }}>
+                    {isFolder ? 'Supprimer ce dossier ?' : 'Supprimer cette note ?'}
+                </div>
                 {error && (
                     <div style={{ marginBottom: '12px', padding: '8px 10px', borderRadius: '6px', background: 'rgba(239,68,68,.08)', border: '1px solid rgba(239,68,68,.35)', fontSize: '12px', color: '#EF4444' }}>
                         {error}
@@ -146,6 +170,13 @@ function DeleteModal({ node, lang, onClose, onSuccess }) {
                 <p style={{ fontSize: '13px', color: 'var(--txt2)', lineHeight: 1.6, margin: '8px 0 16px' }}>
                     Supprimer <strong style={{ color: 'var(--txt)' }}>« {name} »</strong> ? Cette action est irréversible.
                 </p>
+                {isFolder && (nestedNotes > 0 || nestedFolders > 0) && (
+                    <p style={{ fontSize: '12.5px', color: '#EF4444', lineHeight: 1.6, margin: '-8px 0 16px', padding: '8px 10px', borderRadius: '6px', background: 'rgba(239,68,68,.08)', border: '1px solid rgba(239,68,68,.35)' }}>
+                        Ce dossier contient {nestedNotes} note{nestedNotes === 1 ? '' : 's'}
+                        {nestedFolders > 0 ? ` et ${nestedFolders} sous-dossier${nestedFolders === 1 ? '' : 's'}` : ''}.
+                        Elles ne seront pas supprimées mais n'apparaîtront plus dans l'arborescence.
+                    </p>
+                )}
                 <div className="modal-footer">
                     <button className="btn-ghost" onClick={onClose}>Annuler</button>
                     <button

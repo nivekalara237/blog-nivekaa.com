@@ -37,14 +37,52 @@ export default function ArticleEditor({
             fetchAuthorData();
         }
     }, [isLoading, user]);
+
+    // Fetch existing series per locale (article mode only) to power the name autocomplete
+    useEffect(() => {
+        if (mode !== 'article') return;
+
+        const dedupeSeries = (items) => {
+            const map = new Map();
+            (items || []).forEach(a => {
+                if (a.serie?.slug && !map.has(a.serie.slug)) {
+                    map.set(a.serie.slug, { name: a.serie.name, slug: a.serie.slug, description: a.serie.description || '' });
+                }
+            });
+            return Array.from(map.values());
+        };
+
+        const fetchSerieOptions = async () => {
+            try {
+                const [enRes, frRes] = await Promise.all([
+                    fetch(`${API_URL}/articles?lang=en&includeDrafts=true&limit=1000`),
+                    fetch(`${API_URL}/articles?lang=fr&includeDrafts=true&limit=1000`),
+                ]);
+                const [enData, frData] = await Promise.all([enRes.json(), frRes.json()]);
+                setSerieOptions({ en: dedupeSeries(enData.items), fr: dedupeSeries(frData.items) });
+            } catch (error) {
+                console.warn('Failed to load series options:', error);
+            }
+        };
+
+        fetchSerieOptions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mode]);
     // i18n: active language tab ('en' | 'fr')
     const [activeLang, setActiveLang] = useState('en');
 
     // Per-locale fields
     const [locales, setLocales] = useState({
-        en: { title: '', description: '', content: '# My Article\n\nWrite your content here...', isDrafted: false },
-        fr: { title: '', description: '', content: '', isDrafted: true },
+        en: { title: '', description: '', content: '# My Article\n\nWrite your content here...', isDrafted: false, serie: { name: '', description: '' } },
+        fr: { title: '', description: '', content: '', isDrafted: true, serie: { name: '', description: '' } },
     });
+
+    // Whether the "series" section is active for each locale
+    const [serieEnabled, setSerieEnabled] = useState({ en: false, fr: false });
+    // Existing series per locale, fetched once, used to populate the dropdown
+    const [serieOptions, setSerieOptions] = useState({ en: [], fr: [] });
+    // Whether the "create a new series" fields are shown (dropdown set to "+ Nouvelle série")
+    const [newSerieMode, setNewSerieMode] = useState({ en: false, fr: false });
 
     const [slug, setSlug] = useState('');
     const [selectedTags, setSelectedTags] = useState([]);
@@ -71,8 +109,20 @@ export default function ArticleEditor({
         setLocales(prev => ({ ...prev, [lang]: { ...prev[lang], [field]: value } }));
     };
 
+    // Helper: update a single field of a locale's series
+    const updateSerie = (lang, field, value) => {
+        setLocales(prev => ({ ...prev, [lang]: { ...prev[lang], serie: { ...prev[lang].serie, [field]: value } } }));
+    };
+
     // Shortcut: current locale data
     const currentLocale = locales[activeLang] || locales['en'];
+
+    // Series options for the active locale + whether the current name matches an existing series
+    const currentSerieOptions = serieOptions[activeLang] || [];
+    const serieNameInput = (currentLocale.serie?.name || '').trim();
+    const matchedSerie = currentSerieOptions.find(
+        s => s.name.trim().toLowerCase() === serieNameInput.toLowerCase()
+    );
 
     // Deletion state
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -170,22 +220,25 @@ export default function ArticleEditor({
                                 description: apiLocales.en?.description || '',
                                 content: article.enContent || article.contentMarkdown || article.content || '',
                                 isDrafted: apiLocales.en?.isDrafted || false,
+                                serie: { name: apiLocales.en?.serie?.name || '', description: apiLocales.en?.serie?.description || '' },
                             },
                             fr: {
                                 title: apiLocales.fr?.title || '',
                                 description: apiLocales.fr?.description || '',
                                 content: apiLocales.fr?.content || '',
                                 isDrafted: apiLocales.fr?.isDrafted !== false,
+                                serie: { name: apiLocales.fr?.serie?.name || '', description: apiLocales.fr?.serie?.description || '' },
                             }
+                        });
+                        setSerieEnabled({
+                            en: !!apiLocales.en?.serie?.name,
+                            fr: !!apiLocales.fr?.serie?.name,
                         });
 
                         setSelectedTags(article.tags || []);
                         setSelectedCategory(article.category || categories[0]);
                         setCoverPreview(article.cover || '');
-                        if (article.cover) {
-                            const keyMatch = article.cover.match(/images\/covers\/[^/?#]+/);
-                            setExistingCoverKey(keyMatch ? keyMatch[0] : article.cover);
-                        }
+                        setExistingCoverKey(article.coverKey || '');
                     } else {
                         console.error('Failed to load article for edition');
                         alert('[x] Impossible de charger l\'article pour modification');
@@ -205,6 +258,10 @@ export default function ArticleEditor({
                         const draft = JSON.parse(savedDraft);
                         if (draft.locales) {
                             setLocales(draft.locales);
+                            setSerieEnabled({
+                                en: !!draft.locales.en?.serie?.name,
+                                fr: !!draft.locales.fr?.serie?.name,
+                            });
                         }
                         setSelectedTags(draft.selectedTags || []);
                         setSelectedCategory(draft.selectedCategory || categories[0]);
@@ -332,9 +389,10 @@ export default function ArticleEditor({
         if (confirm('⚠️ Êtes-vous sûr de vouloir supprimer le brouillon ? Cette action est irréversible.')) {
             localStorage.removeItem('articleDraft');
             setLocales({
-                en: { title: '', description: '', content: '# My Article\n\nWrite your content here...', isDrafted: false },
-                fr: { title: '', description: '', content: '', isDrafted: true },
+                en: { title: '', description: '', content: '# My Article\n\nWrite your content here...', isDrafted: false, serie: { name: '', description: '' } },
+                fr: { title: '', description: '', content: '', isDrafted: true, serie: { name: '', description: '' } },
             });
+            setSerieEnabled({ en: false, fr: false });
             setSelectedTags([]);
             setSelectedCategory(categories[0] || '');
             setCoverImage(null);
@@ -523,6 +581,22 @@ export default function ArticleEditor({
                 finalCoverKey = key;
             }
 
+            // Build the `serie` sub-payload for a locale, or undefined if disabled/empty.
+            // If the typed name matches an existing series, its description wins
+            // (the description belongs to the series, not to this article).
+            const buildSeriePayload = (lang) => {
+                if (!serieEnabled[lang]) return undefined;
+                const name = (locales[lang].serie?.name || '').trim();
+                if (!name) return undefined;
+                const matched = (serieOptions[lang] || []).find(
+                    s => s.name.trim().toLowerCase() === name.toLowerCase()
+                );
+                return {
+                    name,
+                    description: matched ? matched.description : (locales[lang].serie?.description || ''),
+                };
+            };
+
             // Build locales payload for the API
             const localesToSend = {
                 en: {
@@ -532,6 +606,8 @@ export default function ArticleEditor({
                     isDrafted: submitStatus === 'draft' ? true : (locales.en.isDrafted || false),
                 },
             };
+            const enSerie = buildSeriePayload('en');
+            if (enSerie) localesToSend.en.serie = enSerie;
 
             // Only include FR if it has at least a title
             if (locales.fr.title.trim()) {
@@ -541,6 +617,8 @@ export default function ArticleEditor({
                     content: locales.fr.content,
                     isDrafted: locales.fr.isDrafted !== false,
                 };
+                const frSerie = buildSeriePayload('fr');
+                if (frSerie) localesToSend.fr.serie = frSerie;
             }
 
             const articleData = {
@@ -585,9 +663,10 @@ export default function ArticleEditor({
 
             // Reset form
             setLocales({
-                en: { title: '', description: '', content: '# My Article\n\nWrite your content here...', isDrafted: false },
-                fr: { title: '', description: '', content: '', isDrafted: true },
+                en: { title: '', description: '', content: '# My Article\n\nWrite your content here...', isDrafted: false, serie: { name: '', description: '' } },
+                fr: { title: '', description: '', content: '', isDrafted: true, serie: { name: '', description: '' } },
             });
+            setSerieEnabled({ en: false, fr: false });
             setSelectedTags([]);
             setCoverImage(null);
             setCoverPreview('');
@@ -884,6 +963,97 @@ export default function ArticleEditor({
                         className="w-full text-xl text-gray-600 dark:text-gray-400 bg-transparent border-none focus:outline-none placeholder-gray-300 dark:placeholder-gray-700"
                         placeholder={activeLang === 'en' ? 'Short, catchy description...' : 'Description courte et accrocheuse...'}
                     />
+                </div>
+
+                {/* Series — per locale */}
+                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <label className="flex items-center gap-2 cursor-pointer select-none mb-3">
+                        <input
+                            type="checkbox"
+                            checked={!!serieEnabled[activeLang]}
+                            onChange={(e) => {
+                                const checked = e.target.checked;
+                                setSerieEnabled(prev => ({ ...prev, [activeLang]: checked }));
+                                if (!checked) {
+                                    updateSerie(activeLang, 'name', '');
+                                    updateSerie(activeLang, 'description', '');
+                                    setNewSerieMode(prev => ({ ...prev, [activeLang]: false }));
+                                }
+                            }}
+                            className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        />
+                        <span className="text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider">
+                            Cet article ({activeLang.toUpperCase()}) fait partie d'une série
+                        </span>
+                    </label>
+
+                    {serieEnabled[activeLang] && (
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-500 mb-2">SÉRIE</label>
+                                <select
+                                    value={newSerieMode[activeLang] ? '__new__' : (matchedSerie ? matchedSerie.slug : '')}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        if (val === '__new__') {
+                                            setNewSerieMode(prev => ({ ...prev, [activeLang]: true }));
+                                            updateSerie(activeLang, 'name', '');
+                                            updateSerie(activeLang, 'description', '');
+                                        } else if (val === '') {
+                                            setNewSerieMode(prev => ({ ...prev, [activeLang]: false }));
+                                            updateSerie(activeLang, 'name', '');
+                                            updateSerie(activeLang, 'description', '');
+                                        } else {
+                                            const chosen = currentSerieOptions.find(s => s.slug === val);
+                                            setNewSerieMode(prev => ({ ...prev, [activeLang]: false }));
+                                            if (chosen) {
+                                                updateSerie(activeLang, 'name', chosen.name);
+                                                updateSerie(activeLang, 'description', chosen.description);
+                                            }
+                                        }
+                                    }}
+                                    className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none"
+                                >
+                                    <option value="">-- Sélectionner une série existante --</option>
+                                    {currentSerieOptions.map(s => (
+                                        <option key={s.slug} value={s.slug}>{s.name}</option>
+                                    ))}
+                                    <option value="__new__">+ Créer une nouvelle série</option>
+                                </select>
+                            </div>
+
+                            {newSerieMode[activeLang] ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-500 mb-2">NOM DE LA SÉRIE</label>
+                                        <input
+                                            type="text"
+                                            value={currentLocale.serie?.name || ''}
+                                            onChange={(e) => updateSerie(activeLang, 'name', e.target.value)}
+                                            placeholder="ex: Guide Terraform"
+                                            autoFocus
+                                            autoComplete="off"
+                                            className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-500 mb-2">DESCRIPTION DE LA SÉRIE</label>
+                                        <input
+                                            type="text"
+                                            value={currentLocale.serie?.description || ''}
+                                            onChange={(e) => updateSerie(activeLang, 'description', e.target.value)}
+                                            placeholder="Courte description de la série..."
+                                            className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none"
+                                        />
+                                    </div>
+                                </div>
+                            ) : matchedSerie && (
+                                <p className="text-xs text-gray-500 dark:text-gray-500">
+                                    {matchedSerie.description || 'Aucune description pour cette série.'}
+                                </p>
+                            )}
+                        </div>
+                    )}
                 </div>
                 </>}
 

@@ -38,8 +38,9 @@ const translatePath = useTranslatedPath(lang);
                     { label: t('nav.notes-v2'), href: "/notes-v2", app: true },
                     // { label: t('nav.articles'), href: "/articles" },
                     // { label: t('nav.categories'), href: "/categories" },
+                    { label: t('nav.series'), href: "/series", special: true },
                     { label: t('nav.contact'), href: "/contact" },
-                ].map(({ label, href, app = false }) => (
+                ].map(({ label, href, app = false, special = false }) => (
                     <li>
 											{app && <a
                           href={translatePath(href)}
@@ -48,7 +49,14 @@ const translatePath = useTranslatedPath(lang);
                       >
                          {label}
                       </a>}
-											{!app && <a
+											{special && <a
+                          href={translatePath(href)}
+                          class="px-3 py-1.5 text-sm font-semibold no-underline transition-opacity hover:opacity-75 rounded-md"
+                          style="color: #4B5694;"
+                      >
+												{label}
+                      </a>}
+											{!app && !special && <a
                           href={translatePath(href)}
                           class="px-3 py-1.5 text-sm font-medium no-underline transition-all duration-100 nav-link rounded-md"
                           style="color: var(--text-secondary); border: 1px solid transparent;"

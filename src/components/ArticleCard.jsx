@@ -109,6 +109,11 @@ export default function ArticleCard({ article }) {
                             <span>{article.readingTime} min</span>
                         </>
                     )}
+                    {article.serie?.name && (
+                        <span style={{ marginLeft: 'auto', color: '#4B5694', fontWeight: 600 }}>
+                            Série{article.serie.indexNo ? ` · ${article.serie.indexNo}` : ''}
+                        </span>
+                    )}
                 </div>
 
                 {/* Title */}

@@ -33,3 +33,5 @@ springboot-security.md
 loop.txt
 
 /histo/
+!README.md
+*.md

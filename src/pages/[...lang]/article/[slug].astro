@@ -91,6 +91,16 @@ const sameCategory = others.filter((a: any) => a.category === article.category);
 const rest = others.filter((a: any) => a.category !== article.category);
 const related = [...sameCategory, ...rest].slice(0, 2);
 
+// Series navigation: other articles sharing the same serie.slug, ordered by indexNo.
+const seriesSiblings = article.serie?.slug
+    ? siblings
+        .filter((a: any) => a.serie?.slug === article.serie.slug)
+        .sort((a: any, b: any) => (a.serie?.indexNo || 0) - (b.serie?.indexNo || 0))
+    : [];
+const seriesHref = article.serie?.slug
+    ? (lang === 'fr' ? `/fr/series/${encodeURIComponent(article.serie.slug)}` : `/series/${encodeURIComponent(article.serie.slug)}`)
+    : null;
+
 const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -166,6 +176,32 @@ const jsonLd = {
             cover={article.cover}
             title={article.title}
         />
+
+        <!-- Series navigation -->
+        {
+            article.serie?.slug && (
+                <div style="margin-top:24px; margin-bottom:8px; border-radius:8px; padding:16px; display:flex; align-items:center; gap:16px; background:rgba(75,86,148,0.06); border:1px solid rgba(75,86,148,0.25);">
+                    <div style="width:32px; height:32px; border-radius:6px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:rgba(75,86,148,0.12); color:#4B5694;">
+                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="4.5" rx="1"></rect><rect x="4" y="10" width="16" height="4.5" rx="1"></rect><rect x="4" y="16" width="16" height="4.5" rx="1"></rect></svg>
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                        <a href={seriesHref} style="font-size:13px; font-weight:600; color:#4B5694; text-decoration:none;">
+                            {article.serie.name}
+                        </a>
+                        <p style="margin:2px 0 0; font-size:12.5px; color:var(--text-dim);">
+                            {lang === 'fr'
+                                ? `Partie ${article.serie.indexNo} sur ${seriesSiblings.length} de cette série.`
+                                : `Part ${article.serie.indexNo} of ${seriesSiblings.length} in this series.`}
+                        </p>
+                        {article.serie.description && (
+                            <p style="margin:4px 0 0; font-size:12.5px; color:var(--text-secondary);">
+                                {article.serie.description}
+                            </p>
+                        )}
+                    </div>
+                </div>
+            )
+        }
 
         <!-- Tags -->
         {
