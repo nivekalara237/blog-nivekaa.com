@@ -1,4 +1,6 @@
-import { createHighlighter } from 'shiki';
+// shiki/bundle/web is the browser-safe build — it resolves WASM internally
+// without dynamic imports that Vite can't handle in the browser.
+import { createHighlighter } from 'shiki/bundle-full.mjs';
 
 let highlighterInstance = null;
 let highlighterPromise = null;
@@ -15,13 +17,15 @@ export async function getHighlighter() {
     highlighterPromise = createHighlighter({
         themes: ['github-light', 'github-dark'],
         langs: [
-            'javascript', 'js', 'ts', 'typescript', 'css', 'html',
-            'json', 'bash', 'markdown', 'jsx', 'tsx', 'astro',
-            'java', 'scss', 'python', 'shell', 'c', 'cpp',
-            'yaml', 'yml', 'xml', 'sql', 'graphql', 'dockerfile',
-            'ini', 'mermaid', 'csharp', 'py', 'kotlin', 'kt', 'kts',
-            'jinja', 'hcl', 'mermaid', 'asm', 'astro', 'json', 'json5', 'toml',
-            'terraform', 'conf', 'ini'
+            'javascript', 'typescript', 'css', 'html',
+            'json', 'json5', 'bash', 'shell', 'markdown',
+            'jsx', 'tsx', 'astro', 'scss',
+            'java', 'python', 'c', 'cpp',
+            'yaml', 'xml', 'sql', 'graphql', //'docker', 'ini', 'toml
+            'properties'
+            // 'mermaid',
+            //'hcl', 'kotlin',
+            // 'asm',
         ],
     }).then(highlighter => {
         highlighterInstance = highlighter;

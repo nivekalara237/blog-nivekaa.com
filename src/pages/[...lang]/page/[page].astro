@@ -1,6 +1,6 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
-import ArticleCard from "../../../components/ArticleCard.jsx";
+import ArticleListRow from "../../../components/ArticleListRow.jsx";
 import Pagination from "../../../components/Pagination.astro";
 import { api } from "../../../lib/api";
 
@@ -8,7 +8,7 @@ export async function getStaticPaths({ paginate }: any) {
     // Fetch articles for both languages
     const responseEn = await api.getArticles({ limit: 1000, lang: 'en' });
     const responseFr = await api.getArticles({ limit: 1000, lang: 'fr' });
-    
+
     let articlesEn = responseEn.items || [];
     let articlesFr = responseFr.items || [];
 
@@ -32,27 +32,29 @@ const SITE_URL = 'https://cloud.nivekaa.com';
 const currentPath = Astro.url.pathname.replace(/^\/fr/, '') || `/page/${page.currentPage}`;
 ---
 
-<Layout 
+<Layout
     title={lang === 'fr' ? `Articles - Page ${page.currentPage}` : `Articles - Page ${page.currentPage}`}
     lang={lang}
     hreflangEn={`${SITE_URL}${currentPath}`}
     hreflangFr={`${SITE_URL}/fr${currentPath}`}
 >
-    <section class="mb-12">
-        <h1 class="text-3xl font-bold text-gray-900 mb-8">
-            {lang === 'fr' 
-              ? `Tous les articles (Page ${page.currentPage})`
-              : `All articles (Page ${page.currentPage})`}
-        </h1>
+    <div class="max-w-3xl mx-auto px-6">
+        <div style="padding-top:40px; padding-bottom:32px; border-bottom:1px solid var(--bg-border);">
+            <h1 style="font-family:'Inter',sans-serif; font-weight:600; font-size:28px; letter-spacing:-0.02em; color:var(--text-primary); margin:0;">
+                {lang === 'fr'
+                  ? `Tous les articles (Page ${page.currentPage})`
+                  : `All articles (Page ${page.currentPage})`}
+            </h1>
+        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div style="padding-top:8px;">
             {
                 page.data.map((article: any) => (
-                    <ArticleCard client:load article={article} />
+                    <ArticleListRow client:load article={article} lang={lang} />
                 ))
             }
         </div>
 
         <Pagination page={page} lang={lang} />
-    </section>
+    </div>
 </Layout>

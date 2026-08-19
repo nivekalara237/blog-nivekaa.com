@@ -172,7 +172,7 @@ export default function ContactForm({ lang = 'en' }) {
                     required
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-[var(--bg-deep)] text-[var(--text-primary)] border-2 border-[var(--bg-border)] focus:border-[var(--green-light)] focus:ring-0 outline-none transition-colors"
+                    className="w-full px-4 py-3 rounded-md bg-[var(--bg-deep)] text-[var(--text-primary)] border border-[var(--bg-border)] focus:border-[var(--green-light)] focus:ring-0 outline-none transition-colors"
                     style={{ fontFamily: "'Inter', sans-serif" }}
                     placeholder={t.namePlaceholder}
                 />
@@ -189,7 +189,7 @@ export default function ContactForm({ lang = 'en' }) {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-[var(--bg-deep)] text-[var(--text-primary)] border-2 border-[var(--bg-border)] focus:border-[var(--green-light)] focus:ring-0 outline-none transition-colors"
+                    className="w-full px-4 py-3 rounded-md bg-[var(--bg-deep)] text-[var(--text-primary)] border border-[var(--bg-border)] focus:border-[var(--green-light)] focus:ring-0 outline-none transition-colors"
                     style={{ fontFamily: "'Inter', sans-serif" }}
                     placeholder={t.emailPlaceholder}
                 />
@@ -206,7 +206,7 @@ export default function ContactForm({ lang = 'en' }) {
                     rows="5"
                     value={formData.message}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-[var(--bg-deep)] text-[var(--text-primary)] border-2 border-[var(--bg-border)] focus:border-[var(--green-light)] focus:ring-0 outline-none transition-colors"
+                    className="w-full px-4 py-3 rounded-md bg-[var(--bg-deep)] text-[var(--text-primary)] border border-[var(--bg-border)] focus:border-[var(--green-light)] focus:ring-0 outline-none transition-colors"
                     style={{ fontFamily: "'Inter', sans-serif", resize: 'vertical' }}
                     placeholder={t.messagePlaceholder}
                 ></textarea>
@@ -223,12 +223,12 @@ export default function ContactForm({ lang = 'en' }) {
             <button
                 type="submit"
                 disabled={status === 'loading'}
-                className="w-full py-4 font-black uppercase tracking-widest transition-all duration-200"
+                className="w-full py-4 rounded-md font-semibold transition-all duration-200"
                 style={{
-                    fontFamily: "'Space Grotesk', sans-serif",
-                    background: 'var(--yellow-dark)',
-                    color: '#0A0F0A',
-                    border: '2px solid #FFAA00',
+                    fontFamily: "'Inter', sans-serif",
+                    background: 'var(--green-dark)',
+                    color: 'var(--bg-deep)',
+                    border: '1px solid var(--green-dark)',
                     opacity: status === 'loading' ? 0.7 : 1,
                     cursor: status === 'loading' ? 'not-allowed' : 'pointer'
                 }}
@@ -238,15 +238,15 @@ export default function ContactForm({ lang = 'en' }) {
 
             {feedback && (
                 <div
-                    className={`mt-4 p-4 text-center font-bold text-sm`}
+                    className="mt-4 px-4 py-3 rounded-md text-center text-sm font-medium"
                     style={{
-                        fontFamily: "'JetBrains Mono', monospace",
-                        color: status === 'success' ? 'var(--green-light)' : '#F87171',
-                        border: `1px solid ${status === 'success' ? 'var(--green-dark)' : '#B91C1C'}`,
-                        background: 'rgba(0,0,0,0.2)'
+                        fontFamily: "'Inter', sans-serif",
+                        color: status === 'success' ? 'var(--green-dark)' : '#EF4444',
+                        border: `1px solid ${status === 'success' ? 'var(--bg-border)' : 'rgba(239,68,68,0.35)'}`,
+                        background: status === 'success' ? 'var(--bg-panel)' : 'rgba(239,68,68,0.1)',
                     }}
                 >
-                    {status === 'success' ? '✓ ' : '✗ '} {feedback}
+                    {status === 'success' ? '✓ ' : '✗ '}{feedback}
                 </div>
             )}
         </form>

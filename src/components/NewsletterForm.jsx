@@ -43,19 +43,20 @@ export default function NewsletterForm({ lang = 'en' }) {
         <div id="newsletter" className="w-full">
             {/* Notice badge */}
             <div
-                className="inline-flex items-center gap-2 mb-5"
+                className="inline-flex items-center gap-2 mb-5 rounded-full"
                 style={{
-                    background: 'rgba(35,114,39,0.12)',
-                    border: '2px solid var(--green-dark)',
-                    borderLeft: '6px solid var(--green-dark)',
-                    padding: '8px 16px',
-                    fontFamily: "'JetBrains Mono', monospace",
+                    background: 'var(--bg-panel)',
+                    border: '1px solid var(--bg-border)',
+                    padding: '6px 14px',
+                    fontFamily: "'Inter', sans-serif",
+                    fontWeight: 600,
                     fontSize: '11px',
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
                     color: 'var(--text-secondary)',
                 }}
             >
-                <span style={{ color: 'var(--green-light)' }}>📡</span>
-                {lang === 'fr' ? 'NEW SIGNAL DETECTED — Rejoins la communauté' : 'NEW SIGNAL DETECTED — Join the community'}
+                {lang === 'fr' ? 'Newsletter' : 'Newsletter'}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
@@ -64,15 +65,13 @@ export default function NewsletterForm({ lang = 'en' }) {
                     <h2
                         className="m-0 mb-3 leading-tight"
                         style={{
-                            fontFamily: "'Space Grotesk', sans-serif",
-                            fontWeight: 900,
+                            fontFamily: "'Inter', sans-serif",
+                            fontWeight: 700,
                             fontSize: 'clamp(20px, 3vw, 28px)',
                             color: 'var(--text-primary)',
                         }}
                     >
-                        {lang === 'fr' ? 'Garde ton ' : 'Keep your '}
-                        <span style={{ color: 'var(--yellow-dark)' }}>{lang === 'fr' ? 'niveau MAX' : 'MAX level'}</span>
-                        <br />{lang === 'fr' ? 'sur le Cloud & Dev' : 'on Cloud & Dev'}
+                        {lang === 'fr' ? 'Recevez les nouveaux articles' : 'Get the new articles'}
                     </h2>
                     <p className="m-0 text-sm"
                         style={{ color: 'var(--text-secondary)', fontFamily: "'Inter', sans-serif", lineHeight: 1.7, fontSize: '14px' }}
@@ -101,21 +100,20 @@ export default function NewsletterForm({ lang = 'en' }) {
                         type="email"
                         id="newsletter-email"
                         name="email"
-                        placeholder={lang === 'fr' ? "// ton@email.com" : "// your@email.com"}
+                        placeholder={lang === 'fr' ? "vous@exemple.com" : "you@example.com"}
                         value={email}
                         onChange={e => setEmail(e.target.value)}
                         disabled={status === 'loading'}
                         required
-                        className="w-full outline-none"
+                        className="w-full outline-none rounded-md"
                         style={{
                             background: 'var(--bg-deep)',
-                            border: '3px solid var(--bg-border)',
+                            border: '1px solid var(--bg-border)',
                             color: 'var(--text-primary)',
-                            fontFamily: "'JetBrains Mono', monospace",
+                            fontFamily: "'Inter', sans-serif",
                             fontSize: '13px',
                             padding: '12px 16px',
-                            boxShadow: 'inset 2px 2px 0 rgba(0,0,0,0.25)',
-                            transition: 'border-color 0.1s',
+                            transition: 'border-color 0.15s',
                         }}
                         onFocus={e => { e.target.style.borderColor = 'var(--green-light)'; }}
                         onBlur={e => { e.target.style.borderColor = 'var(--bg-border)'; }}
@@ -128,23 +126,21 @@ export default function NewsletterForm({ lang = 'en' }) {
                         style={{ fontSize: '13px', opacity: status === 'loading' ? 0.6 : 1 }}
                     >
                         {status === 'loading' ? (
-                            <span>⟳ {lang === 'fr' ? 'Envoi...' : 'Sending...'}</span>
+                            <span>{lang === 'fr' ? 'Envoi...' : 'Sending...'}</span>
                         ) : (
-                            <span>▶ SUBSCRIBE — {lang === 'fr' ? 'Rejoindre la guilde' : 'Join the guild'}</span>
+                            <span>{lang === 'fr' ? "S'inscrire" : 'Subscribe'}</span>
                         )}
                     </button>
 
                     {/* Status message */}
                     {message && (
                         <p
-                            className="text-center text-xs m-0"
+                            className="text-center text-xs m-0 px-3 py-2 rounded-md"
                             style={{
-                                fontFamily: "'JetBrains Mono', monospace",
-                                color: status === 'success'
-                                    ? 'var(--green-light)'
-                                    : status === 'error'
-                                        ? '#F87171'
-                                        : 'var(--text-secondary)',
+                                fontFamily: "'Inter', sans-serif",
+                                color: status === 'success' ? 'var(--green-dark)' : '#EF4444',
+                                background: status === 'success' ? 'var(--bg-panel)' : 'rgba(239,68,68,0.1)',
+                                border: `1px solid ${status === 'success' ? 'var(--bg-border)' : 'rgba(239,68,68,0.35)'}`,
                             }}
                         >
                             {status === 'success' ? '✓ ' : '✗ '}{message}
@@ -154,9 +150,9 @@ export default function NewsletterForm({ lang = 'en' }) {
                     {!message && (
                         <p
                             className="text-center m-0"
-                            style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: 'var(--text-dim)' }}
+                            style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: 'var(--text-dim)' }}
                         >
-                            // {lang === 'fr' ? 'Désabonnement en 1 clic. Respect garanti.' : '1-click unsubscribe. Respect guaranteed.'}
+                            {lang === 'fr' ? 'Désabonnement en un clic. Sans spam.' : '1-click unsubscribe. No spam.'}
                         </p>
                     )}
                 </form>

@@ -30,18 +30,16 @@ export default function DarkModeToggle() {
     return (
         <button
             onClick={toggleDark}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-widest transition-all duration-100"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-100"
             style={{
                 fontFamily: "'Inter', sans-serif",
-                border: '2px solid var(--bg-border)',
+                border: '1px solid var(--bg-border)',
                 color: 'var(--text-secondary)',
                 background: 'transparent',
-                boxShadow: '2px 2px 0 rgba(0,0,0,0.4)',
-                letterSpacing: '1.5px',
             }}
             onMouseEnter={e => {
-                e.currentTarget.style.borderColor = 'var(--yellow-dark)';
-                e.currentTarget.style.color = 'var(--yellow-light)';
+                e.currentTarget.style.borderColor = 'var(--green-dark)';
+                e.currentTarget.style.color = 'var(--text-primary)';
             }}
             onMouseLeave={e => {
                 e.currentTarget.style.borderColor = 'var(--bg-border)';

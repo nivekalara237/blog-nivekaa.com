@@ -1,0 +1,32 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import NotesApp from "../../../components/notes/NotesApp.jsx";
+
+export const prerender = true;
+export function getStaticPaths() {
+  return [
+    { params: { lang: undefined } },
+    { params: { lang: 'fr' } }
+  ];
+}
+
+const { lang: paramLang } = Astro.params;
+const lang = paramLang === 'fr' ? 'fr' : 'en';
+
+const SITE_URL = 'https://cloud.nivekaa.com';
+const currentPath = Astro.url.pathname.replace(/^\/fr/, '') || '/notes';
+---
+
+<Layout 
+  title={lang === 'fr' ? "Notes Techniques - CloudNive" : "Technical Notes - CloudNive"}
+  description={lang === 'fr' 
+    ? "Consultez, ajoutez et organisez vos notes techniques de manière hiérarchique."
+    : "View, add, and organize your technical notes in a hierarchical structure."}
+  lang={lang}
+  hreflangEn={`${SITE_URL}${currentPath}`}
+  hreflangFr={`${SITE_URL}/fr${currentPath}`}
+>
+  <main class="max-w-[1400px] mx-auto w-full h-[calc(100vh-64px)] flex overflow-hidden bg-[var(--bg-deep)]">
+    <NotesApp client:only="react" lang={lang} />
+  </main>
+</Layout>

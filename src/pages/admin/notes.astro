@@ -1,0 +1,11 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import AuthenticatedNotesApp from "../../components/admin/AuthenticatedNotesApp.jsx";
+
+// This page wraps the NotesApp in the Admin context, giving it access to Kinde auth.
+---
+
+<AdminLayout title="Espace Notes | CloudNive Admin">
+    {/* AuthenticatedNotesApp sets up KindeAuthProvider and AdminGuard */}
+    <AuthenticatedNotesApp client:only="react" lang="fr" />
+</AdminLayout>

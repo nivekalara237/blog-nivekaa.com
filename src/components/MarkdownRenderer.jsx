@@ -16,6 +16,7 @@ mermaid.initialize({
     theme: (typeof window !== 'undefined' && localStorage.getItem("theme") === 'dark' ? 'dark' : 'neutral') || 'default',
     securityLevel: 'loose',
     fontFamily: 'inherit',
+    suppressErrorRendering: true,
 });
 
 const Mermaid = ({ chart }) => {
@@ -69,6 +70,7 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
     // Detect inline code: no className means inline code
     const isInline = !className || inline;
 
+
     // Handle Mermaid diagrams
     if (!isInline && lang === 'mermaid') {
         return <Mermaid chart={code} />;
@@ -81,17 +83,16 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
             try {
                 const highlighter = await getHighlighter();
 
+                // Code blocks always render dark (editor look), regardless of
+                // the site's light/dark mode — matches the design reference.
                 const highlighted = highlighter.codeToHtml(code, {
                     lang: lang,
-                    themes: {
-                        light: 'github-light',
-                        dark: 'github-dark',
-                    }
+                    theme: 'github-dark',
                 });
                 setHtml(highlighted);
             } catch (e) {
                 console.error("Shiki error:", e);
-                setHtml(`<pre class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto"><code>${code}</code></pre>`);
+                setHtml(`<pre style="background:#0d1117;padding:1.25rem;overflow-x:auto"><code style="color:#c9d1d9;font-family:'JetBrains Mono',monospace;font-size:0.875em">${code}</code></pre>`);
             }
         };
 
@@ -108,16 +109,16 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
         }
     };
 
-    // Inline code
+    // Inline code — solid highlighter strip in background, positioned below text
     if (isInline) {
         return (
             <code
-                className="px-1.5 inline-block py-0.5 mx-1 text-sm font-bold tracking-wide"
+                className="inline font-mono text-[0.875em] font-semibold text-[var(--text-primary)] px-1 py-0.5"
                 style={{
-                    backgroundColor: 'rgba(255, 170, 0, 0.15)',
-                    color: 'var(--yellow-dark)',
-                    border: '1px solid rgba(255, 170, 0, 0.3)',
-                    fontFamily: "'JetBrains Mono', monospace"
+                    backgroundColor: 'var(--bg-panel)',
+                    borderRadius: '4px',
+                    WebkitBoxDecorationBreak: 'clone',
+                    boxDecorationBreak: 'clone',
                 }}
                 {...props}
             >
@@ -125,6 +126,8 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
             </code>
         );
     }
+
+
 
     // Block code with highlighting
     if (html) {
@@ -138,7 +141,7 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
                     )}
                     <button
                         onClick={copyToClipboard}
-                        className="p-2 bg-[var(--bg-surface)] border-2 border-[var(--bg-border)] transition-colors duration-200 hover:border-[var(--green-light)]"
+                        className="p-2 rounded-md bg-[var(--bg-surface)] border border-[var(--bg-border)] transition-colors duration-200 hover:border-[var(--green-light)]"
                         title={copied ? "Copié!" : "Copier le code"}
                     >
                         {copied ? (
@@ -153,8 +156,8 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
                     </button>
                 </div>
                 <div
-                    className="overflow-x-auto border border-[var(--bg-border)] p-1 [&>pre]:!bg-transparent [&>pre]:!m-0 [&>pre]:!p-4"
-                    style={{ background: 'var(--bg-deep)' }}
+                    className="overflow-x-auto rounded-lg border border-[var(--bg-border)] p-1 [&>pre]:!bg-transparent [&>pre]:!m-0 [&>pre]:!p-4"
+                    style={{ background: '#0d1117' }}
                     dangerouslySetInnerHTML={{ __html: html }}
                 />
             </div>
@@ -186,8 +189,8 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
                     )}
                 </button>
             </div>
-            <pre className="border border-[var(--bg-border)] p-4 overflow-x-auto" style={{ background: 'var(--bg-deep)' }}>
-                <code className={`${className} text-sm leading-relaxed`} style={{ fontFamily: "'JetBrains Mono', monospace", color: 'var(--green-light)' }} {...props}>
+            <pre className="rounded-lg border border-[var(--bg-border)] p-4 overflow-x-auto" style={{ background: '#0d1117' }}>
+                <code className={`${className} text-sm leading-relaxed`} style={{ fontFamily: "'JetBrains Mono', monospace", color: '#c9d1d9' }} {...props}>
                     {children}
                 </code>
             </pre>
@@ -326,16 +329,20 @@ export default function MarkdownRenderer({ content, className = '', ...props }) 
                         return <h5 id={id} className="text-base font-bold mt-4 mb-2 scroll-mt-24" {...props}>{children}</h5>;
                     },
                     p: ({ node, ...props }) => <div className="mb-4 leading-relaxed" {...props} />,
-                    ul: ({ node, ...props }) => <ul className="list-disc !pl-0 list-inside !my-2 space-y-2" {...props} />,
-                    ol: ({ node, ...props }) => <ol className="list-decimal !pl-0 list-inside mb-4 space-y-2" {...props} />,
-                    li: ({ node, ...props }) => <li className="ml-4 !mb-0" {...props} />,
+                    ul: ({ node, ...props }) => <ul className="list-disc pl-5 !my-2 space-y-2" {...props} />,
+                    ol: ({ node, ...props }) => <ol className="list-decimal pl-5 mb-4 space-y-2" {...props} />,
+                    li: ({ node, ...props }) => <li className="!mb-0 pl-1" {...props} />,
                     a: ({ node, ...props }) => <a className="text-indigo-600 dark:text-indigo-400 hover:underline" {...props} />,
                     em: ({ node, ...props }) => <i className="italic underline underline-offset-4" {...props} />,
                     blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-indigo-500 pl-4 italic my-4" {...props} />,
                     strong: ({ node, ...props }) => <strong className="font-bold text-gray-900 dark:text-gray-100" {...props} />,
                     hr: ({ node, ...props }) => <hr className="my-8 border-gray-300 dark:border-gray-700" {...props} />,
-                    table: ({ node, ...props }) => <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 my-4" {...props} />,
-                    th: ({ node, ...props }) => <th className="px-4 py-2 bg-gray-100 dark:bg-gray-800 font-semibold text-left" {...props} />,
+                    table: ({ node, ...props }) => (
+                        <div className="not-prose my-6 overflow-x-auto rounded-lg border border-[var(--bg-border)]">
+                            <table className="min-w-full border-collapse" {...props} />
+                        </div>
+                    ),
+                    th: ({ node, ...props }) => <th className="px-4 py-2 bg-gray-100 dark:bg-gray-800 font-semibold text-left border-b border-gray-200 dark:border-gray-700" {...props} />,
                     td: ({ node, ...props }) => <td className="px-4 py-2 border-t border-gray-200 dark:border-gray-700" {...props} />,
                 }}
             >

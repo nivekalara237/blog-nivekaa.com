@@ -1,65 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 /**
- * CoverImage - Component for article cover with elegant error handling
- * Displays gradient fallback when image fails to load
+ * CoverImage - Article cover image.
+ * Only rendered when the API actually returned a cover URL. If that URL
+ * fails to load (error, 404...), nothing is shown — no category SVG
+ * fallback on the article page (that fallback is only used on cards).
  */
-export default function CoverImage({ cover, title, category, slug }) {
+export default function CoverImage({ cover, title }) {
     const [imageError, setImageError] = useState(false);
     const imgRef = useRef(null);
 
     // Check image validity on mount (handles cached broken images)
     useEffect(() => {
-        if (!cover) {
-            setImageError(true);
-            return;
-        }
+        if (!cover) return;
 
         const img = imgRef.current;
-        if (img && img.complete) {
-            // Image already loaded (from cache)
-            if (img.naturalHeight === 0) {
-                // Image failed to load
-                setImageError(true);
-            }
+        if (img && img.complete && img.naturalHeight === 0) {
+            setImageError(true);
         }
     }, [cover]);
 
-    const handleImageError = (e) => {
-        setImageError(true);
-    };
-
-    const showGradient = !cover || imageError;
-
-    const getCategorySvg = (cat) => {
-        if (!cat) return 'default';
-        const clean = cat.toLowerCase().replace(/[^a-z0-9/]/g, '');
-        if (clean.includes('cloud') || clean.includes('aws')) return 'cloud';
-        if (clean.includes('terraform') || clean.includes('iac')) return 'terraform';
-        if (clean.includes('docker')) return 'docker';
-        if (clean.includes('kubernetes') || clean.includes('k8s')) return 'kubernetes';
-        if (clean.includes('cicd') || clean.includes('devops')) return 'cicd';
-        if (clean.includes('backend') || clean.includes('java')) return 'backend';
-        if (clean.includes('securite') || clean.includes('security')) return 'securite';
-        if (clean.includes('frontend') || clean.includes('react')) return 'frontend';
-        if (clean.includes('linux')) return 'linux';
-        return 'default';
-    };
-
-    if (showGradient) {
-        // Fallback: render generated SVG
-        return (
-            <div className="mb-8 pixel-box overflow-hidden h-64 md:h-[400px]">
-                <img
-                    src={`/api/cover/${slug}.svg`}
-                    alt={`Default ${category || 'Article'} cover`}
-                    className="w-full h-full object-cover"
-                />
-            </div>
-        );
+    if (!cover || imageError) {
+        return null;
     }
 
-    // Image loaded successfully
     return (
         <div className="mb-8 pixel-box overflow-hidden h-64 md:h-[400px]">
             <img
@@ -67,7 +31,7 @@ export default function CoverImage({ cover, title, category, slug }) {
                 src={cover}
                 alt={title}
                 className="w-full h-full object-cover"
-                onError={handleImageError}
+                onError={() => setImageError(true)}
                 loading="eager"
             />
         </div>

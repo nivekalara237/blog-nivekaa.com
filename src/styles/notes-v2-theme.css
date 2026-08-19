@@ -1,0 +1,679 @@
+/*
+ * sys.NOTES v2 — Design System
+ * Pastel palette + magenta accent, matches site/propo-note-v2.html
+ * Scoped via .sys-notes-v2 wrapper
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+.sys-notes-v2 *,
+.sys-notes-v2 *::before,
+.sys-notes-v2 *::after {
+  box-sizing: border-box;
+}
+
+/* ── CSS Variables ──────────────────────────────────────────── */
+.sys-notes-v2 {
+  --bg: #F7F8FC;
+  --bg2: #FFFFFF;
+  --panel: #EEF0F8;
+  --border: #DFE2F0;
+  --border2: #DFE2F0;
+  --em: #C026D3;
+  --em2: #A21CAF;
+  --em3: #FAE8FF;
+  --txt: #2E303F;
+  --txt2: #6D7390;
+  --txt3: #8890AC;
+  --card: #FFFFFF;
+  --input-bg: #FFFFFF;
+
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--txt);
+  height: calc(100vh - 4px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sys-notes-v2 .mono { font-family: 'JetBrains Mono', monospace; }
+
+/* Dark mode */
+html.dark .sys-notes-v2 {
+  --bg: #1C1D28;
+  --bg2: #262838;
+  --panel: #2E303F;
+  --border: #414458;
+  --border2: #414458;
+  --em: #E879F9;
+  --em2: #F0ABFC;
+  --em3: rgba(232, 121, 249, .14);
+  --txt: #EEF0F8;
+  --txt2: #A6ABC7;
+  --txt3: #6D7390;
+  --card: #262838;
+  --input-bg: #1C1D28;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not(.light) .sys-notes-v2 {
+    --bg: #1C1D28;
+    --bg2: #262838;
+    --panel: #2E303F;
+    --border: #414458;
+    --border2: #414458;
+    --em: #E879F9;
+    --em2: #F0ABFC;
+    --em3: rgba(232, 121, 249, .14);
+    --txt: #EEF0F8;
+    --txt2: #A6ABC7;
+    --txt3: #6D7390;
+    --card: #262838;
+    --input-bg: #1C1D28;
+  }
+}
+
+/* ── Topbar ──────────────────────────────────────────────────── */
+.sys-notes-v2 .topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  height: 56px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.sys-notes-v2 .logo {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--txt);
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sys-notes-v2 .logo .logo-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: var(--em);
+  color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.sys-notes-v2 .topbar-title {
+  font-size: 12px;
+  color: var(--txt3);
+  flex: 1;
+}
+
+.sys-notes-v2 .topbar-badges { display: flex; gap: 6px; }
+
+.sys-notes-v2 .badge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--txt2);
+  background: var(--panel);
+}
+
+.sys-notes-v2 .badge.active {
+  border-color: var(--em);
+  color: var(--em);
+  background: var(--em3);
+}
+
+.sys-notes-v2 .blog-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  background: #000000;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.sys-notes-v2 .search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  max-width: 320px;
+  flex: 1;
+}
+
+.sys-notes-v2 .search-bar svg { flex-shrink: 0; color: var(--txt3); width: 15px; height: 15px; }
+
+.sys-notes-v2 .search-bar input {
+  background: none;
+  border: none;
+  outline: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--txt);
+  width: 100%;
+}
+
+.sys-notes-v2 .search-bar input::placeholder { color: var(--txt3); }
+
+/* ── Main Layout ─────────────────────────────────────────────── */
+.sys-notes-v2 .main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────── */
+.sys-notes-v2 .sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sys-notes-v2 .sidebar-header {
+  padding: 0 12px;
+  height: 44px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.sys-notes-v2 .sidebar-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--txt3);
+  letter-spacing: .08em;
+}
+
+.sys-notes-v2 .sidebar-actions { display: flex; gap: 4px; }
+
+.sys-notes-v2 .sidebar-tree {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.sys-notes-v2 .sidebar-tree::-webkit-scrollbar { width: 6px; }
+.sys-notes-v2 .sidebar-tree::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.sys-notes-v2 .btn-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--txt2);
+  cursor: pointer;
+  transition: border-color .12s, color .12s, background .12s;
+}
+
+.sys-notes-v2 .btn-sm:hover {
+  border-color: var(--em);
+  color: var(--em);
+  background: var(--em3);
+}
+
+.sys-notes-v2 .btn-icon {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--em);
+  cursor: pointer;
+  transition: border-color .12s;
+}
+
+.sys-notes-v2 .btn-icon:hover { border-color: var(--em); }
+.sys-notes-v2 .btn-icon svg { width: 14px; height: 14px; }
+
+.sys-notes-v2 .btn-ghost {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: none;
+  border: none;
+  color: var(--txt2);
+  cursor: pointer;
+}
+
+.sys-notes-v2 .btn-ghost:hover { color: var(--txt); }
+
+.sys-notes-v2 .btn-primary {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: var(--em);
+  border: 1px solid var(--em);
+  color: var(--bg);
+  cursor: pointer;
+  transition: opacity .12s;
+}
+
+.sys-notes-v2 .btn-primary:hover { opacity: .85; }
+.sys-notes-v2 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.sys-notes-v2 .btn-danger {
+  color: #EF4444;
+  border-color: rgba(239,68,68,.35);
+}
+
+.sys-notes-v2 .btn-danger:hover {
+  border-color: #EF4444;
+  color: #EF4444;
+  background: rgba(239,68,68,.08);
+}
+
+.sys-notes-v2 .btn-danger.btn-primary {
+  background: #EF4444;
+  border-color: #EF4444;
+  color: #fff;
+}
+
+/* ── Tree ────────────────────────────────────────────────────── */
+.sys-notes-v2 .tree-node { cursor: pointer; user-select: none; }
+
+.sys-notes-v2 .tree-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13.5px;
+  color: var(--txt2);
+  transition: background .12s, color .12s;
+}
+
+.sys-notes-v2 .tree-row:hover {
+  background: var(--panel);
+  color: var(--txt);
+}
+
+.sys-notes-v2 .tree-row.active {
+  background: var(--em3);
+  color: var(--em);
+  font-weight: 600;
+}
+
+.sys-notes-v2 .tree-bullet {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  color: var(--txt3);
+}
+
+.sys-notes-v2 .tree-bullet svg { width: 15px; height: 15px; }
+
+.sys-notes-v2 .tree-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sys-notes-v2 .tree-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--txt3);
+  flex-shrink: 0;
+}
+
+.sys-notes-v2 .tree-folder > .tree-row { font-weight: 500; }
+
+.sys-notes-v2 .tree-actions {
+  flex-shrink: 0;
+  display: none;
+  align-items: center;
+  gap: 2px;
+}
+
+.sys-notes-v2 .tree-row:hover .tree-actions { display: flex; }
+
+.sys-notes-v2 .tree-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--em);
+  cursor: pointer;
+}
+
+.sys-notes-v2 .tree-action-btn:hover { background: var(--em3); }
+.sys-notes-v2 .tree-action-btn svg { width: 13px; height: 13px; }
+
+.sys-notes-v2 .tree-action-danger { color: #EF4444; }
+.sys-notes-v2 .tree-action-danger:hover { background: rgba(239,68,68,.12); }
+
+/* ── Content Area ────────────────────────────────────────────── */
+.sys-notes-v2 .content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.sys-notes-v2 .content-header {
+  padding: 0 24px;
+  height: 44px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.sys-notes-v2 .content-path {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--txt3);
+  flex: 1;
+}
+
+.sys-notes-v2 .content-path span { color: var(--txt2); }
+.sys-notes-v2 .content-path .sep { color: var(--border); margin: 0 6px; }
+
+.sys-notes-v2 .content-actions { display: flex; gap: 6px; }
+
+.sys-notes-v2 .content-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 28px 32px;
+  width: 100%;
+}
+
+.sys-notes-v2 .content-body::-webkit-scrollbar { width: 6px; }
+.sys-notes-v2 .content-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+/* ── Folder row (folder view listing) ───────────────────────── */
+.sys-notes-v2 .folder-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .12s;
+}
+
+.sys-notes-v2 .folder-row:hover { border-color: var(--em); }
+.sys-notes-v2 .folder-row .icon { color: var(--txt3); flex-shrink: 0; display: flex; }
+.sys-notes-v2 .folder-row .icon.note { color: var(--em); }
+.sys-notes-v2 .folder-row .name { font-size: 14px; font-weight: 500; color: var(--txt); }
+.sys-notes-v2 .folder-row .meta { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--txt3); }
+
+/* ── Tags ────────────────────────────────────────────────────── */
+.sys-notes-v2 .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.sys-notes-v2 .tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  color: var(--txt2);
+  background: var(--panel);
+  letter-spacing: .02em;
+}
+
+/* ── Note View ───────────────────────────────────────────────── */
+.sys-notes-v2 .note-view { padding: 0; }
+
+.sys-notes-v2 .note-view h1 {
+  font-size: 26px; font-weight: 700; color: var(--txt); margin-bottom: 20px;
+  letter-spacing: -0.01em; line-height: 1.25;
+}
+.sys-notes-v2 .note-view h2 { font-size: 18px; font-weight: 700; color: var(--txt); margin: 1.8em 0 .6em; }
+.sys-notes-v2 .note-view p { font-size: 15px; color: var(--txt2); line-height: 1.75; margin-bottom: 1.1em; }
+/* Inline code only. Block code (```...```) is rendered by MarkdownRenderer's
+   CodeBlock component, which fully self-styles via Shiki + its own dark
+   background/padding/border — it must NOT be re-styled here, since these
+   rules would otherwise fight the injected markup (double background,
+   double border-radius, flattened syntax-highlight colors). */
+.sys-notes-v2 .note-view code { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--panel); border-radius: 4px; padding: 2px 6px; color: var(--txt); }
+.sys-notes-v2 .note-view pre code { background: none; padding: 0; border-radius: 0; }
+.sys-notes-v2 .note-view ul { padding-left: 1.3em; margin-bottom: 1.2em; }
+.sys-notes-v2 .note-view li { font-size: 15px; color: var(--txt2); line-height: 1.7; margin-bottom: .4em; }
+.sys-notes-v2 .note-view li::marker { color: var(--em); }
+.sys-notes-v2 .note-view strong { color: var(--txt); font-weight: 600; }
+
+.sys-notes-v2 .note-meta-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.sys-notes-v2 .note-meta-item {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--txt3);
+}
+
+.sys-notes-v2 .note-edit-area {
+  width: 100%;
+  min-height: 380px;
+  padding: 16px;
+  border-radius: 8px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--txt);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13.5px;
+  line-height: 1.7;
+  outline: none;
+  resize: vertical;
+}
+
+.sys-notes-v2 .note-edit-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* ── Status Bar ──────────────────────────────────────────────── */
+.sys-notes-v2 .status-bar {
+  padding: 0 16px;
+  height: 32px;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.sys-notes-v2 .status-item {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--txt3);
+}
+
+.sys-notes-v2 .cursor { animation: sn-blink 1s step-end infinite; }
+@keyframes sn-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* ── Empty State ─────────────────────────────────────────────── */
+.sys-notes-v2 .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--txt3);
+  font-size: 13px;
+  gap: 10px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+.sys-notes-v2 .empty-state svg { width: 28px; height: 28px; color: var(--border); }
+
+/* ── Modals ──────────────────────────────────────────────────── */
+.sys-notes-v2 .modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 24px;
+}
+
+.sys-notes-v2 .modal {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  width: 460px;
+  max-width: 100%;
+  padding: 20px;
+}
+
+.sys-notes-v2 .modal-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--txt);
+  margin-bottom: 16px;
+}
+
+.sys-notes-v2 .modal-field { margin-bottom: 14px; }
+
+.sys-notes-v2 .modal-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--txt3);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.sys-notes-v2 .modal-input {
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--txt);
+  padding: 9px 12px;
+  outline: none;
+  transition: border-color .12s;
+}
+
+.sys-notes-v2 .modal-input:focus { border-color: var(--em); }
+
+.sys-notes-v2 .modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.sys-notes-v2 .chip-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 8px;
+  border-radius: 6px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  cursor: text;
+}
+
+.sys-notes-v2 .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--em3);
+  color: var(--em);
+}
+
+.sys-notes-v2 .chip button { display: flex; line-height: 1; color: inherit; }
+
+.sys-notes-v2 .chip-input {
+  flex: 1;
+  min-width: 100px;
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: var(--txt);
+}
+
+.sys-notes-v2 .chip-hint {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--txt3);
+  margin-top: 6px;
+}
+
+.sys-notes-v2 .confirm-delete {
+  background: var(--bg2);
+  border: 1px solid rgba(239,68,68,.35);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  padding: 20px;
+  width: 380px;
+  max-width: 100%;
+}

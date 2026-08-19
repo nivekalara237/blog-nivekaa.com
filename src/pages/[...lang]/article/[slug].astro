@@ -2,12 +2,10 @@
 import Layout from "../../../layouts/Layout.astro";
 import { api } from "../../../lib/api";
 import MarkdownRenderer from "../../../components/MarkdownRenderer.jsx";
-import TableOfContents from "../../../components/TableOfContents.jsx";
 import PublicAuthorCard from "../../../components/PublicAuthorCard.jsx";
-import AdPanel from "../../../components/AdPanel.jsx";
 import CoverImage from "../../../components/CoverImage.jsx";
+import TableOfContents from "../../../components/TableOfContents.jsx";
 import { DEFAULT_AUTHOR } from "../../../config/author";
-import { ADS_ENABLED, AD_CONFIG, AD_SLOTS } from "../../../config/ads";
 
 // Active le mode statique (SSG)
 export const prerender = true;
@@ -18,41 +16,54 @@ export async function getStaticPaths() {
     const SITE_URL = 'https://cloud.nivekaa.com';
     const dataEn = await api.getArticles({ limit: 1000, lang: 'en' });
     const dataFr = await api.getArticles({ limit: 1000, lang: 'fr' });
-    
+
     const articlesEn = Array.isArray(dataEn) ? dataEn : dataEn.items || [];
     const articlesFr = Array.isArray(dataFr) ? dataFr : dataFr.items || [];
 
     const paths: any[] = [];
 
-    articlesEn.forEach((article: any) => {
-        paths.push({
-            params: { lang: undefined, slug: article.slug },
-            props: {
-                article,
-                lang: 'en',
-                hreflangEn: `${SITE_URL}/article/${article.slug}`,
-                hreflangFr: article.translationAvailable ? `${SITE_URL}/fr/article/${article.slug}` : undefined,
-            }
-        });
-    });
+    // The list endpoint only returns metadata — fetch each full article
+    // individually so the `content` body is available on the page.
+    await Promise.all(
+        articlesEn.map(async (meta: any) => {
+            try {
+                const article = await api.getArticle(meta.slug);
+                paths.push({
+                    params: { lang: undefined, slug: article.slug },
+                    props: {
+                        article,
+                        lang: 'en',
+                        hreflangEn: `${SITE_URL}/article/${article.slug}`,
+                        hreflangFr: article.translationAvailable ? `${SITE_URL}/fr/article/${article.slug}` : undefined,
+                        siblings: articlesEn,
+                    }
+                });
+            } catch { /* skip articles that fail to load */ }
+        })
+    );
 
-    articlesFr.forEach((article: any) => {
-        // Assume article object from FR query is already translated
-        paths.push({
-            params: { lang: 'fr', slug: article.slug },
-            props: {
-                article,
-                lang: 'fr',
-                hreflangEn: article.translationAvailable ? `${SITE_URL}/article/${article.slug}` : undefined,
-                hreflangFr: `${SITE_URL}/fr/article/${article.slug}`,
-            }
-        });
-    });
+    await Promise.all(
+        articlesFr.map(async (meta: any) => {
+            try {
+                const article = await api.getArticle(meta.slug, 'fr');
+                paths.push({
+                    params: { lang: 'fr', slug: article.slug },
+                    props: {
+                        article,
+                        lang: 'fr',
+                        hreflangEn: article.translationAvailable ? `${SITE_URL}/article/${article.slug}` : undefined,
+                        hreflangFr: `${SITE_URL}/fr/article/${article.slug}`,
+                        siblings: articlesFr,
+                    }
+                });
+            } catch { /* skip articles that fail to load */ }
+        })
+    );
 
     return paths;
 }
 
-const { article, lang, hreflangEn, hreflangFr }: any = Astro.props;
+const { article, lang, hreflangEn, hreflangFr, siblings = [] }: any = Astro.props;
 
 // Use article author or default author
 const author = article.author || DEFAULT_AUTHOR;
@@ -73,6 +84,22 @@ const formatDate = (dateStr: string) => {
 };
 const siteUrl = Astro.site || SITE_URL;
 const articleUrl = new URL(Astro.url.pathname, siteUrl);
+
+// Related content: prefer same category, fall back to most recent others.
+const others = siblings.filter((a: any) => a.slug !== article.slug);
+const sameCategory = others.filter((a: any) => a.category === article.category);
+const rest = others.filter((a: any) => a.category !== article.category);
+const related = [...sameCategory, ...rest].slice(0, 2);
+
+// Series navigation: other articles sharing the same serie.slug, ordered by indexNo.
+const seriesSiblings = article.serie?.slug
+    ? siblings
+        .filter((a: any) => a.serie?.slug === article.serie.slug)
+        .sort((a: any, b: any) => (a.serie?.indexNo || 0) - (b.serie?.indexNo || 0))
+    : [];
+const seriesHref = article.serie?.slug
+    ? (lang === 'fr' ? `/fr/series/${encodeURIComponent(article.serie.slug)}` : `/series/${encodeURIComponent(article.serie.slug)}`)
+    : null;
 
 const jsonLd = {
     "@context": "https://schema.org",
@@ -113,123 +140,133 @@ const jsonLd = {
     hreflangFr={hreflangFr}
 >
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-    <div class="max-w-7xl mx-auto px-6 lg:px-8 py-12">
-        <!-- Cover Image or Gradient Fallback -->
+
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="lg:flex lg:gap-16">
+
+        <div class="lg:flex-1 min-w-0" style="max-width: 48rem;">
+
+        <!-- Header -->
+        <div style="padding-top:40px; padding-bottom:24px;">
+            <span style="font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:0.06em; font-size:11px; color:var(--green-dark);">
+                {article.category}
+            </span>
+            <h1 style="margin-top:12px; font-family:'Inter',sans-serif; font-weight:700; font-size:clamp(28px,4vw,40px); line-height:1.15; letter-spacing:-0.02em; color:var(--text-primary);">
+                {article.title}
+            </h1>
+            <div class="flex items-center gap-3" style="margin-top:24px;">
+                <img
+                    src={author.avatar}
+                    alt={author.name}
+                    class="rounded-full"
+                    style="width:36px; height:36px; object-fit:cover;"
+                />
+                <div>
+                    <p style="margin:0; font-size:14px; font-weight:500; color:var(--text-primary);">{author.name}</p>
+                    <p style="margin:0; font-size:13px; color:var(--text-dim);">
+                        {formatDate(article.date)} · {readingTime} {lang === 'fr' ? 'min de lecture' : 'min read'}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cover image -->
         <CoverImage
             client:load
             cover={article.cover}
             title={article.title}
-            category={article.category}
-            slug={article.slug}
         />
 
-        <!-- Tags (right after image) -->
-        <div class="max-w-4xl ml-0 mb-6">
-            {
-                article.tags && article.tags.length > 0 && (
-                    <div class="flex flex-wrap gap-2">
-                        {article.tags.map((tag: any) => (
-                            <span class="game-tag">#{tag}</span>
-                        ))}
+        <!-- Series navigation -->
+        {
+            article.serie?.slug && (
+                <div style="margin-top:24px; margin-bottom:8px; border-radius:8px; padding:16px; display:flex; align-items:center; gap:16px; background:rgba(75,86,148,0.06); border:1px solid rgba(75,86,148,0.25);">
+                    <div style="width:32px; height:32px; border-radius:6px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:rgba(75,86,148,0.12); color:#4B5694;">
+                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="4.5" rx="1"></rect><rect x="4" y="10" width="16" height="4.5" rx="1"></rect><rect x="4" y="16" width="16" height="4.5" rx="1"></rect></svg>
                     </div>
-                )
-            }
-        </div>
-
-        <!-- Article Header Section -->
-        <div class="max-w-4xl ml-0 mb-10">
-            <!-- Title -->
-            <h1
-                class="mb-6 leading-tight"
-                style="font-family:'Space Grotesk',sans-serif; font-weight:900; font-size:clamp(28px,4vw,48px); letter-spacing:-1px; color:var(--text-primary);"
-            >
-                {article.title}
-            </h1>
-
-            <!-- Author Info -->
-            <div class="flex items-center gap-3 mb-5">
-                <img
-                    src={author.avatar}
-                    alt={author.name}
-                    class="w-12 h-12 rounded-full border-2 border-gray-200 dark:border-gray-700"
-                />
-                <div>
-                    <div
-                        class="text-sm font-semibold text-gray-900 dark:text-gray-100"
-                    >
-                        {author.name}
-                    </div>
-                    <div class="text-xs text-gray-600 dark:text-gray-400">
-                        {author.role}
+                    <div style="flex:1; min-width:0;">
+                        <a href={seriesHref} style="font-size:13px; font-weight:600; color:#4B5694; text-decoration:none;">
+                            {article.serie.name}
+                        </a>
+                        <p style="margin:2px 0 0; font-size:12.5px; color:var(--text-dim);">
+                            {lang === 'fr'
+                                ? `Partie ${article.serie.indexNo} sur ${seriesSiblings.length} de cette série.`
+                                : `Part ${article.serie.indexNo} of ${seriesSiblings.length} in this series.`}
+                        </p>
+                        {article.serie.description && (
+                            <p style="margin:4px 0 0; font-size:12.5px; color:var(--text-secondary);">
+                                {article.serie.description}
+                            </p>
+                        )}
                     </div>
                 </div>
-            </div>
-
-            <!-- Date & Reading Time & Category -->
-            <div
-                class="flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-500"
-            >
-                <time>{formatDate(article.date)}</time>
-                <span>•</span>
-                <span>{readingTime} {lang === 'fr' ? 'min de lecture' : 'min read'}</span>
-                <span>•</span>
-                <span class="font-medium" style="color:var(--green-light);"
-                    >{article.category}</span
-                >
-            </div>
-        </div>
-
-        <!-- Ad Before Content -->
-        {
-            ADS_ENABLED && AD_CONFIG.showBeforeContent && (
-                <AdPanel
-                    client:load
-                    ad={AD_SLOTS.beforeContent}
-                    variant="banner"
-                />
             )
         }
 
-        <!-- Two Column Layout: Content + TOC -->
-        <div class="lg:flex lg:gap-8">
-            <!-- Main Content -->
-            <article class="lg:w-3/4">
-                <div class="pixel-box-removed-tmp pb-8 md:pb-12 mb-8">
-                    <div class="prose max-w-none">
-                        <MarkdownRenderer client:load content={content} />
-                    </div>
+        <!-- Tags -->
+        {
+            article.tags && article.tags.length > 0 && (
+                <div class="flex flex-wrap gap-2 mb-6">
+                    {article.tags.map((tag: any) => (
+                        <span class="game-tag">#{tag}</span>
+                    ))}
                 </div>
+            )
+        }
 
-                <!-- Ad After Content -->
-                {
-                    ADS_ENABLED && AD_CONFIG.showAfterContent && (
-                        <AdPanel
-                            client:load
-                            ad={AD_SLOTS.afterContent}
-                            variant="card"
-                        />
-                    )
-                }
+        <!-- Body -->
+        <article class="prose max-w-none" style="padding-top:16px; padding-bottom:16px;">
+            <MarkdownRenderer client:load content={content} />
+        </article>
 
-                <!-- Author Card (Always displayed with fallback to default) -->
-                <PublicAuthorCard client:load author={author} />
-            </article>
+        <!-- Author box -->
+        <PublicAuthorCard client:load author={author} />
 
-            <!-- Sidebar: Table of Contents (hidden on mobile) -->
-            <aside class="hidden lg:block lg:w-1/4">
-                <TableOfContents client:load content={content} />
-
-                <!-- Ad in Sidebar -->
-                {
-                    ADS_ENABLED && AD_CONFIG.showInSidebar && (
-                        <AdPanel
-                            client:load
-                            ad={AD_SLOTS.sidebar}
-                            variant="sidebar"
-                        />
-                    )
-                }
-            </aside>
         </div>
+
+        <!-- Sidebar: Table of Contents (hidden on mobile) -->
+        <aside class="hidden lg:block shrink-0" style="width:220px; padding-top:40px;">
+            <TableOfContents client:load content={content} lang={lang} />
+        </aside>
+
+      </div>
+
+        <!-- Related content -->
+        {
+            related.length > 0 && (
+                <section style="border-top:1px solid var(--bg-border); padding:48px 0 64px;">
+                    <p style="font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:0.1em; font-size:11px; color:var(--text-dim); margin-bottom:20px;">
+                        {lang === 'fr' ? 'Contenu associé' : 'Related content'}
+                    </p>
+                    <div class="grid sm:grid-cols-2 gap-5">
+                        {related.map((rel: any) => (
+                            <a
+                                href={`/article/${rel.slug}`}
+                                class="group block no-underline"
+                                style={`background: var(--bg-surface); border: 1px solid var(--bg-border); border-radius: 12px; overflow: hidden;`}
+                            >
+                                <div style="aspect-ratio: 16/10; overflow: hidden; background: var(--bg-panel);">
+                                    <img
+                                        src={rel.cover || `/api/cover/${rel.slug}.svg`}
+                                        alt={rel.title}
+                                        class="w-full h-full object-cover"
+                                        loading="lazy"
+                                        onerror={`this.onerror=null; this.src='/api/cover/${rel.slug}.svg';`}
+                                    />
+                                </div>
+                                <div style="padding: 20px;">
+                                    <span style={`font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--green-dark);`}>
+                                        {rel.category}
+                                    </span>
+                                    <h3 class="group-hover:underline" style="margin-top:8px; font-family:'Inter',sans-serif; font-weight:600; font-size:15px; color:var(--text-primary);">
+                                        {rel.title}
+                                    </h3>
+                                </div>
+                            </a>
+                        ))}
+                    </div>
+                </section>
+            )
+        }
     </div>
 </Layout>

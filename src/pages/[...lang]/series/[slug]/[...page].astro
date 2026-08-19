@@ -1,0 +1,102 @@
+---
+import Layout from "../../../../layouts/Layout.astro";
+import ArticleListRow from "../../../../components/ArticleListRow.jsx";
+import Pagination from "../../../../components/Pagination.astro";
+import { api } from "../../../../lib/api";
+
+export async function getStaticPaths({ paginate }: any) {
+    const responseEn = await api.getArticles({ limit: 1000, lang: 'en' });
+    const responseFr = await api.getArticles({ limit: 1000, lang: 'fr' });
+
+    const articlesEn = responseEn.items || [];
+    const articlesFr = responseFr.items || [];
+
+    // Series are derived from articles carrying a `serie.slug` field —
+    // ordered by indexNo within each series (not by date).
+    const buildSeriesPaths = (articles: any[], langParam: string | undefined) => {
+        const bySlug = new Map<string, any[]>();
+        articles.forEach((a: any) => {
+            if (!a.serie?.slug) return;
+            if (!bySlug.has(a.serie.slug)) bySlug.set(a.serie.slug, []);
+            bySlug.get(a.serie.slug)!.push(a);
+        });
+        return Array.from(bySlug.entries()).flatMap(([slug, seriesArticles]) => {
+            seriesArticles.sort((a: any, b: any) => (a.serie?.indexNo || 0) - (b.serie?.indexNo || 0));
+            return paginate(seriesArticles, {
+                params: { lang: langParam, slug },
+                pageSize: 24,
+                props: {
+                    seriesName: seriesArticles[0]?.serie?.name || slug,
+                    seriesDescription: seriesArticles[0]?.serie?.description || '',
+                },
+            });
+        });
+    };
+
+    return [
+        ...buildSeriesPaths(articlesEn, undefined),
+        ...buildSeriesPaths(articlesFr, 'fr'),
+    ];
+}
+
+export const prerender = true;
+
+const { page, seriesName, seriesDescription } = Astro.props as any;
+const { slug, lang: paramLang }: any = Astro.params;
+const lang = paramLang === 'fr' ? 'fr' : 'en';
+
+const SITE_URL = 'https://cloud.nivekaa.com';
+const currentPath = Astro.url.pathname.replace(/^\/fr/, '') || `/series/${slug}`;
+const seriesHref = lang === 'fr' ? '/fr/series' : '/series';
+---
+
+<Layout
+    title={lang === 'fr' ? `Série — ${seriesName}` : `Series — ${seriesName}`}
+    lang={lang}
+    hreflangEn={`${SITE_URL}${currentPath}`}
+    hreflangFr={`${SITE_URL}/fr${currentPath}`}
+>
+    <div class="max-w-3xl mx-auto px-6">
+        <div style="padding-top:40px; padding-bottom:32px; border-bottom:1px solid var(--bg-border);">
+            <a href={seriesHref} style="font-size:13px; color:var(--text-dim); text-decoration:none;">
+                &larr; {lang === 'fr' ? 'Toutes les séries' : 'All series'}
+            </a>
+            <div style="margin-top:16px;">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:#4B5694;">
+                    {lang === 'fr' ? 'Série' : 'Series'}
+                </span>
+            </div>
+            <h1 style="margin-top:8px; font-family:'Inter',sans-serif; font-weight:600; font-size:28px; letter-spacing:-0.02em; color:var(--text-primary);">
+                {seriesName}
+            </h1>
+            {seriesDescription && (
+                <p style="margin-top:8px; font-size:14px; color:var(--text-secondary); max-width:36rem;">
+                    {seriesDescription}
+                </p>
+            )}
+        </div>
+
+        {
+            page.data.length > 0 ? (
+                <div style="padding-top:8px;">
+                    {page.data.map((article: any) => (
+                        <ArticleListRow
+                            client:load
+                            article={article}
+                            lang={lang}
+                            badge={lang === 'fr' ? `Partie ${article.serie?.indexNo ?? '?'}` : `Part ${article.serie?.indexNo ?? '?'}`}
+                        />
+                    ))}
+                </div>
+            ) : (
+                <div style="padding:64px 0; text-align:center;">
+                    <p style="font-family:'Inter',sans-serif; color:var(--text-secondary); font-size:15px;">
+                        {lang === 'fr' ? 'Aucun article dans cette série.' : 'No articles in this series.'}
+                    </p>
+                </div>
+            )
+        }
+
+        <Pagination page={page} lang={lang} />
+    </div>
+</Layout>

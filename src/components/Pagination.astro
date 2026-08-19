@@ -41,13 +41,13 @@ if (totalPages <= 7) {
                     style={`
                     display:inline-flex; align-items:center; justify-content:center;
                     width:36px; height:36px;
+                    border-radius: 8px;
                     background: var(--bg-surface);
-                    border: 3px solid var(--bg-border);
+                    border: 1px solid var(--bg-border);
                     color: var(--text-secondary);
                     text-decoration: none;
-                    font-size: 16px;
-                    box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
-                    transition: all 0.1s;
+                    font-size: 14px;
+                    transition: all 0.15s;
                 `}
                 >
                     ◀
@@ -57,10 +57,11 @@ if (totalPages <= 7) {
                     style={`
                     display:inline-flex; align-items:center; justify-content:center;
                     width:36px; height:36px;
+                    border-radius: 8px;
                     background: var(--bg-panel);
-                    border: 3px solid var(--bg-border);
+                    border: 1px solid var(--bg-border);
                     color: var(--text-dim);
-                    font-size: 16px;
+                    font-size: 14px;
                     opacity: 0.4;
                 `}
                 >
@@ -92,15 +93,15 @@ if (totalPages <= 7) {
                             style={`
                             display:inline-flex; align-items:center; justify-content:center;
                             width:36px; height:36px;
-                            border: 3px solid;
+                            border-radius: 8px;
+                            border: 1px solid;
                             text-decoration: none;
                             font-size: 12px;
-                            font-weight: 700;
-                            transition: all 0.1s;
-                            box-shadow: 3px 3px 0 rgba(0,0,0,0.35);
+                            font-weight: 600;
+                            transition: all 0.15s;
                             ${
                                 pageNum === currentPage
-                                    ? "background:var(--green-dark); border-color:var(--green-light); color:var(--yellow-light);"
+                                    ? "background:var(--green-dark); border-color:var(--green-dark); color:var(--bg-deep);"
                                     : "background:var(--bg-surface); border-color:var(--bg-border); color:var(--text-secondary);"
                             }
                         `}
@@ -120,13 +121,13 @@ if (totalPages <= 7) {
                     style={`
                     display:inline-flex; align-items:center; justify-content:center;
                     width:36px; height:36px;
+                    border-radius: 8px;
                     background: var(--bg-surface);
-                    border: 3px solid var(--bg-border);
+                    border: 1px solid var(--bg-border);
                     color: var(--text-secondary);
                     text-decoration: none;
-                    font-size: 16px;
-                    box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
-                    transition: all 0.1s;
+                    font-size: 14px;
+                    transition: all 0.15s;
                 `}
                 >
                     ▶
@@ -136,10 +137,11 @@ if (totalPages <= 7) {
                     style={`
                     display:inline-flex; align-items:center; justify-content:center;
                     width:36px; height:36px;
+                    border-radius: 8px;
                     background: var(--bg-panel);
-                    border: 3px solid var(--bg-border);
+                    border: 1px solid var(--bg-border);
                     color: var(--text-dim);
-                    font-size: 16px;
+                    font-size: 14px;
                     opacity: 0.4;
                 `}
                 >
@@ -153,12 +155,10 @@ if (totalPages <= 7) {
 <style>
     .pagination-btn:hover {
         border-color: var(--green-dark) !important;
-        color: var(--yellow-light) !important;
-        transform: translate(-1px, -1px);
-        box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.4) !important;
+        color: var(--text-primary) !important;
     }
     .pagination-num:hover {
         border-color: var(--green-dark) !important;
-        color: var(--yellow-light) !important;
+        color: var(--text-primary) !important;
     }
 </style>

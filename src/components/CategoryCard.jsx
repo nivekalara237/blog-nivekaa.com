@@ -21,24 +21,24 @@ export default function CategoryCard({ category, href = null, count = null, icon
             style={{
                 padding: '12px 22px',
                 minWidth: '110px',
-                borderRight: '2px solid var(--bg-border)',
+                borderRight: '1px solid var(--bg-border)',
                 cursor: 'pointer',
-                background: active ? 'rgba(35,114,39,0.18)' : 'transparent',
+                background: active ? 'var(--bg-panel)' : 'transparent',
                 textDecoration: 'none',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(35,114,39,0.18)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = active ? 'rgba(35,114,39,0.18)' : 'transparent'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-panel)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = active ? 'var(--bg-panel)' : 'transparent'; }}
         >
-            <span style={{ color: 'var(--yellow-dark)', transition: 'color 0.1s' }}>
+            <span style={{ color: 'var(--green-dark)', transition: 'color 0.1s' }}>
                 <IconComponent className="w-6 h-6" />
             </span>
             <span
-                className="text-center font-bold uppercase"
+                className="text-center font-medium uppercase"
                 style={{
                     fontFamily: "'Inter', sans-serif",
                     fontSize: '10px',
-                    letterSpacing: '1.5px',
-                    color: active ? 'var(--yellow-light)' : 'var(--text-secondary)',
+                    letterSpacing: '0.08em',
+                    color: active ? 'var(--text-primary)' : 'var(--text-secondary)',
                     transition: 'color 0.1s',
                 }}
             >
@@ -49,10 +49,11 @@ export default function CategoryCard({ category, href = null, count = null, icon
                     style={{
                         fontFamily: "'JetBrains Mono', monospace",
                         fontSize: '9px',
-                        color: 'var(--green-light)',
-                        background: 'rgba(35,114,39,0.25)',
-                        padding: '1px 5px',
-                        border: '1px solid var(--green-dark)',
+                        borderRadius: '999px',
+                        color: 'var(--text-secondary)',
+                        background: 'var(--bg-panel)',
+                        padding: '1px 6px',
+                        border: '1px solid var(--bg-border)',
                     }}
                 >
                     {count}

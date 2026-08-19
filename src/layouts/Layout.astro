@@ -13,6 +13,8 @@ interface Props {
     lang?: string;
     hreflangEn?: string;
     hreflangFr?: string;
+    hideHeader?: boolean;
+    hideFooter?: boolean;
 }
 
 const {
@@ -23,6 +25,8 @@ const {
     lang = "en",
     hreflangEn,
     hreflangFr,
+    hideHeader = false,
+    hideFooter = false,
 } = Astro.props;
 ---
 
@@ -43,11 +47,11 @@ const {
         style="background-color: var(--bg-deep); color: var(--text-primary);"
     >
         <KindeAuthProvider client:load>
-            <Header />
+            {!hideHeader && <Header />}
             <main class="flex-grow">
                 <slot />
             </main>
-            <Footer />
+            {!hideFooter && <Footer />}
         </KindeAuthProvider>
     </body>
 </html>

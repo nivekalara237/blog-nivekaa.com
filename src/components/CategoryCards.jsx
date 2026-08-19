@@ -46,8 +46,8 @@ export default function CategoryCards({ counts = {} }) {
             className="w-full"
             style={{
                 background: 'var(--bg-surface)',
-                borderTop: '3px solid var(--bg-border)',
-                borderBottom: '3px solid var(--bg-border)',
+                borderTop: '1px solid var(--bg-border)',
+                borderBottom: '1px solid var(--bg-border)',
             }}
         >
             {/* Inner container to center items */}

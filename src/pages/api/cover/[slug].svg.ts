@@ -1,4 +1,3 @@
-import { getCategories } from '../../../utils/api';
 import { api } from '../../../lib/api';
 
 const ICONS = {
@@ -28,24 +27,6 @@ function getCategoryData(cat: string | null | undefined) {
     return { id: 'default', name: cat, icon: ICONS.document };
 }
 
-// Basic text wrapping for SVG
-function wrapText(text: string, maxChars: number) {
-    const words = text.split(' ');
-    let lines = [];
-    let currentLine = '';
-
-    words.forEach((word: string) => {
-        if ((currentLine + word).length > maxChars) {
-            lines.push(currentLine.trim());
-            currentLine = word + ' ';
-        } else {
-            currentLine += word + ' ';
-        }
-    });
-    lines.push(currentLine.trim());
-    return lines.slice(0, 2); // Max 2 lines
-}
-
 export async function getStaticPaths() {
     const response = await api.getArticles({ limit: 1000 });
     const articles = response.items || [];
@@ -62,73 +43,31 @@ export async function GET({ props }: any) {
     const { article } = props;
     const catData = getCategoryData(article.category);
 
-    const lines = wrapText(article.title || 'CLOUDNIVE_DATABASE', 45); // Adjust max chars based on width
-    const line1 = lines[0] || '';
-    const line2 = lines[1] || '';
-
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400">
   <defs>
-      <!-- Media query for light mode -->
       <style>
-          .bg-deep { fill: #0A0F0A; }
-          .bg-stroke { stroke: #237227; }
-          .bg-stroke-light { stroke: #519A66; }
-          .text-main { fill: #E8F5E8; }
-          .text-dim { fill: #519A66; }
-          
-          @media (prefers-color-scheme: light) {
-              .bg-deep { fill: #F4FBF4; }
-              .bg-stroke { stroke: #519A66; }
-              .bg-stroke-light { stroke: #237227; }
-              .text-main { fill: #0A0F0A; }
-              .text-dim { fill: #237227; }
+          .bg { fill: #EEF0F8; }
+          .icon { stroke: #7C93D8; }
+          .label { fill: #6D7390; }
+
+          @media (prefers-color-scheme: dark) {
+              .bg { fill: #2E303F; }
+              .icon { stroke: #A8BCEF; }
+              .label { fill: #A6ABC7; }
           }
       </style>
   </defs>
 
   <!-- Background -->
-  <rect width="800" height="400" class="bg-deep" />
-  
-  <!-- Subtle scanline / tech grid -->
-  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-    <path d="M 40 0 L 0 0 0 40" fill="none" class="bg-stroke" stroke-width="1" stroke-opacity="0.2" />
-    <circle cx="40" cy="40" r="1.5" class="bg-stroke-light" fill-opacity="0.4" />
-  </pattern>
-  <rect width="800" height="400" fill="url(#grid)" />
+  <rect width="800" height="400" class="bg" />
 
-  <!-- Outer frame -->
-  <rect x="20" y="20" width="760" height="360" fill="none" class="bg-stroke" stroke-width="2" stroke-opacity="0.5" />
-  <rect x="26" y="26" width="748" height="348" fill="none" class="bg-stroke-light" stroke-width="1" stroke-opacity="0.3" />
-
-  <!-- Decorative technical marks -->
-  <path d="M 20 60 L 30 60 M 20 340 L 30 340 M 780 60 L 770 60 M 780 340 L 770 340" stroke="#FFAA00" stroke-width="2" />
-  <path d="M 60 20 L 60 30 M 340 20 L 340 30 M 60 380 L 60 370 M 340 380 L 340 370" stroke="#FFAA00" stroke-width="2" />
-
-  <!-- Giant Background Icon -->
-  <g opacity="0.05" transform="matrix(15 0 0 15 480 30)">
-    <path fill="none" class="bg-stroke-light" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="${catData.icon}" />
+  <!-- Centered category icon -->
+  <g transform="translate(364,120) scale(3)">
+    <path fill="none" class="icon" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" d="${catData.icon}" />
   </g>
 
-  <!-- Tag / Breadcrumb -->
-  <rect x="60" y="110" width="80" height="24" fill="#237227" fill-opacity="0.2" stroke="#237227" stroke-width="1" />
-  <text x="70" y="126" font-family="monospace" font-size="12" font-weight="bold" fill="#519A66" letter-spacing="1.5">SYS.LOG</text>
-
-  <!-- Main Category Title -->
-  <text x="60" y="195" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="56" class="text-main" letter-spacing="-1">
-    <tspan fill="#FFAA00">//</tspan> ${catData.name.toUpperCase()}
-  </text>
-  
-  <!-- Subtitle / Meta (Truncated Title) -->
-  <text x="60" y="240" font-family="monospace" font-size="16" class="text-dim" letter-spacing="1">
-    ${line1}
-  </text>
-  <text x="60" y="265" font-family="monospace" font-size="16" class="text-dim" letter-spacing="1">
-    ${line2}
-  </text>
-  
-  <!-- "Status" indicator -->
-  <circle cx="66" cy="336" r="4" fill="#FFAA00" />
-  <text x="80" y="340" font-family="monospace" font-size="12" fill="#888888">STATUS: <tspan fill="#FFAA00">ONLINE</tspan></text>
+  <!-- Category label -->
+  <text x="400" y="280" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600" font-size="20" letter-spacing="0.02em" class="label">${catData.name}</text>
 </svg>`;
 
     return new Response(svg, {

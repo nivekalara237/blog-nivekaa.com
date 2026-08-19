@@ -11,22 +11,22 @@ const translatePath = useTranslatedPath(lang);
 
 <header
     class="sticky top-0 z-50"
-    style="background: var(--bg-deep); border-bottom: 3px solid var(--green-dark); box-shadow: 0 4px 0 rgba(35,114,39,0.25);"
+    style="background: var(--bg-deep); border-bottom: 1px solid var(--bg-border);"
 >
-    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
         <!-- Logo -->
         <a href="/" class="flex items-center gap-3 no-underline group">
             <div
-                class="w-9 h-9 flex items-center justify-center text-lg font-bold"
-                style="background: var(--green-dark); border: 3px solid var(--green-light); box-shadow: 3px 3px 0 rgba(0,0,0,0.5); color: var(--yellow-light);"
+                class="w-9 h-9 flex items-center justify-center text-lg font-bold rounded-md"
+                style="background: var(--green-dark); color: var(--bg-deep);"
             >
                 ☁
             </div>
             <span
-                class="text-sm font-black uppercase tracking-widest"
-                style="font-family: 'Space Grotesk', sans-serif; color: var(--text-primary);"
+                class="text-sm font-semibold tracking-tight"
+                style="color: var(--text-primary);"
             >
-                Cloud<span style="color: var(--yellow-dark);">Nive</span>
+                Cloud<span style="color: var(--green-dark);">Nive</span>
             </span>
         </a>
 
@@ -34,19 +34,36 @@ const translatePath = useTranslatedPath(lang);
         <ul class="hidden md:flex items-center gap-1 list-none m-0 p-0">
             {
                 [
-                    { label: t('nav.home'), href: "/" },
-                    { label: t('nav.articles'), href: "/articles" },
-                    { label: t('nav.categories'), href: "/categories" },
+                    // { label: t('nav.home'), href: "/" },
+                    { label: t('nav.notes-v2'), href: "/notes-v2", app: true },
+                    // { label: t('nav.articles'), href: "/articles" },
+                    // { label: t('nav.categories'), href: "/categories" },
+                    { label: t('nav.series'), href: "/series", special: true },
                     { label: t('nav.contact'), href: "/contact" },
-                ].map(({ label, href }) => (
+                ].map(({ label, href, app = false, special = false }) => (
                     <li>
-                        <a
-                            href={translatePath(href)}
-                            class="px-3 py-1.5 text-xs font-bold uppercase tracking-widest no-underline transition-all duration-100 nav-link"
-                            style="font-family: 'Inter', sans-serif; color: var(--text-secondary); border: 2px solid transparent; letter-spacing: 1.5px;"
-                        >
-                            {label}
-                        </a>
+											{app && <a
+                          href={translatePath(href)}
+                          class="hidden sm:inline-flex btn btn--primary"
+                          style="font-size: 12px; padding: 6px 14px;"
+                      >
+                         {label}
+                      </a>}
+											{special && <a
+                          href={translatePath(href)}
+                          class="px-3 py-1.5 text-sm font-semibold no-underline transition-opacity hover:opacity-75 rounded-md"
+                          style="color: #4B5694;"
+                      >
+												{label}
+                      </a>}
+											{!app && !special && <a
+                          href={translatePath(href)}
+                          class="px-3 py-1.5 text-sm font-medium no-underline transition-all duration-100 nav-link rounded-md"
+                          style="color: var(--text-secondary); border: 1px solid transparent;"
+                      >
+												{label}
+                      </a>}
+
                     </li>
                 ))
             }
@@ -60,16 +77,16 @@ const translatePath = useTranslatedPath(lang);
             <a
                 href="#newsletter"
                 class="hidden sm:inline-flex btn btn--primary"
-                style="font-size: 9px; padding: 5px 10px;"
+                style="font-size: 12px; padding: 6px 14px;"
             >
-                ▶ {t('nav.newsletter')}
+                {t('nav.newsletter')}
             </a>
 
             <!-- Mobile menu button -->
             <button
                 id="mobile-menu-button"
-                class="md:hidden p-2 transition-colors flex items-center justify-center cursor-pointer"
-                style="border: 2px solid var(--bg-border); color: var(--yellow-dark); background: transparent; height: 38px; width: 38px; position: relative; z-index: 60;"
+                class="md:hidden p-2 transition-colors flex items-center justify-center cursor-pointer rounded-md"
+                style="border: 1px solid var(--bg-border); color: var(--text-secondary); background: transparent; height: 38px; width: 38px; position: relative; z-index: 60;"
                 aria-label="Open menu"
             >
                 <svg
@@ -94,9 +111,9 @@ const translatePath = useTranslatedPath(lang);
 
 <style>
     .nav-link:hover {
-        color: var(--yellow-light) !important;
-        border-color: var(--green-dark) !important;
-        background: rgba(35, 114, 39, 0.15);
+        color: var(--text-primary) !important;
+        border-color: var(--bg-border) !important;
+        background: var(--bg-panel);
     }
 </style>
 
